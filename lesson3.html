@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lesson 3 - Cryptography</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ffcc;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      text-align: center;
+      margin: 20px 0;
+      text-shadow: 0 0 10px #00ffc3;
+    }
+    .content {
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .quiz {
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffc3;
+      margin-top: 40px;
+    }
+    .quiz h2 {
+      text-align: center;
+    }
+    .quiz button {
+      margin-top: 15px;
+      background: linear-gradient(45deg, #ff0080, #7928ca);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .quiz button:hover {
+      background: linear-gradient(45deg, #00ffe7, #0099ff);
+      color: #000;
+    }
+    .wrong {
+      color: red;
+      font-weight: bold;
+    }
+    .back-btn {
+      display: block;
+      margin: 30px auto;
+      padding: 10px 20px;
+      background: #111;
+      color: #00ffcc;
+      text-decoration: none;
+      border-radius: 6px;
+      box-shadow: 0 0 10px #00ffc3;
+      width: fit-content;
+    }
+    .back-btn:hover {
+      background: #00ffcc;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lesson 3: Cryptography</h1>
+  <div class="content">
+    <h2>🔐 Introduction</h2>
+    <p>Cryptography is the science of protecting information by transforming it into unreadable formats for unauthorized users. It ensures confidentiality, integrity, and authentication in modern digital systems.</p>
+
+    <h2>⚠️ Threats</h2>
+    <p>Cyber threats include viruses, data breaches, denial of service, and eavesdropping. Cryptography provides a shield against these by encoding data.</p>
+
+    <h2>🎯 Security Goals</h2>
+    <ul>
+      <li><b>Confidentiality:</b> Only intended parties can read the data.</li>
+      <li><b>Integrity:</b> Ensures data is not altered.</li>
+      <li><b>Authentication:</b> Confirms the identity of users.</li>
+      <li><b>Non-repudiation:</b> Prevents denial of actions by a sender.</li>
+    </ul>
+
+    <h2>🔑 Encryption & Decryption</h2>
+    <p><b>Encryption</b> converts plaintext into ciphertext. <b>Decryption</b> transforms it back. Together, they protect data during storage and transmission.</p>
+
+    <h2>🛠 Types of Cryptography</h2>
+    <p><b>Symmetric Key Cryptography:</b> Uses a single key for both encryption and decryption. Examples: DES, AES.</p>
+    <p><b>Asymmetric Key Cryptography:</b> Uses two keys (public and private). Example: RSA.</p>
+    <p><b>Hash Functions:</b> Irreversible, one-way algorithms. Used in password storage and blockchain.</p>
+
+    <h2>🔄 Ciphers</h2>
+    <p>Ciphers are algorithms for encryption/decryption. Examples include substitution ciphers (replace characters) and transposition ciphers (rearrange characters).</p>
+
+    <h2>🏛 Public Key Infrastructure (PKI)</h2>
+    <p>PKI issues digital certificates, manages public/private keys, and ensures secure communication in systems like banking and e-commerce.</p>
+
+    <h2>💥 Attacks on Cryptosystems</h2>
+    <ul>
+      <li><b>Passive Attacks:</b> Eavesdropping without altering data.</li>
+      <li><b>Active Attacks:</b> Modify or disrupt communication.</li>
+      <li><b>Ciphertext Only Attack:</b> Attacker only has encrypted text.</li>
+      <li><b>Brute Force Attack:</b> Trying all possible keys until success.</li>
+    </ul>
+
+    <h2>📌 Cryptography in Cybersecurity</h2>
+    <p>Used in ATM cards, passwords, and e-commerce. Ensures secure digital communication and trust between systems.</p>
+
+    <!-- QUIZ -->
+    <div class="quiz">
+      <h2>🧠 Quiz: Cryptography</h2>
+      <form id="quizForm">
+        <ol>
+          <li>What is cryptography?<br>
+            <input type="radio" name="q1" value="wrong"> A type of malware<br>
+            <input type="radio" name="q1" value="correct"> The science of protecting information through codes<br>
+            <input type="radio" name="q1" value="wrong"> A network monitoring tool<br>
+          </li>
+          <li>Which ensures data is not altered?<br>
+            <input type="radio" name="q2" value="correct"> Integrity<br>
+            <input type="radio" name="q2" value="wrong"> Confidentiality<br>
+            <input type="radio" name="q2" value="wrong"> Non-repudiation<br>
+          </li>
+          <li>Which uses the same key for encryption and decryption?<br>
+            <input type="radio" name="q3" value="correct"> Symmetric key<br>
+            <input type="radio" name="q3" value="wrong"> Asymmetric key<br>
+            <input type="radio" name="q3" value="wrong"> Hashing<br>
+          </li>
+          <li>RSA is an example of?<br>
+            <input type="radio" name="q4" value="wrong"> Symmetric key<br>
+            <input type="radio" name="q4" value="correct"> Asymmetric key<br>
+            <input type="radio" name="q4" value="wrong"> Hashing<br>
+          </li>
+          <li>Hash functions are?<br>
+            <input type="radio" name="q5" value="wrong"> Reversible<br>
+            <input type="radio" name="q5" value="correct"> Irreversible<br>
+            <input type="radio" name="q5" value="wrong"> Symmetric<br>
+          </li>
+          <li>What does PKI manage?<br>
+            <input type="radio" name="q6" value="wrong"> Malware<br>
+            <input type="radio" name="q6" value="correct"> Digital certificates and keys<br>
+            <input type="radio" name="q6" value="wrong"> Firewalls<br>
+          </li>
+          <li>Which attack involves trying all possible keys?<br>
+            <input type="radio" name="q7" value="correct"> Brute Force<br>
+            <input type="radio" name="q7" value="wrong"> Ciphertext Only<br>
+            <input type="radio" name="q7" value="wrong"> Passive Attack<br>
+          </li>
+          <li>Which is an example of a passive attack?<br>
+            <input type="radio" name="q8" value="correct"> Eavesdropping<br>
+            <input type="radio" name="q8" value="wrong"> Data modification<br>
+            <input type="radio" name="q8" value="wrong"> DoS<br>
+          </li>
+          <li>Which cipher rearranges characters?<br>
+            <input type="radio" name="q9" value="correct"> Transposition<br>
+            <input type="radio" name="q9" value="wrong"> Substitution<br>
+            <input type="radio" name="q9" value="wrong"> Hashing<br>
+          </li>
+          <li>Which goal prevents denial of actions by sender?<br>
+            <input type="radio" name="q10" value="wrong"> Confidentiality<br>
+            <input type="radio" name="q10" value="wrong"> Integrity<br>
+            <input type="radio" name="q10" value="correct"> Non-repudiation<br>
+          </li>
+        </ol>
+        <button type="button" onclick="checkQuiz()">Submit</button>
+      </form>
+      <p id="result"></p>
+    </div>
+
+    <a href="index.html" class="back-btn">⬅ Back to Homepage</a>
+  </div>
+
+  <script>
+    function checkQuiz() {
+      const form = document.getElementById('quizForm');
+      let score = 0;
+      const answers = form.querySelectorAll('input[type="radio"]:checked');
+      answers.forEach(a => {
+        if (a.value === "correct") score++;
+        else a.parentElement.innerHTML += " <span class='wrong'>(X)</span>";
+      });
+      document.getElementById('result').innerHTML =
+        "You scored " + score + "/10";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 6 - Identity & Access Management (IAM)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ffcc;
+      padding: 20px;
+      line-height: 1.7;
+    }
+    h1, h2, h3 {
+      text-shadow: 0 0 15px #00ffc3;
+    }
+    .content {
+      background: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffc3;
+      margin-bottom: 20px;
+      animation: fadeIn 1.5s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    .quiz {
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+    .quiz h3 {
+      margin-bottom: 15px;
+    }
+    .btn-custom {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: linear-gradient(45deg, #ff0080, #7928ca);
+      border: none;
+      color: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-custom:hover {
+      background: linear-gradient(45deg, #00ffe7, #0099ff);
+      color: #000;
+    }
+    .back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      background: #111;
+      color: #00ffcc;
+      padding: 10px 20px;
+      border-radius: 6px;
+      box-shadow: 0 0 15px #00ffc3;
+      transition: 0.3s;
+    }
+    .back-btn:hover {
+      background: #00ffcc;
+      color: #000;
+    }
+    .wrong { color: red; font-weight: bold; }
+    .correct { color: lime; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1 class="text-center">Lesson 6: Identity & Access Management (IAM)</h1>
+
+  <div class="content">
+    <h2>🔑 What is IAM?</h2>
+    <p>Identity and Access Management (IAM) ensures the right individuals and job roles in an organization can access the tools and data they need. It manages not only <b>people</b>, but also <b>software, machines, IoT devices, and applications</b>.</p>
+    <p>IAM allows organizations to manage users, groups, and permissions without having to log into every system separately. With IAM, you can decide <i>who can do what</i> within a system.</p>
+  </div>
+
+  <div class="content">
+    <h2>🆔 What is an Identity?</h2>
+    <p>A <b>digital identity</b> is a collection of unique identifiers that represent a human, system, or device in a computer network. Examples include:</p>
+    <ul>
+      <li>Email addresses</li>
+      <li>Login credentials (username & password)</li>
+      <li>Government IDs</li>
+      <li>IP addresses and MAC addresses</li>
+    </ul>
+    <p>Digital identities are essential for <b>authentication, authorization, communication, and transactions</b>.</p>
+  </div>
+
+  <div class="content">
+    <h2>🔐 Authentication</h2>
+    <p>Authentication verifies <i>who you are</i>. Without it, systems cannot ensure that access requests are genuine. Methods include:</p>
+    <ul>
+      <li><b>Credentials Verification</b> – username and password</li>
+      <li><b>Multi-Factor Authentication (MFA)</b> – something you know (password), something you have (phone), something you are (biometrics)</li>
+      <li><b>Biometric Authentication</b> – fingerprint, iris, face recognition</li>
+    </ul>
+    <p><i>⚠️ Did you know? 61% of data breaches in 2021 involved stolen credentials.</i></p>
+  </div>
+
+  <div class="content">
+    <h2>✅ Authorization</h2>
+    <p>Authorization defines <i>what you can do</i> once authenticated. Examples include:</p>
+    <ul>
+      <li><b>Access Control Lists (ACLs)</b> – permissions for files/resources</li>
+      <li><b>Role-Based Access Control (RBAC)</b> – permissions assigned based on job roles</li>
+      <li><b>Principle of Least Privilege</b> – users only get the minimum required access</li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <h2>🛡️ How IAM Works</h2>
+    <p>IAM systems perform two main tasks:</p>
+    <ol>
+      <li><b>Authentication</b>: Verifying that the user/device is who they say they are.</li>
+      <li><b>Authorization</b>: Granting the correct level of access (e.g., viewer, editor, admin).</li>
+    </ol>
+    <p>Modern IAM solutions use <b>cloud identity tools</b> that are more secure and flexible than simple passwords.</p>
+  </div>
+
+  <div class="content">
+    <h2>🔒 Password Protection</h2>
+    <p>Password security is critical to IAM:</p>
+    <ul>
+      <li>Enforce <b>strong, complex passwords</b></li>
+      <li>Use <b>MFA</b> to strengthen login security</li>
+      <li>Change passwords regularly</li>
+      <li>Use <b>Password Managers</b></li>
+      <li>Avoid password reuse across systems</li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <h2>👥 Identity Theft</h2>
+    <p>Identity theft occurs when attackers steal personal information (e.g., SSN, credit card numbers) to impersonate someone and commit fraud. Common methods include:</p>
+    <ul>
+      <li>Oversharing personal data on social media</li>
+      <li>Geo-tagging photos</li>
+      <li>Phishing and fake login sites</li>
+    </ul>
+  </div>
+
+  <div class="quiz">
+    <h3>🧠 Lesson 6 Quiz: Identity & Access Management</h3>
+    <form id="quizForm">
+      <div>
+        <p>1. IAM ensures the right people have access to?</p>
+        <input type="radio" name="q1" value="wrong"> Social media<br>
+        <input type="radio" name="q1" value="correct"> Tools and data they need<br>
+        <input type="radio" name="q1" value="wrong"> Entertainment systems<br>
+      </div>
+      <div>
+        <p>2. Which of these is a digital identity?</p>
+        <input type="radio" name="q2" value="wrong"> Birthday cake<br>
+        <input type="radio" name="q2" value="correct"> Email address<br>
+        <input type="radio" name="q2" value="wrong"> Street sign<br>
+      </div>
+      <div>
+        <p>3. Authentication verifies?</p>
+        <input type="radio" name="q3" value="correct"> Who you are<br>
+        <input type="radio" name="q3" value="wrong"> What you can do<br>
+        <input type="radio" name="q3" value="wrong"> Your favorite color<br>
+      </div>
+      <div>
+        <p>4. Which method is strongest?</p>
+        <input type="radio" name="q4" value="wrong"> Password only<br>
+        <input type="radio" name="q4" value="correct"> Multi-Factor Authentication (MFA)<br>
+        <input type="radio" name="q4" value="wrong"> PIN only<br>
+      </div>
+      <div>
+        <p>5. Authorization defines?</p>
+        <input type="radio" name="q5" value="wrong"> Who you are<br>
+        <input type="radio" name="q5" value="correct"> What you can access/do<br>
+        <input type="radio" name="q5" value="wrong"> How long you stay logged in<br>
+      </div>
+      <div>
+        <p>6. Which is NOT an IAM task?</p>
+        <input type="radio" name="q6" value="wrong"> Authentication<br>
+        <input type="radio" name="q6" value="wrong"> Authorization<br>
+        <input type="radio" name="q6" value="correct"> Cooking dinner<br>
+      </div>
+      <div>
+        <p>7. What is RBAC?</p>
+        <input type="radio" name="q7" value="wrong"> Random Basic Access Control<br>
+        <input type="radio" name="q7" value="correct"> Role-Based Access Control<br>
+        <input type="radio" name="q7" value="wrong"> Rule-Breaking Account Control<br>
+      </div>
+      <div>
+        <p>8. A good password policy should enforce?</p>
+        <input type="radio" name="q8" value="correct"> Strong & complex passwords<br>
+        <input type="radio" name="q8" value="wrong"> Same password everywhere<br>
+        <input type="radio" name="q8" value="wrong"> Using birthdays<br>
+      </div>
+      <div>
+        <p>9. Identity theft can happen through?</p>
+        <input type="radio" name="q9" value="correct"> Oversharing personal info<br>
+        <input type="radio" name="q9" value="wrong"> Eating chocolate<br>
+        <input type="radio" name="q9" value="wrong"> Watching movies<br>
+      </div>
+      <div>
+        <p>10. Principle of least privilege means?</p>
+        <input type="radio" name="q10" value="correct"> Giving only minimum required access<br>
+        <input type="radio" name="q10" value="wrong"> Granting admin rights to all<br>
+        <input type="radio" name="q10" value="wrong"> Locking everyone out<br>
+      </div>
+      <button type="button" class="btn-custom" onclick="checkQuiz()">Submit</button>
+    </form>
+    <div id="quizResult"></div>
+  </div>
+
+  <div class="text-center">
+    <a href="cyber-index.html" class="back-btn">⬅ Back to Cybersecurity Lessons</a>
+  </div>
+
+  <script>
+    function checkQuiz() {
+      let form = document.forms['quizForm'];
+      let score = 0;
+      let total = 10;
+      let feedback = "";
+      for (let i = 1; i <= total; i++) {
+        let q = form['q' + i];
+        let answered = false;
+        for (let opt of q) {
+          if (opt.checked) {
+            answered = true;
+            if (opt.value === "correct") {
+              score++;
+              feedback += "<p class='correct'>Q" + i + " ✅ Correct</p>";
+            } else {
+              feedback += "<p class='wrong'>Q" + i + " ❌ Wrong</p>";
+            }
+          }
+        }
+        if (!answered) feedback += "<p class='wrong'>Q" + i + " ❌ Not Answered</p>";
+      }
+      document.getElementById("quizResult").innerHTML = 
+        "<h4>You scored " + score + "/" + total + "</h4>" + feedback;
+    }
+  </script>
+</body>
+</html>

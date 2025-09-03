@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson 4 - Computer Networks</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ffcc;
+      padding: 20px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3 {
+      text-shadow: 0 0 15px #00ffc3;
+      margin-top: 30px;
+    }
+
+    .lesson-content {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffc3;
+      margin-bottom: 40px;
+    }
+
+    .quiz {
+      margin-top: 40px;
+      padding: 20px;
+      background: #111;
+      border-radius: 8px;
+      box-shadow: 0 0 20px #ff0080;
+    }
+
+    .quiz h3 {
+      color: #ff66ff;
+    }
+
+    .btn-check-answer {
+      background: linear-gradient(45deg, #ff0080, #7928ca);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 0 15px #ff0080;
+    }
+
+    .btn-check-answer:hover {
+      background: linear-gradient(45deg, #00ffe7, #0099ff);
+      color: #000;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 20px;
+      background: #111;
+      color: #00ffcc;
+      text-decoration: none;
+      border-radius: 6px;
+      box-shadow: 0 0 10px #00ffc3;
+      transition: 0.3s;
+    }
+    .back-btn:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 20px #00ffcc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lesson-content">
+    <h1>Lesson 4: Computer Networks</h1>
+    <p>
+      A <b>computer network</b> is an interconnection of two or more computers that communicate 
+      and share resources. Networks are the backbone of the modern world – powering the internet, 
+      emails, online banking, social media, and cloud computing.
+    </p>
+
+    <h2>Types of Computer Networks</h2>
+    <ul>
+      <li><b>LAN (Local Area Network)</b> – Covers a small area like a home or office.</li>
+      <li><b>WAN (Wide Area Network)</b> – Covers large areas, connecting multiple LANs (e.g., the Internet).</li>
+      <li><b>MAN (Metropolitan Area Network)</b> – Covers a city or campus.</li>
+      <li><b>WLAN</b> – Wireless LANs like Wi-Fi.</li>
+      <li><b>PAN</b> – Personal Area Network, like Bluetooth between your phone and earbuds.</li>
+    </ul>
+
+    <h2>Network Architectures</h2>
+    <p><b>Peer-to-Peer (P2P)</b> – Devices share resources equally without a central server.</p>
+    <p><b>Client-Server</b> – Central server provides resources/services to clients. More secure but expensive.</p>
+
+    <h2>Layered Architectures</h2>
+    <p>Networking uses layers to ensure orderly communication. The most famous models are:</p>
+    <ul>
+      <li><b>OSI Model (7 layers):</b> Application, Presentation, Session, Transport, Network, Data Link, Physical.</li>
+      <li><b>TCP/IP Model (4 layers):</b> Application, Transport, Internet, Network Access.</li>
+    </ul>
+
+    <h2>Network Scanning & Enumeration</h2>
+    <p>
+      Attackers and administrators use <b>scanning</b> to discover hosts, open ports, and services.
+      Tools like <b>Nmap</b> can identify live systems, OS versions, and vulnerabilities. Enumeration 
+      digs deeper to reveal users, shares, and network services.
+    </p>
+
+    <h2>Common Threats & Attacks</h2>
+    <ul>
+      <li><b>Malware</b> – Viruses, worms, Trojans, ransomware.</li>
+      <li><b>Phishing</b> – Tricking users into revealing sensitive data.</li>
+      <li><b>MitM Attacks</b> – Intercepting communications between two parties.</li>
+      <li><b>DoS/DDoS</b> – Overloading a system to deny services.</li>
+      <li><b>Social Engineering</b> – Manipulating humans to gain access.</li>
+    </ul>
+  </div>
+
+  <!-- QUIZ SECTION -->
+  <div class="quiz">
+    <h3>Quiz: Test Your Knowledge</h3>
+    <form id="quizForm">
+      <ol>
+        <li>What does LAN stand for?<br>
+          <input type="radio" name="q1" value="a"> Large Area Network<br>
+          <input type="radio" name="q1" value="b"> Local Area Network<br>
+          <input type="radio" name="q1" value="c"> Limited Access Network<br>
+        </li>
+        <li>Which network type spans across cities?<br>
+          <input type="radio" name="q2" value="a"> LAN<br>
+          <input type="radio" name="q2" value="b"> MAN<br>
+          <input type="radio" name="q2" value="c"> PAN<br>
+        </li>
+        <li>Which architecture uses a central server?<br>
+          <input type="radio" name="q3" value="a"> Peer-to-Peer<br>
+          <input type="radio" name="q3" value="b"> Client-Server<br>
+        </li>
+        <li>How many layers are in the OSI model?<br>
+          <input type="radio" name="q4" value="a"> 5<br>
+          <input type="radio" name="q4" value="b"> 6<br>
+          <input type="radio" name="q4" value="c"> 7<br>
+        </li>
+        <li>Which OSI layer deals with encryption and compression?<br>
+          <input type="radio" name="q5" value="a"> Session<br>
+          <input type="radio" name="q5" value="b"> Presentation<br>
+          <input type="radio" name="q5" value="c"> Application<br>
+        </li>
+        <li>Which tool is commonly used for network scanning?<br>
+          <input type="radio" name="q6" value="a"> Wireshark<br>
+          <input type="radio" name="q6" value="b"> Nmap<br>
+          <input type="radio" name="q6" value="c"> Burp Suite<br>
+        </li>
+        <li>What does DDoS stand for?<br>
+          <input type="radio" name="q7" value="a"> Distributed Denial of Service<br>
+          <input type="radio" name="q7" value="b"> Data Denial of Security<br>
+        </li>
+        <li>Which is an example of social engineering?<br>
+          <input type="radio" name="q8" value="a"> Phishing email<br>
+          <input type="radio" name="q8" value="b"> Firewall rule<br>
+        </li>
+        <li>Which OSI layer deals with physical hardware like cables?<br>
+          <input type="radio" name="q9" value="a"> Data Link<br>
+          <input type="radio" name="q9" value="b"> Physical<br>
+        </li>
+        <li>Which attack intercepts communication between two parties?<br>
+          <input type="radio" name="q10" value="a"> Malware<br>
+          <input type="radio" name="q10" value="b"> Man-in-the-Middle<br>
+        </li>
+      </ol>
+      <button type="button" class="btn-check-answer" onclick="checkQuiz()">Submit Quiz</button>
+    </form>
+    <div id="quizResult" class="result"></div>
+  </div>
+
+  <a href="cyber-index.html" class="back-btn">⬅ Back to Cyber Lessons</a>
+
+  <script>
+    // Animation intro
+    gsap.from(".lesson-content", {opacity: 0, y: 30, duration: 1, ease: "power2.out"});
+    gsap.from("h1", {textShadow: "0 0 0px #00ffc3", duration: 2, repeat: -1, yoyo: true});
+
+    // Quiz answers
+    const answers = {
+      q1: "b", q2: "b", q3: "b", q4: "c", q5: "b",
+      q6: "b", q7: "a", q8: "a", q9: "b", q10: "b"
+    };
+
+    function checkQuiz() {
+      let score = 0;
+      let resultText = "";
+      for (let q in answers) {
+        let selected = document.querySelector(`input[name="${q}"]:checked`);
+        if (selected) {
+          if (selected.value === answers[q]) {
+            score++;
+            resultText += `✔ ${q.toUpperCase()} correct<br>`;
+          } else {
+            resultText += `❌ ${q.toUpperCase()} wrong (Correct: ${answers[q]})<br>`;
+          }
+        } else {
+          resultText += `⚠ ${q.toUpperCase()} not answered<br>`;
+        }
+      }
+      resultText += `<br>Your Score: ${score}/10`;
+      document.getElementById("quizResult").innerHTML = resultText;
+    }
+  </script>
+</body>
+</html>

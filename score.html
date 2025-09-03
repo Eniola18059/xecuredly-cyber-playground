@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Score Tracker - Xecuredly</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ffcc;
+      padding: 40px 20px;
+      min-height: 100vh;
+      transition: background-color 0.3s ease;
+    }
+
+    .light-mode {
+      background-color: #f8f9fa;
+      color: #000;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #00ffc3;
+    }
+
+    .score-box {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(0, 255, 204, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00ffc3;
+    }
+
+    .score-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #00ffc3;
+      padding: 8px 0;
+    }
+
+    .progress {
+      height: 25px;
+      background: #111;
+      border-radius: 30px;
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #00ffc3, #00d4ff);
+      font-weight: bold;
+    }
+
+    .certificate {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .certificate button {
+      background: linear-gradient(45deg, #ff0080, #7928ca);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px #ff0080;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .certificate button:hover {
+      background: linear-gradient(45deg, #00ffe7, #0099ff);
+      color: #000;
+      box-shadow: 0 0 25px #00ffe7;
+    }
+
+    #toggleTheme {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      padding: 6px 14px;
+      border-radius: 10px;
+      border: none;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="dark-mode">
+
+  <button id="toggleTheme">🌙 Toggle Theme</button>
+
+  <h1>📈 Score Tracker</h1>
+
+  <div class="score-box" id="scoreBox">
+    <!-- Scores will be injected here -->
+  </div>
+
+  <div class="certificate" id="certificatePopup" style="display: none;">
+    <h3>🎉 Congratulations, Agent!</h3>
+    <p>You’ve completed all training modules. Download your certificate.</p>
+    <button onclick="alert('Certificate Download Coming Soon!')">🎖 Download Certificate</button>
+  </div>
+
+  <script>
+    const scoreBox = document.getElementById("scoreBox");
+
+    const scores = [];
+    let total = 0;
+
+    for (let i = 1; i <= 7; i++) {
+      const score = parseInt(localStorage.getItem(`lesson${i}_score`)) || 0;
+      scores.push({ label: `Lesson ${i}`, value: score });
+      total += score;
+    }
+
+    const finalQuiz = parseInt(localStorage.getItem("final_quiz_score")) || 0;
+    scores.push({ label: "Final Quiz", value: finalQuiz });
+    total += finalQuiz;
+
+    const maxScore = (7 + 1) * 100;
+    const percentage = Math.round((total / maxScore) * 100);
+
+    scores.forEach(item => {
+      scoreBox.innerHTML += `
+        <div class="score-item">
+          <span>${item.label}</span>
+          <span>${item.value} / 100</span>
+        </div>
+      `;
+    });
+
+    scoreBox.innerHTML += `
+      <div class="mt-4">Overall Progress: ${percentage}%</div>
+      <div class="progress mt-2">
+        <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${percentage}%</div>
+      </div>
+    `;
+
+    if (percentage >= 80) {
+      document.getElementById("certificatePopup").style.display = "block";
+    }
+
+    // GSAP Animation
+    gsap.from(".score-item", {
+      opacity: 0,
+      x: -100,
+      duration: 1,
+      stagger: 0.1
+    });
+
+    // Theme Toggle
+    const toggleBtn = document.getElementById("toggleTheme");
+    toggleBtn.onclick = () => {
+      const isLight = document.body.classList.contains("light-mode");
+      document.body.classList.toggle("light-mode", !isLight);
+      document.body.classList.toggle("dark-mode", isLight);
+      localStorage.setItem("theme", isLight ? "dark" : "light");
+    };
+
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    document.body.classList.add(`${savedTheme}-mode`);
+  </script>
+
+</body>
+</html>

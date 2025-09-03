@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Final Quiz - Xecuredly</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ffcc;
+      padding: 40px 20px;
+      transition: background-color 0.4s ease;
+    }
+
+    .light-mode {
+      background-color: #f8f9fa;
+      color: #000;
+    }
+
+    h1, h2 {
+      text-align: center;
+      text-shadow: 0 0 10px #00ffc3;
+    }
+
+    .quiz-box {
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 30px;
+      background: rgba(0, 255, 204, 0.07);
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00ffc3;
+      display: none;
+    }
+
+    .question {
+      margin-bottom: 20px;
+    }
+
+    .question h5 {
+      margin-bottom: 10px;
+    }
+
+    .form-check {
+      margin-left: 15px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, #00ffe7, #0099ff);
+      border: none;
+      font-weight: bold;
+      color: #000;
+    }
+
+    #attemptBtn {
+      display: block;
+      margin: 50px auto 0;
+      background: linear-gradient(45deg, #ff0080, #7928ca);
+      color: white;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #ff0080;
+    }
+
+    #attemptBtn:hover {
+      background: linear-gradient(45deg, #00ffe7, #0099ff);
+      color: #000;
+    }
+
+    #toggleTheme {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 6px 14px;
+      border-radius: 10px;
+      border: none;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 25px;
+      font-size: 1.3rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="dark-mode">
+  <button id="toggleTheme">🌙 Toggle Theme</button>
+  <h1>🧠 Final Cyber Quiz</h1>
+  <button id="attemptBtn">🚀 Attempt Quiz</button>
+
+  <form class="quiz-box" id="quizForm">
+    <div class="question">
+      <h5>1. What is the most common cyber threat?</h5>
+      <div class="form-check"><input type="radio" name="q1" value="0" class="form-check-input"> Worms</div>
+      <div class="form-check"><input type="radio" name="q1" value="1" class="form-check-input"> Phishing</div>
+      <div class="form-check"><input type="radio" name="q1" value="0" class="form-check-input"> Keyloggers</div>
+    </div>
+
+    <div class="question">
+      <h5>2. What does a firewall do?</h5>
+      <div class="form-check"><input type="radio" name="q2" value="1" class="form-check-input"> Filters network traffic</div>
+      <div class="form-check"><input type="radio" name="q2" value="0" class="form-check-input"> Detects malware</div>
+      <div class="form-check"><input type="radio" name="q2" value="0" class="form-check-input"> Stores passwords</div>
+    </div>
+
+    <div class="question">
+      <h5>3. Which of these is a strong password?</h5>
+      <div class="form-check"><input type="radio" name="q3" value="1" class="form-check-input"> T@l#9g$3Z</div>
+      <div class="form-check"><input type="radio" name="q3" value="0" class="form-check-input"> 123456</div>
+      <div class="form-check"><input type="radio" name="q3" value="0" class="form-check-input"> password</div>
+    </div>
+
+    <div class="question">
+      <h5>4. What is ransomware?</h5>
+      <div class="form-check"><input type="radio" name="q4" value="1" class="form-check-input"> Malware that demands payment</div>
+      <div class="form-check"><input type="radio" name="q4" value="0" class="form-check-input"> A firewall</div>
+      <div class="form-check"><input type="radio" name="q4" value="0" class="form-check-input"> Antivirus software</div>
+    </div>
+
+    <div class="question">
+      <h5>5. How often should you update your passwords?</h5>
+      <div class="form-check"><input type="radio" name="q5" value="0" class="form-check-input"> Never</div>
+      <div class="form-check"><input type="radio" name="q5" value="0" class="form-check-input"> Once a year</div>
+      <div class="form-check"><input type="radio" name="q5" value="1" class="form-check-input"> Every 3–6 months</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit Quiz</button>
+    <div id="result"></div>
+  </form>
+
+  <script>
+    const quizForm = document.getElementById("quizForm");
+    const resultDiv = document.getElementById("result");
+    const quizBox = document.querySelector(".quiz-box");
+    const attemptBtn = document.getElementById("attemptBtn");
+
+    attemptBtn.onclick = () => {
+      gsap.from(quizBox, {opacity: 0, y: 30, duration: 1});
+      quizBox.style.display = "block";
+      attemptBtn.style.display = "none";
+    };
+
+    quizForm.onsubmit = function(e) {
+      e.preventDefault();
+      const formData = new FormData(quizForm);
+      let score = 0;
+      for (let entry of formData.entries()) {
+        score += parseInt(entry[1]);
+      }
+      const percent = Math.round((score / 5) * 100);
+      resultDiv.innerHTML = `✅ You scored ${percent}%`;
+      localStorage.setItem("final_quiz_score", percent);
+    };
+
+    // Theme toggle
+    const toggleBtn = document.getElementById("toggleTheme");
+    toggleBtn.onclick = () => {
+      const isLight = document.body.classList.contains("light-mode");
+      document.body.classList.toggle("light-mode", !isLight);
+      document.body.classList.toggle("dark-mode", isLight);
+      localStorage.setItem("theme", isLight ? "dark" : "light");
+    };
+
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    document.body.classList.add(`${savedTheme}-mode`);
+  </script>
+</body>
+</html>

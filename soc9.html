@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lesson 8 — Malware & Sniffing</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    :root{
+      --cyber: #00ffe7;
+      --cyber2:#00ffc3;
+      --magenta:#ff0080;
+      --violet:#7928ca;
+      --bg:#000;
+      --card:#0b0b0f;
+      --ink:#d9fff9;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Share Tech Mono',monospace;
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x:hidden;
+      min-height:100vh;
+    }
+
+    /* Matrix rain background */
+    #matrix{
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      filter: blur(0.6px) contrast(140%);
+      opacity:.35;
+    }
+
+    .wrap{
+      position:relative; z-index:2;
+      padding: clamp(16px,2vw,24px);
+      max-width: 1100px; margin: 0 auto;
+    }
+
+    h1,h2,h3{
+      color: var(--cyber);
+      text-shadow: 0 0 10px var(--cyber2);
+      letter-spacing: .5px;
+    }
+    .title-badge{
+      display:inline-block; padding:6px 12px; border:1px solid var(--cyber2);
+      border-radius:999px; background:#061214a6; box-shadow:0 0 14px #00ffc33d inset, 0 0 18px #00ffc33d;
+      margin-bottom:12px; color:#aefcf3
+    }
+
+    .card-cyber{
+      background: var(--card);
+      border:1px solid var(--cyber2);
+      border-radius:14px;
+      box-shadow: 0 0 20px #00ffc355, 0 0 60px #00ffc31f inset;
+      padding: clamp(18px,2.4vw,28px);
+      margin: 16px 0;
+      line-height:1.7;
+    }
+    .tag{
+      display:inline-block; font-size:.85rem; padding:2px 8px; border:1px dashed var(--cyber2);
+      border-radius:6px; margin-right:8px; color:#9af9ef;
+    }
+
+    .grid-2{
+      display:grid; gap:16px;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    @media (max-width: 900px){
+      .grid-2{ grid-template-columns: 1fr; }
+    }
+
+    .btn-cyber{
+      display:inline-block; border:none; cursor:pointer; text-decoration:none;
+      padding:12px 20px; border-radius:10px; font-weight:700;
+      background: linear-gradient(45deg, var(--magenta), var(--violet));
+      color:#fff; box-shadow:0 0 16px var(--magenta);
+      transition:.25s;
+    }
+    .btn-cyber:hover{
+      transform: translateY(-2px) scale(1.02);
+      background: linear-gradient(45deg, var(--cyber), #0099ff);
+      color:#000; box-shadow:0 0 22px var(--cyber);
+    }
+
+    .back-btn{
+      display:inline-block; margin-top:24px;
+      padding:10px 16px; border-radius:8px; text-decoration:none;
+      background:#111; color:var(--cyber); border:1px solid var(--cyber2);
+      box-shadow:0 0 12px var(--cyber2);
+    }
+    .back-btn:hover{ background:var(--cyber); color:#000 }
+
+    .note-callout{
+      border-left:3px solid var(--cyber2); padding-left:14px; opacity:.95;
+    }
+
+    /* Quiz */
+    .quiz-wrap{ margin-top:26px }
+    .question{
+      border:1px solid var(--cyber2); border-radius:10px; background:#031315b3;
+      padding:14px; margin-bottom:14px;
+    }
+    .question legend{ font-size:1.05rem; margin-bottom:8px }
+    .question label{ display:block; padding:8px 10px; border-radius:8px; cursor:pointer }
+    .question input{ margin-right:8px }
+    .question label:hover{ background:#062428 }
+    .wrong{ color:#ff6b6b; font-weight:700 }
+    .correct{ color:#10ff86; font-weight:700 }
+    #resultBox{
+      border:1px solid var(--cyber2); border-radius:12px; padding:16px; margin-top:16px;
+      background:#001214ad;
+    }
+
+    /* Subtle floating animation for cards */
+    .floaty{ animation: floaty 6s ease-in-out infinite }
+    @keyframes floaty{
+      0%,100%{ transform: translateY(0) }
+      50%{ transform: translateY(-6px) }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <main class="wrap">
+    <span class="title-badge">CYBERSECURITY • Lesson 8</span>
+    <h1>Malware & Sniffing — How Attacks Spread and How to Defend</h1>
+    <p class="note-callout">
+      In this lesson you’ll learn what malware is (with real cases), how sniffing attacks capture sensitive traffic,
+      and the concrete defenses you can deploy immediately. At the end, take a 10-question quiz and see exactly
+      which ones you missed.
+    </p>
+
+    <!-- Malware Overview -->
+    <section class="card-cyber floaty">
+      <h2>🔬 What Is Malware?</h2>
+      <div class="tag">Viruses</div><div class="tag">Worms</div><div class="tag">Trojans</div>
+      <div class="tag">Ransomware</div><div class="tag">Spyware</div>
+      <p>
+        <b>Malware</b> (malicious software) is any code intentionally designed to <b>disrupt</b>, <b>damage</b>,
+        or <b>gain unauthorized access</b> to systems. It can arrive via phishing attachments, pirated software,
+        drive-by downloads, USB media, or supply-chain updates.
+      </p>
+      <div class="grid-2">
+        <div class="card-cyber">
+          <h3>Common Types</h3>
+          <ul>
+            <li><b>Virus</b> — attaches to files/programs and spreads when executed.</li>
+            <li><b>Worm</b> — self-replicates over networks; can exhaust bandwidth and crash hosts.</li>
+            <li><b>Trojan</b> — disguises as legit software; opens backdoors, exfiltrates data.</li>
+            <li><b>Ransomware</b> — encrypts files, demands payment for the key.</li>
+            <li><b>Spyware</b> — silently monitors activity, keystrokes, and browser data.</li>
+          </ul>
+        </div>
+        <div class="card-cyber">
+          <h3>Real-World Cases</h3>
+          <ul>
+            <li><b>WannaCry (2017)</b> — global ransomware exploiting SMBv1, billions in damage.</li>
+            <li><b>ILOVEYOU (2000)</b> — emailed worm that overwrote files & mailed itself to contacts.</li>
+            <li><b>CovidLock (2020)</b> — Android ransomware posing as a COVID tracker app.</li>
+          </ul>
+          <p class="note-callout mb-0"><b>Lesson:</b> patch aggressively, disable legacy protocols, and never sideload untrusted apps.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Protection -->
+    <section class="card-cyber">
+      <h2>🛡️ Defending Against Malware</h2>
+      <ul>
+        <li>Use reputable <b>endpoint protection</b> (AV/EDR) with real-time scanning.</li>
+        <li><b>Patch</b> OS, browsers, and apps promptly; remove legacy services (e.g., SMBv1).</li>
+        <li><b>Least privilege</b>, application allow-listing, and script control (e.g., block Office macros).</li>
+        <li>Back up with <b>3-2-1 strategy</b> (3 copies, 2 media, 1 offsite/offline).</li>
+        <li>Security awareness: spot <b>phishing</b>, verify downloads, avoid unknown USBs.</li>
+      </ul>
+    </section>
+
+    <!-- Sniffing -->
+    <section class="card-cyber floaty">
+      <h2>🛰️ Sniffing — Capturing Traffic on the Wire</h2>
+      <p>
+        A <b>sniffing attack</b> uses a packet sniffer to capture <b>unencrypted</b> network traffic: logins,
+        cookies, API keys, and personal data. It’s powerful on shared segments (Wi-Fi/LAN) or compromised switches.
+      </p>
+
+      <div class="grid-2">
+        <div class="card-cyber">
+          <h3>Types of Sniffing</h3>
+          <ul>
+            <li><b>Passive</b> — listen on hubs or monitor ports; collect broadcast/cleartext traffic.</li>
+            <li><b>Active</b> — <b>manipulate</b> LAN behavior to see traffic not meant for you:
+              <ul>
+                <li><b>ARP Poisoning</b> — trick hosts to route via attacker (MITM).</li>
+                <li><b>MAC Flooding</b> — overflow switch CAM table, forcing broadcast fallback.</li>
+                <li><b>DHCP Spoofing</b> — hand out rogue IP/gateway/DNS to intercept flows.</li>
+                <li><b>SSL Stripping</b> — downgrade HTTPS to HTTP on poorly configured sites.</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="card-cyber">
+          <h3>Sniffing Toolkit</h3>
+          <ul>
+            <li><b>Wireshark</b> — visualize packets & protocols.</li>
+            <li><b>tcpdump</b> — CLI capture & filters (BPF).</li>
+            <li><b>ettercap / bettercap</b> — ARP poisoning & MITM automations.</li>
+            <li><b>Responder</b> — LLMNR/NBNS spoofing to capture hashes.</li>
+          </ul>
+          <p class="note-callout mb-0"><b>Ethics:</b> Sniff only in lab or with written authorization.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Anti-Sniffing -->
+    <section class="card-cyber">
+      <h2>🧱 Defenses Against Sniffing</h2>
+      <ul>
+        <li><b>Encrypt everything:</b> HTTPS/TLS, SSH, VPN; disable plaintext protocols (FTP/Telnet/POP3).</li>
+        <li><b>Network hardening:</b> enable <b>Dynamic ARP Inspection</b>, DHCP Snooping, Port Security, Private VLANs.</li>
+        <li><b>Segmentation</b> for sensitive systems; use WPA3-Enterprise on Wi-Fi.</li>
+        <li><b>Certificate pinning</b> & HSTS to resist SSL stripping.</li>
+        <li><b>Monitoring:</b> IDS/IPS, SPAN taps, anomaly alerts for ARP/DHCP/HTTPS downgrade.</li>
+      </ul>
+    </section>
+
+    <!-- Quiz Gate -->
+    <section class="card-cyber quiz-wrap">
+      <h2>🧠 Lesson 8 Quiz</h2>
+      <p class="mb-3">Click <b>Attempt Quiz</b> when you’re ready. You’ll see your score and which questions you missed.</p>
+      <button id="attemptBtn" class="btn-cyber">🚀 Attempt Quiz</button>
+
+      <form id="quizForm" class="mt-3" style="display:none;">
+        <!-- Q1 -->
+        <fieldset class="question">
+          <legend>1) What best describes malware?</legend>
+          <label><input type="radio" name="q1" value="b"/> Code designed to disrupt or gain unauthorized access</label>
+          <label><input type="radio" name="q1" value="a"/> A safe debugging tool</label>
+          <label><input type="radio" name="q1" value="c"/> A network cable</label>
+        </fieldset>
+
+        <!-- Q2 -->
+        <fieldset class="question">
+          <legend>2) Which spreads without user interaction across networks?</legend>
+          <label><input type="radio" name="q2" value="a"/> Virus</label>
+          <label><input type="radio" name="q2" value="b"/> Worm</label>
+          <label><input type="radio" name="q2" value="c"/> Trojan</label>
+        </fieldset>
+
+        <!-- Q3 -->
+        <fieldset class="question">
+          <legend>3) A Trojan is best described as…</legend>
+          <label><input type="radio" name="q3" value="b"/> Malicious code disguised as legitimate software</label>
+          <label><input type="radio" name="q3" value="a"/> A hardware bug</label>
+          <label><input type="radio" name="q3" value="c"/> An email gateway</label>
+        </fieldset>
+
+        <!-- Q4 -->
+        <fieldset class="question">
+          <legend>4) Which is a realistic ransomware mitigation?</legend>
+          <label><input type="radio" name="q4" value="b"/> Offline/immutable backups and patching</label>
+          <label><input type="radio" name="q4" value="a"/> Using the same password everywhere</label>
+          <label><input type="radio" name="q4" value="c"/> Rely only on antivirus</label>
+        </fieldset>
+
+        <!-- Q5 -->
+        <fieldset class="question">
+          <legend>5) Passive sniffing typically occurs on…</legend>
+          <label><input type="radio" name="q5" value="c"/> Shared hubs or broadcast segments</label>
+          <label><input type="radio" name="q5" value="a"/> Encrypted VPN tunnels only</label>
+          <label><input type="radio" name="q5" value="b"/> Air-gapped systems</label>
+        </fieldset>
+
+        <!-- Q6 -->
+        <fieldset class="question">
+          <legend>6) ARP poisoning is used primarily to…</legend>
+          <label><input type="radio" name="q6" value="b"/> Intercept traffic via man-in-the-middle</label>
+          <label><input type="radio" name="q6" value="a"/> Block DNS queries</label>
+          <label><input type="radio" name="q6" value="c"/> Encrypt traffic</label>
+        </fieldset>
+
+        <!-- Q7 -->
+        <fieldset class="question">
+          <legend>7) Which combo helps defeat DHCP spoofing and ARP attacks on switches?</legend>
+          <label><input type="radio" name="q7" value="b"/> DHCP Snooping + Dynamic ARP Inspection</label>
+          <label><input type="radio" name="q7" value="a"/> Port mirroring + CDP</label>
+          <label><input type="radio" name="q7" value="c"/> Telnet + TFTP</label>
+        </fieldset>
+
+        <!-- Q8 -->
+        <fieldset class="question">
+          <legend>8) SSL Stripping aims to…</legend>
+          <label><input type="radio" name="q8" value="b"/> Downgrade HTTPS to HTTP to read traffic</label>
+          <label><input type="radio" name="q8" value="a"/> Force stronger ciphers</label>
+          <label><input type="radio" name="q8" value="c"/> Block all TCP ports</label>
+        </fieldset>
+
+        <!-- Q9 -->
+        <fieldset class="question">
+          <legend>9) Which is the best everyday defense against sniffing of credentials?</legend>
+          <label><input type="radio" name="q9" value="c"/> End-to-end encryption (HTTPS/TLS, SSH, VPN)</label>
+          <label><input type="radio" name="q9" value="a"/> Using public Wi-Fi without a VPN</label>
+          <label><input type="radio" name="q9" value="b"/> Disabling browser updates</label>
+        </fieldset>
+
+        <!-- Q10 -->
+        <fieldset class="question">
+          <legend>10) Which tool is a packet sniffer?</legend>
+          <label><input type="radio" name="q10" value="b"/> Wireshark</label>
+          <label><input type="radio" name="q10" value="a"/> Paint</label>
+          <label><input type="radio" name="q10" value="c"/> Slack</label>
+        </fieldset>
+
+        <button type="button" id="submitBtn" class="btn-cyber">Submit Quiz</button>
+        <div id="resultBox" class="mt-3" style="display:none;"></div>
+      </form>
+    </section>
+
+    <div class="text-center">
+      <a href="cyber-index.html" class="back-btn">⬅ Back to Cybersecurity Lessons</a>
+    </div>
+  </main>
+
+  <script>
+    // ---------- Matrix Rain ----------
+    (function matrix(){
+      const c = document.getElementById('matrix');
+      const ctx = c.getContext('2d');
+      function size(){ c.width = innerWidth; c.height = innerHeight }
+      size(); addEventListener('resize', size);
+
+      const chars = 'アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const fontSize = 16;
+      let columns = Math.floor(c.width / fontSize);
+      let drops = Array(columns).fill(1);
+
+      function draw(){
+        ctx.fillStyle = 'rgba(0,0,0,0.08)';
+        ctx.fillRect(0,0,c.width,c.height);
+        ctx.fillStyle = '#00ffe7';
+        ctx.font = fontSize+'px monospace';
+        for(let i=0;i<drops.length;i++){
+          const text = chars[Math.floor(Math.random()*chars.length)];
+          ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+          if(drops[i]*fontSize > c.height && Math.random()>0.975){ drops[i]=0; }
+          drops[i]++;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    // ---------- Animations ----------
+    gsap.from('h1', {y:-40, opacity:0, duration:1, ease:'bounce.out'});
+    gsap.from('.card-cyber', {opacity:0, y:24, duration:0.8, stagger:0.12, ease:'power2.out'});
+
+    // ---------- Quiz gate ----------
+    const attemptBtn = document.getElementById('attemptBtn');
+    const quizForm = document.getElementById('quizForm');
+    attemptBtn.addEventListener('click', ()=>{
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      gsap.from('.question', {opacity:0, y:20, duration:0.6, stagger:0.1});
+    });
+
+    // ---------- Quiz logic ----------
+    const key = { q1:'b', q2:'b', q3:'b', q4:'b', q5:'c', q6:'b', q7:'b', q8:'b', q9:'c', q10:'b' };
+    const explanations = {
+      q1:'Malware is any code built to disrupt, damage or gain unauthorized access.',
+      q2:'Worms self-replicate over networks without user actions.',
+      q3:'Trojans masquerade as legitimate software to run malicious actions.',
+      q4:'Backups + patching + least privilege are practical ransomware mitigations.',
+      q5:'Passive sniffing works on shared/broadcast segments like hubs.',
+      q6:'ARP poisoning enables man-in-the-middle interception.',
+      q7:'DHCP Snooping + DAI protect address assignment and ARP integrity.',
+      q8:'SSL stripping downgrades HTTPS to HTTP to read traffic.',
+      q9:'Encrypt communications (TLS/SSH/VPN) to neutralize sniffing value.',
+      q10:'Wireshark is a packet capture/analysis tool.'
+    };
+
+    document.getElementById('submitBtn').addEventListener('click', ()=>{
+      const resultBox = document.getElementById('resultBox');
+      let score = 0;
+      let misses = [];
+
+      // reset coloring
+      document.querySelectorAll('.question label').forEach(l=>{ l.style.color=''; });
+
+      for(const q in key){
+        const picked = document.querySelector(`input[name="${q}"]:checked`);
+        if(!picked){
+          misses.push({q, msg:'Not answered'});
+          continue;
+        }
+        if(picked.value === key[q]){
+          score++;
+          picked.parentElement.style.color = '#10ff86';
+        }else{
+          picked.parentElement.style.color = '#ff6b6b';
+          misses.push({q, msg:'Incorrect'});
+        }
+      }
+
+      let html = `<h4>Score: ${score}/10</h4>`;
+      if(misses.length){
+        html += `<p><b>Review your mistakes:</b></p><ul>`;
+        for(const m of misses){
+          html += `<li><span class="wrong">${m.q.toUpperCase()}</span> — ${m.msg}.
+                   <br><span class="correct">Correct:</span> ${explanations[m.q]}</li>`;
+        }
+        html += `</ul>`;
+      }else{
+        html += `<p class="correct mb-0">Perfect! ✅</p>`;
+      }
+      resultBox.innerHTML = html;
+      resultBox.style.display='block';
+      gsap.from(resultBox, {opacity:0, y:10, duration:0.4});
+      window.scrollTo({top: resultBox.getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
+    });
+  </script>
+</body>
+</html>

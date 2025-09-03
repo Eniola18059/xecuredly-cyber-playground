@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lesson 10 – Social Engineering</title>
+  <style>
+    :root { --bg:#0b1220;--card:#111a2e;--muted:#8aa0c3;--text:#e7eefc;--accent:#6ea8ff;--accent-2:#7ef0c1;--warning:#ffdf6e;--danger:#ff7e93; }
+    *{box-sizing:border-box} html,body{margin:0;height:100%}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial;color:var(--text);background:linear-gradient(135deg,#0b1220 0%,#101b34 100%)}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.2;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-bottom:16px}
+    .list{padding-left:18px}.list li{margin:6px 0}
+    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
+    .video-wrap iframe{width:100%;height:100%;border:0;display:block}
+    .quiz .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:6px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .result{font-size:18px;font-weight:700}.good{color:var(--accent-2)}.mid{color:var(--warning)}.bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px;text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="badge">Lesson 10</span>
+        <strong>Social Engineering</strong>
+      </div>
+      <div><button class="btn" id="toggleTheme">🌗 Theme</button></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1 class="title">Social Engineering</h1>
+      <p class="subtitle">Exploiting human psychology instead of technical vulnerabilities.</p>
+    </section>
+
+    <section class="card">
+      <h2>What is Social Engineering?</h2>
+      <p>Social engineering is the act of manipulating people into taking actions that may not be in their best interest. Attackers exploit human psychology rather than technical flaws.</p>
+    </section>
+
+    <section class="card">
+      <h2>Why Hackers Use Social Engineering</h2>
+      <ul class="list">
+        <li>Requires the least resistance</li>
+        <li>More effective than technical attacks</li>
+        <li>Common in almost all campaigns</li>
+        <li>Businesses face 700+ attacks yearly</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Common Goals</h2>
+      <ul class="list">
+        <li>Money</li>
+        <li>Ego / Revenge</li>
+        <li>Political or social causes</li>
+        <li>Entertainment</li>
+        <li>Knowledge</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Types of Social Engineering</h2>
+      <ul class="list">
+        <li><strong>Phishing:</strong> Fraudulent emails/messages</li>
+        <li><strong>Spear Phishing:</strong> Targeted phishing using personal data</li>
+        <li><strong>Baiting:</strong> Offering free goods/downloads</li>
+        <li><strong>Quid Pro Quo:</strong> Exchange of services for info</li>
+        <li><strong>Tailgating:</strong> Following someone into restricted areas</li>
+        <li><strong>Whaling:</strong> Targeting executives with sensitive access</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Real-World Example</h2>
+      <p>Between 2013–2015, attackers tricked Google and Facebook employees into paying fraudulent invoices, stealing over $100 million via a spear phishing scheme.</p>
+    </section>
+
+    <section class="card">
+      <h2>Prevention</h2>
+      <ul class="list">
+        <li>Educate employees with awareness training</li>
+        <li>Run phishing simulations</li>
+        <li>Encourage cybersecurity champions</li>
+        <li>Build a culture of continuous learning</li>
+        <li>Foster secure behavior across the organization</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Video Resource</h2>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/lc7scxvKQOo" title="Social Engineering Explained" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <section id="quiz" class="card quiz">
+      <h2>Lesson 10 Quiz</h2>
+      <form id="quizForm">
+        <div class="q-card"><h4>1) What is social engineering?</h4><div class="q-options"><label><input type="radio" name="q1" value="a"/> Manipulating people to act against their interest</label><label><input type="radio" name="q1" value="b"/> Upgrading network firewalls</label><label><input type="radio" name="q1" value="c"/> Debugging code</label></div></div>
+        <div class="q-card"><h4>2) Why is social engineering effective?</h4><div class="q-options"><label><input type="radio" name="q2" value="a"/> Exploits human psychology</label><label><input type="radio" name="q2" value="b"/> Requires advanced coding</label><label><input type="radio" name="q2" value="c"/> Needs expensive hardware</label></div></div>
+        <div class="q-card"><h4>3) On average, how many attacks do businesses face yearly?</h4><div class="q-options"><label><input type="radio" name="q3" value="a"/> Over 700</label><label><input type="radio" name="q3" value="b"/> About 70</label><label><input type="radio" name="q3" value="c"/> Less than 10</label></div></div>
+        <div class="q-card"><h4>4) Which is a common goal of social engineering?</h4><div class="q-options"><label><input type="radio" name="q4" value="a"/> Entertainment</label><label><input type="radio" name="q4" value="b"/> Money</label><label><input type="radio" name="q4" value="c"/> All of the above</label></div></div>
+        <div class="q-card"><h4>5) What is spear phishing?</h4><div class="q-options"><label><input type="radio" name="q5" value="a"/> General spam emails</label><label><input type="radio" name="q5" value="b"/> Targeted phishing using personal data</label><label><input type="radio" name="q5" value="c"/> Network intrusion</label></div></div>
+        <div class="q-card"><h4>6) What is baiting?</h4><div class="q-options"><label><input type="radio" name="q6" value="a"/> Offering free goods/downloads</label><label><input type="radio" name="q6" value="b"/> Asking security questions</label><label><input type="radio" name="q6" value="c"/> Encrypting data</label></div></div>
+        <div class="q-card"><h4>7) How does quid pro quo differ from baiting?</h4><div class="q-options"><label><input type="radio" name="q7" value="a"/> Exchange of services for info</label><label><input type="radio" name="q7" value="b"/> Malware emails</label><label><input type="radio" name="q7" value="c"/> Data encryption</label></div></div>
+        <div class="q-card"><h4>8) Tailgating relies on?</h4><div class="q-options"><label><input type="radio" name="q8" value="a"/> Following someone into restricted areas</label><label><input type="radio" name="q8" value="b"/> Encrypting passwords</label><label><input type="radio" name="q8" value="c"/> Building apps</label></div></div>
+        <div class="q-card"><h4>9) Whaling targets?</h4><div class="q-options"><label><input type="radio" name="q9" value="a"/> Executives</label><label><input type="radio" name="q9" value="b"/> Students</label><label><input type="radio" name="q9" value="c"/> Gamers</label></div></div>
+        <div class="q-card"><h4>10) The best defense against social engineering is?</h4><div class="q-options"><label><input type="radio" name="q10" value="a"/> Awareness and training</label><label><input type="radio" name="q10" value="b"/> Bigger offices</label><label><input type="radio" name="q10" value="c"/> Buying more servers</label></div></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:14px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <footer class="container"><p>© Learning Playground – Cybersecurity Course • Lesson 10</p></footer>
+  </main>
+
+  <script>
+    const themeBtn=document.getElementById('toggleTheme');
+    const key='lesson10-theme';
+    const applyTheme=(mode)=>{if(mode==='light'){document.documentElement.style.setProperty('--bg','#f7f9ff');document.documentElement.style.setProperty('--card','#fff');document.documentElement.style.setProperty('--text','#0b1220');document.documentElement.style.setProperty('--muted','#4a5875');}else{document.documentElement.style.setProperty('--bg','#0b1220');document.documentElement.style.setProperty('--card','#111a2e');document.documentElement.style.setProperty('--text','#e7eefc');document.documentElement.style.setProperty('--muted','#8aa0c3');}};
+    const stored=localStorage.getItem(key)||'dark';applyTheme(stored);
+    themeBtn.addEventListener('click',()=>{const current=localStorage.getItem(key)||stored;const next=current==='dark'?'light':'dark';localStorage.setItem(key,next);applyTheme(next);});
+
+    const answers={q1:'a',q2:'a',q3:'a',q4:'c',q5:'b',q6:'a',q7:'a',q8:'a',q9:'a',q10:'a'};
+    const form=document.getElementById('quizForm');
+    const submitBtn=document.getElementById('submitQuiz');
+    const resetBtn=document.getElementById('resetQuiz');
+    const result=document.getElementById('quizResult');
+    const scoreKey='lesson10-score';
+
+    function gradeQuiz(){let score=0;let total=Object.keys(answers).length;for(const q of Object.keys(answers)){const chosen=form.querySelector(`input[name="${q}"]:checked`);if(chosen&&chosen.value===answers[q])score++;}
+      const pct=Math.round((score/total)*100);localStorage.setItem(scoreKey,pct);
+      result.textContent=`Score: ${score}/${total} (${pct}%)`;
+      result.className='result '+(pct>=80?'good':pct>=60?'mid':'bad');submitBtn.disabled=true;}
+    function resetQuiz(){form.reset();result.textContent='';submitBtn.disabled=false;localStorage.removeItem(scoreKey);}
+    submitBtn.addEventListener('click',gradeQuiz);resetBtn.addEventListener('click',resetQuiz);
+    const savedScore=localStorage.getItem(scoreKey);if(savedScore){result.textContent=`Previous Score: ${savedScore}%`;result.className='result';}
+  </script>
+</body>
+</html>

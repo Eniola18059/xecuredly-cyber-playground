@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lesson 1 – Introduction to Cybersecurity</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
+      color: var(--text);
+      background: linear-gradient(135deg, #0b1220 0%, #101b34 100%);
+    }
+    a { color: var(--accent); text-decoration: none; }
+    header {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: saturate(160%) blur(8px);
+      background: rgba(11, 18, 32, 0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 18px; }
+    .title { font-size: clamp(28px, 4vw, 40px); line-height: 1.2; margin: 4px 0 10px; }
+    .subtitle { color: var(--muted); font-size: 15px; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: #0b1220; background: linear-gradient(135deg, var(--accent), var(--accent-2)); padding: 8px 12px; border-radius: 999px; font-size: 12px; text-transform: uppercase; }
+
+    .card {
+      background: radial-gradient(140% 120% at 100% 0%, #132349 0%, var(--card) 45%);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      margin-bottom: 16px;
+    }
+    .card h2, .card h3 { margin-top: 0; }
+
+    .list { padding-left: 18px; }
+    .list li { margin: 6px 0; }
+
+    .video-wrap { position: relative; overflow: hidden; border-radius: 16px; aspect-ratio: 16/9; background:#0b1220; border:1px solid rgba(255,255,255,.06); }
+    .video-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    .quiz { margin-top: 8px; }
+    .q-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 12px; margin: 10px 0; }
+    .q-card h4 { margin: 0 0 8px; }
+    .q-options { display:grid; gap:6px; }
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      border: 1px solid rgba(255,255,255,.12); color: var(--text);
+      padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,.05);
+      cursor: pointer; font-weight: 600;
+    }
+    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#0b1220; border: none; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    .result { font-size: 18px; font-weight: 700; }
+    .good { color: var(--accent-2); }
+    .mid { color: var(--warning); }
+    .bad { color: var(--danger); }
+
+    footer { opacity: .7; font-size: 13px; padding: 30px 0 60px; text-align:center; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="badge">Lesson 1</span>
+        <strong>Introduction to Cybersecurity</strong>
+      </div>
+      <div>
+        <button class="btn" id="toggleTheme">🌗 Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1 class="title">Introduction to Cybersecurity</h1>
+      <p class="subtitle">The practice of defending systems, networks, and data from malicious attacks.</p>
+    </section>
+
+    <section class="card">
+      <h2>Why is Cybersecurity Important?</h2>
+      <p>Every second, massive amounts of data are created, transmitted, and stored across networks globally. Sensitive information — like financial transactions, health records, intellectual property, and government intelligence — can be compromised if not protected. Cyberattacks can lead to financial loss, reputational damage, and national security risks.</p>
+    </section>
+
+    <section class="card">
+      <h2>Types of Cybersecurity</h2>
+      <ul class="list">
+        <li><strong>Network Security:</strong> Protects infrastructure from intrusions.</li>
+        <li><strong>Application Security:</strong> Ensures software is free from vulnerabilities.</li>
+        <li><strong>Information Security:</strong> Protects data integrity and privacy.</li>
+        <li><strong>Operational Security:</strong> Policies & processes to handle data safely.</li>
+        <li><strong>Disaster Recovery:</strong> Response plans for data loss or disruption.</li>
+        <li><strong>End-User Education:</strong> Training to recognize threats and safe habits.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>The CIA Triad</h2>
+      <ul class="list">
+        <li><strong>Confidentiality:</strong> Only authorized access to data.</li>
+        <li><strong>Integrity:</strong> Safeguarding data from unauthorized alteration.</li>
+        <li><strong>Availability:</strong> Systems accessible when needed.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Common Cyber Threats</h2>
+      <ul class="list">
+        <li><strong>Malware:</strong> Viruses, worms, Trojans, ransomware.</li>
+        <li><strong>Phishing:</strong> Tricking users into giving sensitive information.</li>
+        <li><strong>DoS:</strong> Overwhelming systems with traffic.</li>
+        <li><strong>Man-in-the-Middle:</strong> Intercepting communication.</li>
+        <li><strong>SQL Injection:</strong> Exploiting database queries.</li>
+        <li><strong>Zero-Day Exploit:</strong> Attacks before fixes are available.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Video Resource</h2>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/2oNDCd1cZg4" title="Cybersecurity Basics" allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <section id="quiz" class="card quiz">
+      <h2>Lesson 1 Quiz</h2>
+      <form id="quizForm">
+        <div class="q-card"><h4>1) What does cybersecurity primarily protect?</h4><div class="q-options"><label><input type="radio" name="q1" value="a"/> Furniture</label><label><input type="radio" name="q1" value="b"/> Data and systems</label><label><input type="radio" name="q1" value="c"/> Only financial transactions</label></div></div>
+        <div class="q-card"><h4>2) Which is NOT a type of cybersecurity?</h4><div class="q-options"><label><input type="radio" name="q2" value="a"/> Network Security</label><label><input type="radio" name="q2" value="b"/> Application Security</label><label><input type="radio" name="q2" value="c"/> Cooking Security</label></div></div>
+        <div class="q-card"><h4>3) The 'C' in CIA triad stands for?</h4><div class="q-options"><label><input type="radio" name="q3" value="a"/> Confidentiality</label><label><input type="radio" name="q3" value="b"/> Communication</label><label><input type="radio" name="q3" value="c"/> Control</label></div></div>
+        <div class="q-card"><h4>4) Malware is short for?</h4><div class="q-options"><label><input type="radio" name="q4" value="a"/> Malicious Software</label><label><input type="radio" name="q4" value="b"/> Manual Warehousing</label><label><input type="radio" name="q4" value="c"/> Management Alert</label></div></div>
+        <div class="q-card"><h4>5) Which attack overwhelms a system with traffic?</h4><div class="q-options"><label><input type="radio" name="q5" value="a"/> SQL Injection</label><label><input type="radio" name="q5" value="b"/> DoS Attack</label><label><input type="radio" name="q5" value="c"/> Phishing</label></div></div>
+        <div class="q-card"><h4>6) Which threat tricks users into giving info?</h4><div class="q-options"><label><input type="radio" name="q6" value="a"/> Phishing</label><label><input type="radio" name="q6" value="b"/> DoS</label><label><input type="radio" name="q6" value="c"/> Worm</label></div></div>
+        <div class="q-card"><h4>7) Zero-Day exploit means?</h4><div class="q-options"><label><input type="radio" name="q7" value="a"/> Attack before a fix exists</label><label><input type="radio" name="q7" value="b"/> A 24‑hour cyber event</label><label><input type="radio" name="q7" value="c"/> Malware lasting one day</label></div></div>
+        <div class="q-card"><h4>8) Integrity in CIA triad means?</h4><div class="q-options"><label><input type="radio" name="q8" value="a"/> Ensuring data accuracy</label><label><input type="radio" name="q8" value="b"/> Systems online always</label><label><input type="radio" name="q8" value="c"/> Keeping users out</label></div></div>
+        <div class="q-card"><h4>9) SQL Injection targets?</h4><div class="q-options"><label><input type="radio" name="q9" value="a"/> Databases</label><label><input type="radio" name="q9" value="b"/> Operating Systems</label><label><input type="radio" name="q9" value="c"/> Emails</label></div></div>
+        <div class="q-card"><h4>10) Which is part of Disaster Recovery?</h4><div class="q-options"><label><input type="radio" name="q10" value="a"/> Planning responses to attacks</label><label><input type="radio" name="q10" value="b"/> Building more apps</label><label><input type="radio" name="q10" value="c"/> Sending spam</label></div></div>
+
+        <div style="display:flex; gap:10px; align-items:center; margin-top:14px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <footer class="container">
+      <p>© Learning Playground – Cybersecurity Course • Lesson 1</p>
+    </footer>
+  </main>
+
+  <script>
+    // Theme toggle
+    const themeBtn = document.getElementById('toggleTheme');
+    const key = 'lesson1-theme';
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg', '#f7f9ff');
+        document.documentElement.style.setProperty('--card', '#ffffff');
+        document.documentElement.style.setProperty('--text', '#0b1220');
+        document.documentElement.style.setProperty('--muted', '#4a5875');
+      } else {
+        document.documentElement.style.setProperty('--bg', '#0b1220');
+        document.documentElement.style.setProperty('--card', '#111a2e');
+        document.documentElement.style.setProperty('--text', '#e7eefc');
+        document.documentElement.style.setProperty('--muted', '#8aa0c3');
+      }
+    };
+    const stored = localStorage.getItem(key) || 'dark';
+    applyTheme(stored);
+    themeBtn.addEventListener('click', () => {
+      const current = localStorage.getItem(key) || stored;
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(key, next);
+      applyTheme(next);
+    });
+
+    // Quiz logic
+    const answers = { q1: 'b', q2: 'c', q3: 'a', q4: 'a', q5: 'b', q6: 'a', q7: 'a', q8: 'a', q9: 'a', q10: 'a' };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const result = document.getElementById('quizResult');
+    const scoreKey = 'lesson1-score';
+
+    function gradeQuiz() {
+      let score = 0; let total = Object.keys(answers).length;
+      for (const q of Object.keys(answers)) {
+        const chosen = form.querySelector(`input[name="${q}"]:checked`);
+        if (chosen && chosen.value === answers[q]) score++;
+      }
+      const pct = Math.round((score / total) * 100);
+      localStorage.setItem(scoreKey, pct);
+      result.textContent = `Score: ${score}/${total} (${pct}%)`;
+      result.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      result.textContent = '';
+      submitBtn.disabled = false;
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', gradeQuiz);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    const savedScore = localStorage.getItem(scoreKey);
+    if (savedScore) {
+      result.textContent = `Previous Score: ${savedScore}%`;
+      result.className = 'result';
+    }
+  </script>
+</body>
+</html>

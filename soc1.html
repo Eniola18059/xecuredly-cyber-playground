@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cybersecurity - Lesson 1</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ffcc;
+      line-height: 1.7;
+      padding-bottom: 100px;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      text-shadow: 0 0 15px #00ffc3;
+      margin-top: 40px;
+    }
+    p {
+      font-size: 1.1rem;
+      margin: 15px 0;
+    }
+    .content {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+    iframe {
+      display: block;
+      margin: 30px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffc3;
+    }
+    .quiz {
+      margin-top: 50px;
+      padding: 20px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffcc;
+    }
+    .quiz h2 {
+      margin-bottom: 20px;
+    }
+    .quiz button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #00ffc3;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .quiz button:hover {
+      background: #0099ff;
+      color: #fff;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .correct {
+      color: #00ff00;
+      font-weight: bold;
+    }
+    .incorrect {
+      color: #ff4444;
+      font-weight: bold;
+    }
+    .back-btn {
+      display: inline-block;
+      margin: 30px auto;
+      padding: 10px 20px;
+      background: #111;
+      color: #00ffcc;
+      text-decoration: none;
+      border-radius: 6px;
+      box-shadow: 0 0 10px #00ffc3;
+      transition: 0.3s;
+    }
+    .back-btn:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 20px #00ffcc;
+    }
+    .text-center { text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>Lesson 1: Introduction to Cybersecurity</h1>
+
+    <p>Cybersecurity is the practice of defending computers, servers, mobile devices, networks, and data from malicious attacks. It is also known as information technology security or electronic information security. In today’s digital-first world, cybersecurity is one of the most critical fields because individuals, organizations, and even nations depend on secure data and infrastructure to function.</p>
+
+    <h2>Why is Cybersecurity Important?</h2>
+    <p>Every second, massive amounts of data are created, transmitted, and stored across networks globally. Sensitive information — like financial transactions, personal health records, intellectual property, and government intelligence — can be compromised if not protected. Cyberattacks can lead to financial loss, reputational damage, and even national security risks.</p>
+
+    <h2>Types of Cybersecurity</h2>
+    <ul>
+      <li><b>Network Security:</b> Protects network infrastructure from intrusions such as malware or unauthorized access.</li>
+      <li><b>Application Security:</b> Ensures that software and applications are free of vulnerabilities that attackers can exploit.</li>
+      <li><b>Information Security:</b> Protects the integrity and privacy of data, both in storage and transit.</li>
+      <li><b>Operational Security:</b> Includes the processes and decisions for handling and protecting data assets.</li>
+      <li><b>Disaster Recovery & Business Continuity:</b> Defines how an organization responds to incidents that cause data loss or service interruption.</li>
+      <li><b>End-User Education:</b> Trains individuals to recognize cyber threats and practice safe habits.</li>
+    </ul>
+
+    <h2>Principles of Cybersecurity</h2>
+    <p>The three main principles of cybersecurity are known as the CIA triad:</p>
+    <ul>
+      <li><b>Confidentiality:</b> Ensuring that only authorized individuals can access data.</li>
+      <li><b>Integrity:</b> Safeguarding data from being altered or destroyed in unauthorized ways.</li>
+      <li><b>Availability:</b> Making sure data and systems are accessible when needed.</li>
+    </ul>
+
+    <h2>Common Cyber Threats</h2>
+    <p>Some of the most common threats include:</p>
+    <ul>
+      <li><b>Malware:</b> Malicious software designed to harm systems (viruses, worms, Trojans, ransomware).</li>
+      <li><b>Phishing:</b> Fraudulent attempts to obtain sensitive information by disguising as trustworthy entities.</li>
+      <li><b>Denial-of-Service (DoS):</b> Overwhelming systems with traffic to make them unavailable.</li>
+      <li><b>Man-in-the-Middle Attacks:</b> Intercepting communication between two systems to steal or manipulate data.</li>
+      <li><b>SQL Injection:</b> Exploiting vulnerabilities in database queries.</li>
+      <li><b>Zero-Day Exploit:</b> Attacks launched before developers release a fix for a vulnerability.</li>
+    </ul>
+
+    <h2>Video Resource</h2>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/2oNDCd1cZg4" title="Cybersecurity Basics" frameborder="0" allowfullscreen></iframe>
+
+    <div class="quiz">
+      <h2>🧠 Lesson 1 Quiz</h2>
+      <form id="quizForm">
+        <div>
+          <p>1. What does cybersecurity primarily protect?</p>
+          <input type="radio" name="q1" value="a"> Furniture and electronics<br>
+          <input type="radio" name="q1" value="b"> Data and systems<br>
+          <input type="radio" name="q1" value="c"> Only financial transactions<br>
+        </div>
+        <div>
+          <p>2. Which of these is NOT a type of cybersecurity?</p>
+          <input type="radio" name="q2" value="a"> Network Security<br>
+          <input type="radio" name="q2" value="b"> Application Security<br>
+          <input type="radio" name="q2" value="c"> Cooking Security<br>
+        </div>
+        <div>
+          <p>3. The 'C' in the CIA triad stands for?</p>
+          <input type="radio" name="q3" value="a"> Confidentiality<br>
+          <input type="radio" name="q3" value="b"> Communication<br>
+          <input type="radio" name="q3" value="c"> Control<br>
+        </div>
+        <div>
+          <p>4. Malware is short for?</p>
+          <input type="radio" name="q4" value="a"> Malicious Software<br>
+          <input type="radio" name="q4" value="b"> Manual Warehousing<br>
+          <input type="radio" name="q4" value="c"> Management Alert<br>
+        </div>
+        <div>
+          <p>5. Which attack overwhelms a system with traffic?</p>
+          <input type="radio" name="q5" value="a"> SQL Injection<br>
+          <input type="radio" name="q5" value="b"> DoS Attack<br>
+          <input type="radio" name="q5" value="c"> Phishing<br>
+        </div>
+        <div>
+          <p>6. Which threat tricks users into giving sensitive info?</p>
+          <input type="radio" name="q6" value="a"> Phishing<br>
+          <input type="radio" name="q6" value="b"> DoS Attack<br>
+          <input type="radio" name="q6" value="c"> Worm<br>
+        </div>
+        <div>
+          <p>7. Which of these is a Zero-Day exploit?</p>
+          <input type="radio" name="q7" value="a"> Attack before a fix is released<br>
+          <input type="radio" name="q7" value="b"> A 24-hour cyber event<br>
+          <input type="radio" name="q7" value="c"> Malware lasting one day<br>
+        </div>
+        <div>
+          <p>8. Integrity in CIA triad means?</p>
+          <input type="radio" name="q8" value="a"> Ensuring data accuracy and trustworthiness<br>
+          <input type="radio" name="q8" value="b"> Making sure systems are online<br>
+          <input type="radio" name="q8" value="c"> Keeping unauthorized users out<br>
+        </div>
+        <div>
+          <p>9. SQL Injection targets?</p>
+          <input type="radio" name="q9" value="a"> Databases<br>
+          <input type="radio" name="q9" value="b"> Operating Systems<br>
+          <input type="radio" name="q9" value="c"> Emails<br>
+        </div>
+        <div>
+          <p>10. Which is part of Disaster Recovery?</p>
+          <input type="radio" name="q10" value="a"> Planning system responses to attacks<br>
+          <input type="radio" name="q10" value="b"> Building more apps<br>
+          <input type="radio" name="q10" value="c"> Sending spam emails<br>
+        </div>
+
+        <button type="button" onclick="checkAnswers()">Submit Quiz</button>
+      </form>
+      <div class="result" id="quizResult"></div>
+    </div>
+
+    <div class="text-center">
+      <a href="index.html" class="back-btn">⬅ Back to Homepage</a>
+    </div>
+  </div>
+
+  <script>
+    // Animate content
+    gsap.from("h1, h2, p, li, iframe", {
+      opacity: 0,
+      y: 30,
+      duration: 0.8,
+      stagger: 0.2,
+      ease: "power2.out"
+    });
+
+    // Quiz answer key
+    const answers = {
+      q1: "b", q2: "c", q3: "a", q4: "a", q5: "b",
+      q6: "a", q7: "a", q8: "a", q9: "a", q10: "a"
+    };
+
+    function checkAnswers() {
+      let score = 0;
+      let resultText = "";
+      Object.keys(answers).forEach((q, index) => {
+        const selected = document.querySelector(`input[name="${q}"]:checked`);
+        if (selected) {
+          if (selected.value === answers[q]) {
+            score++;
+            resultText += `<p class="correct">Q${index+1}: Correct ✅</p>`;
+          } else {
+            resultText += `<p class="incorrect">Q${index+1}: Incorrect ❌ (Correct: ${answers[q].toUpperCase()})</p>`;
+          }
+        } else {
+          resultText += `<p class="incorrect">Q${index+1}: Not Answered ❌</p>`;
+        }
+      });
+      resultText += `<p><b>Total Score: ${score}/10</b></p>`;
+      document.getElementById("quizResult").innerHTML = resultText;
+    }
+  </script>
+</body>
+</html>

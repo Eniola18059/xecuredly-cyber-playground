@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cybersecurity - Lesson 2: Introduction to Linux</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ffcc;
+      overflow-x: hidden;
+    }
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      text-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
+      animation: glitch 2s infinite;
+    }
+    @keyframes glitch {
+      0% { text-shadow: 2px 2px #ff0080; }
+      20% { text-shadow: -2px -2px #00ffe7; }
+      40% { text-shadow: 2px -2px #7928ca; }
+      60% { text-shadow: -2px 2px #00ffcc; }
+      100% { text-shadow: 0 0 15px #00ffcc; }
+    }
+    section {
+      padding: 30px;
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    .highlight { color: #ff0080; font-weight: bold; }
+    .quiz {
+      background: #111;
+      padding: 20px;
+      margin: 30px auto;
+      border-radius: 10px;
+      max-width: 900px;
+      box-shadow: 0 0 20px #00ffcc;
+    }
+    .quiz h3 {
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #00ffe7;
+    }
+    .btn-check + label {
+      background: #222;
+      color: #00ffcc;
+      border: 1px solid #00ffcc;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .btn-check:checked + label {
+      background: #00ffcc;
+      color: #000;
+      font-weight: bold;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      padding: 15px;
+      background: #222;
+      border-radius: 6px;
+    }
+    .correct { color: #00ff99; }
+    .wrong { color: #ff4444; }
+    .back-btn {
+      display: block;
+      margin: 40px auto;
+      padding: 10px 20px;
+      background: #00ffcc;
+      color: #000;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+      text-align: center;
+      max-width: 250px;
+    }
+    .back-btn:hover {
+      background: #ff0080;
+      color: #fff;
+      box-shadow: 0 0 20px #ff0080;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Lesson 2: Introduction to Linux 🐧</h1>
+    <p>The Powerhouse Behind Modern Computing</p>
+  </header>
+
+  <section>
+    <h2>🔹 What is an Operating System?</h2>
+    <p>
+      An <span class="highlight">Operating System (OS)</span> is the backbone of every computer. 
+      It manages hardware (CPU, RAM, storage, devices), software, and provides a way for users to 
+      interact with the system. Without an OS, your computer would just be a pile of components 
+      unable to communicate.
+    </p>
+
+    <h2>🔹 What is Linux?</h2>
+    <p>
+      <span class="highlight">Linux</span> is an open-source operating system created in 1991 by 
+      <strong>Linus Torvalds</strong>. It is modeled after Unix and has become the foundation of 
+      servers, supercomputers, mobile phones (Android), and even Hollywood’s special effects machines. 
+      Over 64% of the world’s servers run Linux or Unix.
+    </p>
+
+    <h2>🔹 Key Components of Linux</h2>
+    <ul>
+      <li><strong>Kernel</strong> – The brain of Linux, controlling memory, hardware, and processes.</li>
+      <li><strong>System Libraries</strong> – Provide essential functions for apps to interact with the Kernel.</li>
+      <li><strong>System Utilities</strong> – Tools that perform day-to-day tasks like managing files.</li>
+    </ul>
+
+    <h2>🔹 Features of Linux</h2>
+    <ul>
+      <li><span class="highlight">Portable</span> – Works on many types of devices.</li>
+      <li><span class="highlight">Open Source</span> – Free to use and modify.</li>
+      <li><span class="highlight">Multiprogramming</span> – Run multiple apps at once.</li>
+      <li><span class="highlight">Secure</span> – Strong password protection, permissions, and encryption.</li>
+    </ul>
+
+    <h2>🔹 Linux vs. Other Systems</h2>
+    <p>
+      <strong>Linux vs. Windows:</strong> Linux is free, fast, and secure. Windows is easier for beginners but often less secure.<br>
+      <strong>Linux vs. macOS:</strong> Linux is highly customizable, while macOS is polished but restrictive.
+    </p>
+
+    <h2>🔹 Common Linux Commands</h2>
+    <pre>
+ls       → List files
+mv       → Move files
+mkdir    → Create a directory
+rmdir    → Remove a directory
+    </pre>
+
+    <h2>🔹 Why Linux?</h2>
+    <p>
+      Linux is <strong>stable, reliable, powerful, and secure</strong>. It runs everything from 
+      smart devices to the world’s fastest supercomputers.
+    </p>
+  </section>
+
+  <!-- Quiz Section -->
+  <div class="quiz">
+    <h3>🧠 Quick Quiz: Test Your Linux Knowledge</h3>
+    <form id="quizForm">
+      <!-- Q1 -->
+      <p>1. Who created Linux?</p>
+      <input type="radio" class="btn-check" name="q1" id="q1a" value="wrong"><label for="q1a">Steve Jobs</label>
+      <input type="radio" class="btn-check" name="q1" id="q1b" value="correct"><label for="q1b">Linus Torvalds</label>
+      <input type="radio" class="btn-check" name="q1" id="q1c" value="wrong"><label for="q1c">Bill Gates</label>
+
+      <!-- Q2 -->
+      <p>2. In what year was Linux created?</p>
+      <input type="radio" class="btn-check" name="q2" id="q2a" value="wrong"><label for="q2a">1985</label>
+      <input type="radio" class="btn-check" name="q2" id="q2b" value="correct"><label for="q2b">1991</label>
+      <input type="radio" class="btn-check" name="q2" id="q2c" value="wrong"><label for="q2c">2000</label>
+
+      <!-- Q3 -->
+      <p>3. Linux is modeled after which OS?</p>
+      <input type="radio" class="btn-check" name="q3" id="q3a" value="correct"><label for="q3a">Unix</label>
+      <input type="radio" class="btn-check" name="q3" id="q3b" value="wrong"><label for="q3b">Windows</label>
+      <input type="radio" class="btn-check" name="q3" id="q3c" value="wrong"><label for="q3c">macOS</label>
+
+      <!-- Q4 -->
+      <p>4. Which Linux component is called the "brain" of the OS?</p>
+      <input type="radio" class="btn-check" name="q4" id="q4a" value="correct"><label for="q4a">Kernel</label>
+      <input type="radio" class="btn-check" name="q4" id="q4b" value="wrong"><label for="q4b">System Libraries</label>
+      <input type="radio" class="btn-check" name="q4" id="q4c" value="wrong"><label for="q4c">System Utilities</label>
+
+      <!-- Q5 -->
+      <p>5. Which Linux feature allows multiple apps to run at once?</p>
+      <input type="radio" class="btn-check" name="q5" id="q5a" value="wrong"><label for="q5a">Single-tasking</label>
+      <input type="radio" class="btn-check" name="q5" id="q5b" value="correct"><label for="q5b">Multiprogramming</label>
+      <input type="radio" class="btn-check" name="q5" id="q5c" value="wrong"><label for="q5c">Read-only mode</label>
+
+      <!-- Q6 -->
+      <p>6. Which Linux command lists files in a directory?</p>
+      <input type="radio" class="btn-check" name="q6" id="q6a" value="correct"><label for="q6a">ls</label>
+      <input type="radio" class="btn-check" name="q6" id="q6b" value="wrong"><label for="q6b">mv</label>
+      <input type="radio" class="btn-check" name="q6" id="q6c" value="wrong"><label for="q6c">mkdir</label>
+
+      <!-- Q7 -->
+      <p>7. Which Linux command creates a new directory?</p>
+      <input type="radio" class="btn-check" name="q7" id="q7a" value="wrong"><label for="q7a">rmdir</label>
+      <input type="radio" class="btn-check" name="q7" id="q7b" value="correct"><label for="q7b">mkdir</label>
+      <input type="radio" class="btn-check" name="q7" id="q7c" value="wrong"><label for="q7c">ls</label>
+
+      <!-- Q8 -->
+      <p>8. Which company primarily uses Linux in Android?</p>
+      <input type="radio" class="btn-check" name="q8" id="q8a" value="wrong"><label for="q8a">Apple</label>
+      <input type="radio" class="btn-check" name="q8" id="q8b" value="correct"><label for="q8b">Google</label>
+      <input type="radio" class="btn-check" name="q8" id="q8c" value="wrong"><label for="q8c">Microsoft</label>
+
+      <!-- Q9 -->
+      <p>9. Which of these is NOT a Linux advantage?</p>
+      <input type="radio" class="btn-check" name="q9" id="q9a" value="wrong"><label for="q9a">Open Source</label>
+      <input type="radio" class="btn-check" name="q9" id="q9b" value="wrong"><label for="q9b">Security</label>
+      <input type="radio" class="btn-check" name="q9" id="q9c" value="correct"><label for="q9c">Proprietary License</label>
+
+      <!-- Q10 -->
+      <p>10. Linux is most commonly used in:</p>
+      <input type="radio" class="btn-check" name="q10" id="q10a" value="wrong"><label for="q10a">Gaming Consoles</label>
+      <input type="radio" class="btn-check" name="q10" id="q10b" value="correct"><label for="q10b">Servers & Supercomputers</label>
+      <input type="radio" class="btn-check" name="q10" id="q10c" value="wrong"><label for="q10c">Smart TVs only</label>
+
+      <button type="submit" class="back-btn">Submit Quiz</button>
+      <div id="result" class="result"></div>
+    </form>
+  </div>
+
+  <a href="index.html" class="back-btn">⬅ Back to Homepage</a>
+
+  <script>
+    // GSAP animations
+    gsap.from("header h1", { y: -50, opacity: 0, duration: 1, ease: "bounce" });
+    gsap.from("section h2", { x: -100, opacity: 0, duration: 1, stagger: 0.3 });
+    gsap.from("section p, ul, pre", { x: 100, opacity: 0, duration: 1, stagger: 0.2 });
+
+  
+    // Quiz Logic
+    document.getElementById("quizForm").onsubmit = function(e){
+      e.preventDefault();
+      let score = 0;
+      const total = 10;
+      let feedback = "";
+      for (let i = 1; i <= total; i++) {
+        const answer = document.querySelector("input[name=q"+i+"]:checked");
+        if(answer){
+          if(answer.value === "correct"){
+            score++;
+            feedback += `<p class='correct'>Q${i}: ✅ Correct</p>`;
+          } else {
+            feedback += `<p class='wrong'>Q${i}: ❌ Wrong</p>`;
+          }
+        } else {
+          feedback += `<p class='wrong'>Q${i}: ❌ Not answered</p>`;
+        }
+      }
+      document.getElementById("result").innerHTML = 
+        `<h4>You scored ${score}/${total}</h4>` + feedback;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lesson 9 – DoS/DDoS Attacks & Session Hijacking</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: linear-gradient(135deg, #0b1220 0%, #101b34 100%);
+    }
+    a { color: var(--accent); text-decoration: none; }
+    header {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: saturate(160%) blur(8px);
+      background: rgba(11, 18, 32, 0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 18px; }
+    .row { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .hero {
+      padding: 28px 20px 8px;
+    }
+    .title { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; margin: 4px 0 10px; }
+    .subtitle { color: var(--muted); font-size: 15px; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: #0b1220; background: linear-gradient(135deg, var(--accent), var(--accent-2)); padding: 8px 12px; border-radius: 999px; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+
+    .card {
+      background: radial-gradient(140% 120% at 100% 0%, #132349 0%, var(--card) 45%);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .card h2, .card h3 { margin-top: 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+
+    .list { margin: 0; padding-left: 18px; }
+    .list li { margin: 6px 0; }
+
+    .callout { background: linear-gradient(180deg, rgba(126,240,193,.08), rgba(126,240,193,.02)); border: 1px solid rgba(126,240,193,.25); padding: 12px 14px; border-radius: 12px; }
+    .warn { background: linear-gradient(180deg, rgba(255,223,110,.08), rgba(255,223,110,.02)); border: 1px solid rgba(255,223,110,.25); }
+
+    .video-wrap { position: relative; overflow: hidden; border-radius: 16px; aspect-ratio: 16/9; background:#0b1220; border:1px solid rgba(255,255,255,.06); }
+    .video-wrap iframe, .video-wrap video { width: 100%; height: 100%; border: 0; display: block; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0; }
+    .chip { padding:6px 10px; background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); border-radius:999px; font-size:12px; color: var(--muted); }
+
+    .quiz { margin-top: 8px; }
+    .q-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 12px; margin: 10px 0; }
+    .q-card h4 { margin: 0 0 8px; }
+    .q-options { display:grid; gap:6px; }
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      border: 1px solid rgba(255,255,255,.12); color: var(--text);
+      padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,.05);
+      cursor: pointer; font-weight: 600;
+    }
+    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#0b1220; border: none; }
+    .btn.ghost { background: transparent; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    .result { font-size: 18px; font-weight: 700; }
+    .good { color: var(--accent-2); }
+    .mid { color: var(--warning); }
+    .bad { color: var(--danger); }
+
+    footer { opacity: .7; font-size: 13px; padding: 30px 0 60px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="badge">Lesson 9</span>
+        <strong>DoS/DDoS & Session Hijacking</strong>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">Denial‑of‑Service (DoS/DDoS) & Session Hijacking</h1>
+      <p class="subtitle">How attackers overwhelm services and steal sessions — and how SOC analysts detect and stop them.</p>
+      <div class="chips">
+        <span class="chip">Volumetric</span>
+        <span class="chip">Protocol</span>
+        <span class="chip">Application Layer</span>
+        <span class="chip">Botnets</span>
+        <span class="chip">IDS</span>
+        <span class="chip">Honeypots</span>
+        <span class="chip">Cookies & Tokens</span>
+      </div>
+    </section>
+
+    <section class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <h2>Learning Objectives</h2>
+        <ul class="list">
+          <li>Explain the difference between DoS and DDoS attacks.</li>
+          <li>Identify volumetric, protocol, and application‑layer attack types.</li>
+          <li>Detect operational symptoms & logs that indicate an attack.</li>
+          <li>Describe session hijacking methods and mitigations.</li>
+          <li>Understand the roles of IDS and honeypots in defense.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Intro Video (placeholder)</h2>
+        <div class="video-wrap">
+          <!-- Replace src with your uploaded video link or YouTube embed -->
+          <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Lesson 9 Intro" allowfullscreen></iframe>
+        </div>
+        <p class="subtitle" style="margin-top:8px;">Swap the iframe <code>src</code> with your real Lesson 9 video link.</p>
+      </div>
+    </section>
+
+    <section class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <h3>What is DoS vs DDoS?</h3>
+        <p><strong>DoS</strong> aims to make a service unavailable by overwhelming it with requests from a single source. <strong>DDoS</strong> distributes the attack across many compromised machines (<em>botnet</em>), making it far more powerful and harder to block.</p>
+        <div class="callout">
+          <strong>Key Insight:</strong> DDoS is not just “bigger DoS.” Distribution breaks simple IP‑based blocking and saturates multiple layers (bandwidth, CPU, app threads).
+        </div>
+      </div>
+      <div class="card">
+        <h3>Attack Classes</h3>
+        <ul class="list">
+          <li><strong>Volumetric:</strong> UDP/ICMP floods, DNS/NTP amplification.</li>
+          <li><strong>Protocol:</strong> SYN flood, Ping of Death, Smurf, fragmentation.</li>
+          <li><strong>Application‑Layer (L7):</strong> HTTP flood, Slowloris, expensive search endpoints.</li>
+        </ul>
+        <p class="subtitle">Defenders must profile <em>normal</em> traffic to spot anomalies in rate, headers, or request mix.</p>
+      </div>
+    </section>
+
+    <section class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <h3>Detection & Indicators</h3>
+        <ul class="list">
+          <li>Sudden latency, timeouts, 5xx/503 spikes.</li>
+          <li>Bandwidth/CPU saturation on dashboards.</li>
+          <li>NetFlow shows unusual source distribution.</li>
+          <li>WAF/IDS signatures fire; rate limits hit.</li>
+        </ul>
+        <div class="warn callout"><strong>Watch out:</strong> Some DDoS traffic mimics legit browsers. Layer‑7 telemetry (URLs, cookies, user‑agents) becomes critical.</div>
+      </div>
+      <div class="card">
+        <h3>Why DDoS Happens</h3>
+        <ul class="list">
+          <li><strong>Ransom:</strong> “Pay or stay offline.”</li>
+          <li><strong>Hacktivism:</strong> Political/ideological pressure.</li>
+          <li><strong>Competitive abuse:</strong> Knock out rivals during launches.</li>
+          <li><strong>Cover noise:</strong> Distract SOC while another intrusion runs.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <h3>Session Hijacking</h3>
+        <p>Attackers take over a valid user session to impersonate them. They target <em>session tokens</em> in cookies, headers, or storage.</p>
+        <ul class="list">
+          <li><strong>Stealing:</strong> XSS, packet sniffing, man‑in‑the‑browser.</li>
+          <li><strong>Prediction:</strong> Weak token generation.</li>
+          <li><strong>Fixation:</strong> Forcing a victim to use a known token.</li>
+          <li><strong>Sidejacking:</strong> SSL‑stripping -> capture cookies over HTTP.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Defenses Against Hijacking</h3>
+        <ul class="list">
+          <li>Enforce <strong>HTTPS/TLS</strong> everywhere; HSTS.</li>
+          <li>Set cookies <code>HttpOnly; Secure; SameSite</code>.</li>
+          <li>Rotate/regenerate session IDs post‑auth.</li>
+          <li>Short TTLs for tokens; refresh tokens; device binding.</li>
+          <li>Monitor geo‑IP/UA anomalies; step‑up MFA.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="grid-2" style="margin-top:16px;">
+      <div class="card">
+        <h3>Intrusion Detection Systems (IDS)</h3>
+        <ul class="list">
+          <li><strong>HIDS:</strong> File integrity, log analysis on hosts.</li>
+          <li><strong>NIDS:</strong> Network traffic inspection.</li>
+          <li><strong>Approaches:</strong> Signatures, anomaly/behavioral, heuristics/ML.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Honeypots</h3>
+        <p>Decoy systems that lure adversaries, reveal TTPs, and generate high‑fidelity alerts.</p>
+        <ul class="list">
+          <li>Diversion to buy response time.</li>
+          <li>Attribution and intel on tools/exploits.</li>
+          <li>Training data for detectors.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px;">
+      <h2>Hands‑On Ideas (Lab)</h2>
+      <ul class="list">
+        <li>Spin up a test web app; simulate HTTP flood with a safe rate‑limited script in a sandbox/VLAN.</li>
+        <li>Capture pcap during the event; visualize with Wireshark.</li>
+        <li>Configure Nginx rate limiting & basic WAF rules; observe metrics.</li>
+        <li>Implement cookie flags and test XSS‑based cookie access (should be blocked by <code>HttpOnly</code>).</li>
+      </ul>
+      <p class="subtitle">⚠️ <strong>Safety:</strong> Only test in isolated lab environments you control. Never attack networks you do not own or have explicit permission to test.</p>
+    </section>
+
+    <section id="quiz" class="card quiz" style="margin-top:16px;">
+      <h2>Lesson 9 Quiz</h2>
+      <form id="quizForm">
+        <div class="q-card">
+          <h4>1) What primarily distinguishes a DDoS from a DoS attack?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> The target service used is different.</label>
+            <label><input type="radio" name="q1" value="b"/> DDoS uses many distributed sources (botnet).</label>
+            <label><input type="radio" name="q1" value="c"/> DoS only targets Layer 7.</label>
+          </div>
+        </div>
+        <div class="q-card">
+          <h4>2) Which is a <em>volumetric</em> attack?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> SYN flood</label>
+            <label><input type="radio" name="q2" value="b"/> HTTP Slowloris</label>
+            <label><input type="radio" name="q2" value="c"/> DNS amplification</label>
+          </div>
+        </div>
+        <div class="q-card">
+          <h4>3) A common sign of an ongoing DDoS is…</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Lower 5xx rates and reduced latency</label>
+            <label><input type="radio" name="q3" value="b"/> Spikes in bandwidth/CPU and 503 errors</label>
+            <label><input type="radio" name="q3" value="c"/> Decrease in connection attempts</label>
+          </div>
+        </div>
+        <div class="q-card">
+          <h4>4) Which cookie flags help mitigate session hijacking?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> <code>Domain=*</code> and <code>Path=/</code></label>
+            <label><input type="radio" name="q4" value="b"/> <code>HttpOnly; Secure; SameSite</code></label>
+            <label><input type="radio" name="q4" value="c"/> <code>Cache-Control: public</code></label>
+          </div>
+        </div>
+        <div class="q-card">
+          <h4>5) A honeypot is best described as…</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> A high‑availability load balancer</label>
+            <label><input type="radio" name="q5" value="b"/> A decoy system intended to lure attackers</label>
+            <label><input type="radio" name="q5" value="c"/> A web cache for static content</label>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; margin-top:14px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <footer class="container">
+      <p>© Learning Playground – SOC Analyst Track • Lesson 9</p>
+    </footer>
+  </main>
+
+  <script>
+    // Theme toggle (persists in localStorage)
+    const themeBtn = document.getElementById('toggleTheme');
+    const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const key = 'soc9-theme-mode';
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg', '#f7f9ff');
+        document.documentElement.style.setProperty('--card', '#ffffff');
+        document.documentElement.style.setProperty('--text', '#0b1220');
+        document.documentElement.style.setProperty('--muted', '#4a5875');
+      } else {
+        document.documentElement.style.setProperty('--bg', '#0b1220');
+        document.documentElement.style.setProperty('--card', '#111a2e');
+        document.documentElement.style.setProperty('--text', '#e7eefc');
+        document.documentElement.style.setProperty('--muted', '#8aa0c3');
+      }
+    };
+    const stored = localStorage.getItem(key) || (prefers ? 'dark' : 'light');
+    applyTheme(stored);
+    themeBtn.addEventListener('click', () => {
+      const current = localStorage.getItem(key) || stored;
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(key, next);
+      applyTheme(next);
+    });
+
+    // Quiz logic
+    const answers = { q1: 'b', q2: 'c', q3: 'b', q4: 'b', q5: 'b' };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const result = document.getElementById('quizResult');
+    const scoreKey = 'lesson9-score';
+
+    function gradeQuiz() {
+      let score = 0; let total = Object.keys(answers).length;
+      for (const q of Object.keys(answers)) {
+        const chosen = form.querySelector(`input[name="${q}"]:checked`);
+        if (chosen && chosen.value === answers[q]) score++;
+      }
+      const pct = Math.round((score / total) * 100);
+      localStorage.setItem(scoreKey, pct);
+      result.textContent = `Score: ${score}/${total} (${pct}%)`;
+      result.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      result.textContent = '';
+      submitBtn.disabled = false;
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', gradeQuiz);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous score if any
+    const savedScore = localStorage.getItem(scoreKey);
+    if (savedScore) {
+      result.textContent = `Previous Score: ${savedScore}%`;
+      result.className = 'result';
+    }
+  </script>
+</body>
+</html>

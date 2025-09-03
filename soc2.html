@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lesson 2 - Web Servers & Architecture</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background-color: #000;
+      color: #00ffcc;
+      padding: 40px 20px;
+      transition: background-color 0.3s ease;
+    }
+    .light-mode {
+      background-color: #f8f9fa;
+      color: #000;
+    }
+    h1, h3 {
+      text-align: center;
+      text-shadow: 0 0 10px #00ffc3;
+    }
+    .container {
+      max-width: 900px;
+    }
+    .quiz-box {
+      display: none;
+      background: rgba(0, 255, 204, 0.07);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #00ffc3;
+      margin-top: 30px;
+    }
+    .btn-primary, .btn-secondary {
+      background: linear-gradient(45deg, #00ffe7, #0099ff);
+      border: none;
+      font-weight: bold;
+      color: #000;
+    }
+    #toggleTheme {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      padding: 6px 14px;
+      border-radius: 10px;
+      border: none;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+    #result {
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .back-home {
+      margin-top: 20px;
+      display: block;
+    }
+  </style>
+</head>
+<body class="dark-mode">
+
+  <button id="toggleTheme">🌙 Toggle Theme</button>
+  <a href="index.html" class="btn btn-outline-light back-home">⬅ Back to Home</a>
+
+  <div class="container">
+    <h1>Lesson 2</h1>
+    <h3>Understanding Web Servers & Architecture</h3>
+
+    <div class="ratio ratio-16x9 mb-4">
+      <iframe src="https://www.youtube.com/embed/gh3FYtQfux8" allowfullscreen></iframe>
+    </div>
+
+    <p><strong>What is a Web Server?</strong></p>
+    <p>A web server is a software and hardware system that uses HTTP and other protocols to respond to client requests made over the World Wide Web. It stores, processes, and delivers web pages to users.</p>
+
+    <p><strong>How Web Servers Work:</strong></p>
+    <ul>
+      <li>Client (browser) sends a request for a webpage (e.g., www.xecuredly.com)</li>
+      <li>DNS resolves the domain to an IP address</li>
+      <li>Web server receives the request and returns the webpage files (HTML, CSS, JS)</li>
+      <li>The browser renders the webpage for the user</li>
+    </ul>
+
+    <p><strong>Web Architecture Components:</strong></p>
+    <ul>
+      <li><strong>Client:</strong> Browser/device sending the request</li>
+      <li><strong>Web Server:</strong> Receives request, serves web pages</li>
+      <li><strong>Application Server:</strong> Handles logic, authentication, etc.</li>
+      <li><strong>Database Server:</strong> Stores and retrieves data</li>
+    </ul>
+
+    <p><strong>Common Web Technologies:</strong></p>
+    <ul>
+      <li>HTTP / HTTPS</li>
+      <li>TCP/IP Protocol</li>
+      <li>DNS (Domain Name System)</li>
+      <li>Load Balancers</li>
+    </ul>
+
+    <p><strong>Web Server Software:</strong></p>
+    <ul>
+      <li>Apache HTTP Server</li>
+      <li>Nginx</li>
+      <li>Microsoft IIS</li>
+    </ul>
+
+    <p><strong>Common Web Server Vulnerabilities:</strong></p>
+    <ul>
+      <li>Directory Traversal Attacks</li>
+      <li>Misconfigured Permissions</li>
+      <li>Unpatched Server Software</li>
+      <li>Information Disclosure</li>
+    </ul>
+
+    <button class="btn btn-primary mt-3" onclick="showQuiz()">🧠 Attempt Quiz</button>
+
+    <form class="quiz-box" id="quizBox">
+      <div class="question mt-4">
+        <h5>1. What is the primary role of a web server?</h5>
+        <div><input type="radio" name="q1" value="1"> Serve webpages over HTTP/HTTPS</div>
+        <div><input type="radio" name="q1" value="0"> Manage employee records</div>
+        <div><input type="radio" name="q1" value="0"> Scan for malware</div>
+      </div>
+
+      <div class="question mt-3">
+        <h5>2. What resolves domain names to IP addresses?</h5>
+        <div><input type="radio" name="q2" value="0"> HTTP</div>
+        <div><input type="radio" name="q2" value="1"> DNS</div>
+        <div><input type="radio" name="q2" value="0"> FTP</div>
+      </div>
+
+      <div class="question mt-3">
+        <h5>3. Which of these is NOT a layer in web architecture?</h5>
+        <div><input type="radio" name="q3" value="0"> Web Server</div>
+        <div><input type="radio" name="q3" value="0"> Application Server</div>
+        <div><input type="radio" name="q3" value="1"> Photoshop Engine</div>
+      </div>
+
+      <div class="question mt-3">
+        <h5>4. Which is a common web server?</h5>
+        <div><input type="radio" name="q4" value="0"> VLC</div>
+        <div><input type="radio" name="q4" value="1"> Apache</div>
+        <div><input type="radio" name="q4" value="0"> Adobe Reader</div>
+      </div>
+
+      <div class="question mt-3">
+        <h5>5. What’s a common web server vulnerability?</h5>
+        <div><input type="radio" name="q5" value="1"> Misconfigured permissions</div>
+        <div><input type="radio" name="q5" value="0"> Slow downloads</div>
+        <div><input type="radio" name="q5" value="0"> Password hints</div>
+      </div>
+
+      <button type="submit" class="btn btn-secondary mt-3">Submit Quiz</button>
+      <div id="result"></div>
+    </form>
+  </div>
+
+  <script>
+    function showQuiz() {
+      const quiz = document.getElementById("quizBox");
+      quiz.style.display = "block";
+      gsap.from(quiz, {opacity: 0, y: 40, duration: 1});
+    }
+
+    document.getElementById("quizBox").onsubmit = function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      let score = 0;
+      for (let entry of formData.entries()) {
+        score += parseInt(entry[1]);
+      }
+      const percent = Math.round((score / 5) * 100);
+      document.getElementById("result").innerHTML = `✅ You scored ${percent}%`;
+      localStorage.setItem("lesson2_score", percent);
+    };
+
+    // Theme toggle
+    const toggleBtn = document.getElementById("toggleTheme");
+    toggleBtn.onclick = () => {
+      const isLight = document.body.classList.contains("light-mode");
+      document.body.classList.toggle("light-mode", !isLight);
+      document.body.classList.toggle("dark-mode", isLight);
+      localStorage.setItem("theme", isLight ? "dark" : "light");
+    };
+
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    document.body.classList.add(`${savedTheme}-mode`);
+  </script>
+</body>
+</html>
