@@ -1,317 +1,526 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lesson 5 - Application & Web Security</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 5 – Applications & Web Security</title>
+
   <style>
-    .card {
-  background: #111;  /* solid instead of transparent */
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #00ffc3;  /* glowing border */
-  box-shadow: 0 0 12px #00ffc3;
-  color: #00ffe7; /* brighter text */
-}
-
-h1, h2 {
-  text-align: center;
-  color: #00ffe7;
-  text-shadow: 0 0 8px #00ffc3; /* subtle glow only */
-}
-
-    body {
-      margin: 0;
-      font-family: 'Share Tech Mono', monospace;
-      background-color: #000;
-      color: #00ffcc;
-      transition: background-color 0.4s ease;
-      padding-bottom: 100px;
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
     }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: repeating-radial-gradient(circle, #00ffcc11 1px, transparent 3px);
-      z-index: -1;
-      animation: particles 40s linear infinite;
-    }
-    @keyframes particles {
-      from { background-position: 0 0; }
-      to { background-position: 1000px 1000px; }
-    }
-
-    h1, h2 { text-align: center; text-shadow: 0 0 15px #00ffc3; margin: 20px 0; }
-    .wrap { max-width: 1000px; margin: auto; padding: 20px; }
-
-    .card {
-      background: rgba(0,0,0,0.7);
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 15px #00ffc3;
-    }
-
-    ul li { margin-bottom: 8px; }
-
-    .notice { font-size: 0.9rem; color: #ccc; }
-
-    #toggleTheme {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 8px 16px;
-      background: #333;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 99;
-    }
-
-    .back-btn {
-      display: inline-block;
-      margin: 30px auto;
-      padding: 10px 20px;
-      background: #111;
-      color: #00ffcc;
-      text-decoration: none;
-      border-radius: 6px;
-      box-shadow: 0 0 10px #00ffc3;
-      transition: 0.3s;
-    }
-    .back-btn:hover {
-      background: #00ffcc;
-      color: #000;
-      box-shadow: 0 0 20px #00ffcc;
-    }
-
-    /* Quiz styling */
-    .quiz-question { margin-bottom: 20px; }
-    .quiz-question h4 { margin-bottom: 10px; }
-    .quiz-option { display: block; margin: 5px 0; }
-    .quiz-option input { margin-right: 8px; }
-    .result { margin-top: 20px; font-weight: bold; }
-    .correct { color: lightgreen; }
-    .incorrect { color: red; }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
   </style>
 </head>
 <body>
-  <button id="toggleTheme">🌙 Toggle Theme</button>
-
-  <div class="wrap">
-    <h1>Lesson 5: Application & Web Security</h1>
-
-    <div class="card">
-      <p class="notice">
-        This lesson expands on the training slides: <em>Application & Web Security</em>.  
-        It is rewritten in a comprehensive, self-study format.  
-        <small>Reference: Module 05 Application and web security</small>
-      </p>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 5</span>
+        <div>
+          <strong>Applications & Web Security — Lesson 5</strong>
+          <div class="small muted">Web servers, architectures, attacks, LFI walkthrough</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
     </div>
+  </header>
 
-    <section class="card">
-      <h2>1) Introduction</h2>
-      <p>
-        Application and web security focuses on protecting software systems, websites, and web applications 
-        from threats that compromise confidentiality, integrity, and availability. 
-        Web-based platforms are central to our daily lives: banking, healthcare, shopping, and communication. 
-        Because of this, attackers see them as prime targets.
-      </p>
-      <p>
-        Security requires deliberate planning—secure design, coding practices, monitoring, and updates. 
-        This lesson covers how web servers function, common attacks, and defense strategies.
-      </p>
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">Applications & Web Security</h1>
+      <p class="subtitle">An introduction to web servers, how they work, common attacks on web infrastructure and web applications, countermeasures and a hands-on LFI example.</p>
+
+      <div class="chips">
+        <span class="chip">Web Server</span>
+        <span class="chip">WAF</span>
+        <span class="chip">XSS</span>
+        <span class="chip">SQLi</span>
+        <span class="chip">LFI</span>
+      </div>
     </section>
 
-    <section class="card">
-      <h2>2) Web Servers Explained</h2>
-      <p>
-        A <b>web server</b> is both hardware and software. The hardware stores files and connects to the internet. 
-        The software (Apache, Nginx, IIS) processes HTTP/HTTPS requests and delivers content to clients.
-      </p>
-      <p>
-        When you type a URL, your browser sends a request → the server processes it → and sends back a response. 
-        This is the backbone of the internet.
-      </p>
-      <p><b>Analogy:</b> Think of a restaurant: you (client) order food (request), the waiter (server) takes it 
-        to the kitchen (application), food is prepared (process), then delivered back (response).</p>
+    <!-- TOC -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Content</h2>
+      <ol class="list">
+        <li>What Is A Web Server?</li>
+        <li>Web Server Architecture</li>
+        <li>How Web Servers Work?</li>
+        <li>What Is Web Security?</li>
+        <li>Web Server Attacks</li>
+        <li>Countermeasures & Patch Management</li>
+        <li>Difference Between Websites & Web Applications</li>
+        <li>Web Application Architecture</li>
+        <li>Web Application Attacks</li>
+        <li>Local File Inclusion (LFI) — example on bWAPP</li>
+      </ol>
     </section>
 
-    <section class="card">
-      <h2>3) Web Security Fundamentals</h2>
-      <ul>
-        <li><b>Confidentiality:</b> Only authorized people can see sensitive data.</li>
-        <li><b>Integrity:</b> Data remains accurate and unaltered.</li>
-        <li><b>Availability:</b> Services remain online and accessible.</li>
+    <!-- What is a web server -->
+    <section class="card long-read" aria-labelledby="whatserver">
+      <h2 id="whatserver" class="section-title">What Is A Web Server?</h2>
+      <p>A web server is hardware and software that uses HTTP (and related protocols) to respond to client requests and deliver web content. It stores, processes and serves webpages and assets (HTML, CSS, JS, images) to users and API clients.</p>
+    </section>
+
+    <!-- Web server architecture -->
+    <section class="card long-read" aria-labelledby="arch">
+      <h2 id="arch" class="section-title">Web Server Architecture</h2>
+      <h3>Single-Tier (Single Server)</h3>
+      <p>One server handles everything: request processing, application logic and storage. Simple but limited in scale and fault tolerance.</p>
+
+      <h3>Multi-Tier (Load-Balanced)</h3>
+      <p>Multiple servers (often behind a load balancer) share work. Typical tiers: load balancer → web/app servers → database. This improves scalability, fault tolerance and maintainability.</p>
+    </section>
+
+    <!-- How web servers work -->
+    <section class="card long-read" aria-labelledby="how">
+      <h2 id="how" class="section-title">How Web Servers Work</h2>
+      <p>Clients send HTTP(S) requests to the server. The server processes requests (static file lookup, or forwards to application code), and returns an HTTP response with status, headers and body. TLS (via HTTPS) encrypts traffic in transit.</p>
+    </section>
+
+    <!-- What is web security -->
+    <section class="card long-read" aria-labelledby="websec">
+      <h2 id="websec" class="section-title">What Is Web Security?</h2>
+      <p>Web security protects websites and web applications from unauthorized access, data disclosure, tampering and availability loss. It includes secure coding, infrastructure hardening, monitoring and incident response.</p>
+    </section>
+
+    <!-- web server attacks -->
+    <section class="card long-read" aria-labelledby="attacks">
+      <h2 id="attacks" class="section-title">Web Server Attacks</h2>
+      <ul class="list">
+        <li><strong>DoS/DDoS</strong> — flood the server to make it unavailable.</li>
+        <li><strong>Malware</strong> — compromise the server software or file system.</li>
+        <li><strong>Session Hijacking</strong> — steal session tokens or cookies to impersonate users.</li>
+        <li><strong>DNS Spoofing</strong> — redirect users to attacker-controlled sites.</li>
       </ul>
-      <p>Trust and reputation are vital—breaches can destroy both.</p>
     </section>
 
-    <section class="card">
-      <h2>4) Common Attacks</h2>
-      <ul>
-        <li><b>DDoS:</b> Overwhelming servers with traffic.</li>
-        <li><b>Brute Force:</b> Guessing passwords until access is gained.</li>
-        <li><b>XSS:</b> Injecting malicious scripts into web pages.</li>
-        <li><b>Phishing:</b> Tricking users into giving credentials.</li>
-        <li><b>Defacement:</b> Changing site content maliciously.</li>
-        <li><b>DNS Hijacking:</b> Redirecting traffic to fake sites.</li>
+    <!-- countermeasures -->
+    <section class="card long-read" aria-labelledby="counter">
+      <h2 id="counter" class="section-title">Countermeasures & Patch Management</h2>
+      <ul class="list">
+        <li><strong>Web Application Firewall (WAF)</strong> — filter/inspect HTTP traffic for malicious payloads.</li>
+        <li><strong>SSL/TLS</strong> — encrypt communications (use strong TLS versions and ciphers).</li>
+        <li><strong>IDS/IPS</strong> — detect and optionally block suspicious behavior.</li>
+        <li><strong>Patch Management</strong> — keep web server software, frameworks and libraries up to date to fix vulnerabilities.</li>
       </ul>
     </section>
 
-    <section class="card">
-      <h2>5) Countermeasures</h2>
-      <ul>
-        <li>Validate user input to prevent injection.</li>
-        <li>Encrypt traffic using HTTPS.</li>
-        <li>Apply strict access control.</li>
-        <li>Patch and update software often.</li>
-        <li>Use firewalls and Web Application Firewalls (WAFs).</li>
+    <!-- difference websites vs web apps -->
+    <section class="card long-read" aria-labelledby="diff">
+      <h2 id="diff" class="section-title">Difference Between Websites & Web Applications</h2>
+      <table style="width:100%;border-collapse:collapse">
+        <thead style="text-align:left;color:var(--muted)">
+          <tr><th style="padding:8px;border-bottom:1px solid rgba(255,255,255,0.04)">Feature</th><th style="padding:8px;border-bottom:1px solid rgba(255,255,255,0.04)">Website</th><th style="padding:8px;border-bottom:1px solid rgba(255,255,255,0.04)">Web Application</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:8px">Interactivity</td><td style="padding:8px">Primarily static</td><td style="padding:8px">Highly interactive</td></tr>
+          <tr><td style="padding:8px">Functionality</td><td style="padding:8px">Informational</td><td style="padding:8px">Task-oriented</td></tr>
+          <tr><td style="padding:8px">Complexity</td><td style="padding:8px">Simple</td><td style="padding:8px">Complex with database & logic</td></tr>
+          <tr><td style="padding:8px">Examples</td><td style="padding:8px">Blogs, news sites</td><td style="padding:8px">Gmail, Amazon</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- web app architecture -->
+    <section class="card long-read" aria-labelledby="webapp">
+      <h2 id="webapp" class="section-title">Web Application Architecture</h2>
+      <p><strong>Single-Tier (Client-side)</strong> — app runs mostly in the browser (static). <strong>Multi-Tier (Server-side)</strong> — presentation tier (client), application tier (business logic), data tier (database).</p>
+    </section>
+
+    <!-- web app attacks -->
+    <section class="card long-read" aria-labelledby="webattacks">
+      <h2 id="webattacks" class="section-title">Web Application Attacks</h2>
+      <ul class="list">
+        <li><strong>Cross-Site Scripting (XSS)</strong> — inject scripts into pages to run in victims' browsers.</li>
+        <li><strong>SQL Injection (SQLi)</strong> — inject SQL to manipulate or exfiltrate data.</li>
+        <li><strong>Broken Authentication</strong> — weak auth/session handling enabling account takeover.</li>
+        <li><strong>Sensitive Data Exposure</strong> — improper handling or storage of secrets.</li>
+        <li><strong>File Upload Vulnerabilities</strong> — allow execution of uploaded malicious files.</li>
       </ul>
     </section>
 
-    <section class="card">
-      <h2>6) Websites vs. Web Apps</h2>
-      <p><b>Website:</b> Static pages, mostly information.  
-         <b>Web App:</b> Interactive systems where users log in and perform tasks.</p>
+    <!-- LFI example -->
+    <section class="card long-read" aria-labelledby="lfi">
+      <h2 id="lfi" class="section-title">Local File Inclusion (LFI) — bWAPP Example</h2>
+      <p>Local File Inclusion is a vulnerability that lets an attacker include files from the web server filesystem through the browser. It can expose sensitive files (like <code>/etc/passwd</code>) or lead to remote code execution depending on server configuration.</p>
+
+      <h3>Example steps (training lab: bWAPP)</h3>
+      <ol class="list">
+        <li>Check the target machine IP (e.g., run <code>ifconfig</code> on the target). Note the web server IP.</li>
+        <li>From your attacker machine (e.g., Kali), open a browser and navigate to the target IP, e.g. <code>http://10.0.0.169</code>.</li>
+        <li>Open bWAPP and login (commonly <code>bee/bug</code> in labs).</li>
+        <li>Select the vulnerability module (Directory Traversal / LFI) and click "Hack".</li>
+        <li>Observe the URL pattern, e.g. <code>/bWAPP/directory_traversal_1.php?page=message.txt</code>.</li>
+        <li>Replace the filename with a traversal payload, e.g. <code>../../../../etc/passwd</code>, so the URL becomes: <code>/bWAPP/directory_traversal_1.php?page=../../../../etc/passwd</code>.</li>
+        <li>Submit and review the server response — if vulnerable, the contents of the file will be returned in the browser.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Important:</strong> Only perform these steps in authorized, isolated lab environments (e.g., intentionally vulnerable VMs like bWAPP). Never test against systems you do not own or have permission to assess.
+      </div>
     </section>
 
-    <section class="card">
-      <h2>7) Example: Local File Inclusion</h2>
-      <p>
-        If an app doesn’t validate inputs, attackers can request sensitive files (e.g., /etc/passwd). 
-        This is why secure coding and validation are critical.
-      </p>
+    <!-- Download notes -->
+    <section class="card" aria-labelledby="notes">
+      <h2 id="notes" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a plain-text version of this lesson.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~15–25 mins</span></div>
+      </div>
     </section>
 
-    <section class="card">
-      <h2>🧠 Quiz</h2>
-      <form id="quizForm">
-        <div class="quiz-question">
-          <h4>1. What is the main role of a web server?</h4>
-          <label class="quiz-option"><input type="radio" name="q1" value="a"> To store user passwords</label>
-          <label class="quiz-option"><input type="radio" name="q1" value="b"> To deliver web content to clients</label>
-          <label class="quiz-option"><input type="radio" name="q1" value="c"> To hack into other servers</label>
+    <!-- QUIZ GATE -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 5 Quiz — Applications & Web Security</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready — the quiz is gated so students finish reading first. The quiz has 10 questions; incorrect answers will be highlighted and explanations added.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
+      </div>
+
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) What protocol do web servers commonly use to serve webpages?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> FTP</label>
+            <label><input type="radio" name="q1" value="b"/> HTTP / HTTPS</label>
+            <label><input type="radio" name="q1" value="c"/> SMTP</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>2. Which protocol is secured version of HTTP?</h4>
-          <label class="quiz-option"><input type="radio" name="q2" value="a"> FTP</label>
-          <label class="quiz-option"><input type="radio" name="q2" value="b"> HTTPS</label>
-          <label class="quiz-option"><input type="radio" name="q2" value="c"> SMTP</label>
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) Which architecture uses a load balancer and multiple servers for scalability?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> Single-Tier</label>
+            <label><input type="radio" name="q2" value="b"/> Multi-Tier (Load-Balanced)</label>
+            <label><input type="radio" name="q2" value="c"/> Standalone Laptop</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>3. Which attack floods a server with traffic?</h4>
-          <label class="quiz-option"><input type="radio" name="q3" value="a"> DDoS</label>
-          <label class="quiz-option"><input type="radio" name="q3" value="b"> Phishing</label>
-          <label class="quiz-option"><input type="radio" name="q3" value="c"> SQL Injection</label>
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) Which of these is a common server-side countermeasure for web attacks?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Web Application Firewall (WAF)</label>
+            <label><input type="radio" name="q3" value="b"/> Calculator app</label>
+            <label><input type="radio" name="q3" value="c"/> Unpatched services</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>4. Which best describes confidentiality?</h4>
-          <label class="quiz-option"><input type="radio" name="q4" value="a"> Ensuring only authorized access</label>
-          <label class="quiz-option"><input type="radio" name="q4" value="b"> Keeping servers online</label>
-          <label class="quiz-option"><input type="radio" name="q4" value="c"> Data remains accurate</label>
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) What is Cross-Site Scripting (XSS)?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> Injecting malicious scripts into web pages to run in other users' browsers</label>
+            <label><input type="radio" name="q4" value="b"/> Scanning open ports</label>
+            <label><input type="radio" name="q4" value="c"/> Encrypting the database</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>5. What is XSS?</h4>
-          <label class="quiz-option"><input type="radio" name="q5" value="a"> Cross-Site Scripting</label>
-          <label class="quiz-option"><input type="radio" name="q5" value="b"> Cross Server Security</label>
-          <label class="quiz-option"><input type="radio" name="q5" value="c"> XML Secure Socket</label>
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) What is SQL Injection (SQLi)?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> Supplying malicious SQL through inputs to manipulate backend databases</label>
+            <label><input type="radio" name="q5" value="b"/> A way to improve SQL performance</label>
+            <label><input type="radio" name="q5" value="c"/> A protocol for sending emails</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>6. Which attack tricks users into giving credentials?</h4>
-          <label class="quiz-option"><input type="radio" name="q6" value="a"> DNS Hijacking</label>
-          <label class="quiz-option"><input type="radio" name="q6" value="b"> Phishing</label>
-          <label class="quiz-option"><input type="radio" name="q6" value="c"> Brute Force</label>
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) Which defense helps protect credentials even if a database is leaked?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> Storing passwords in plain text</label>
+            <label><input type="radio" name="q6" value="b"/> Hashing and salting passwords</label>
+            <label><input type="radio" name="q6" value="c"/> Publishing credentials publicly</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>7. Why is patching important?</h4>
-          <label class="quiz-option"><input type="radio" name="q7" value="a"> To improve server speed</label>
-          <label class="quiz-option"><input type="radio" name="q7" value="b"> To close known vulnerabilities</label>
-          <label class="quiz-option"><input type="radio" name="q7" value="c"> To add more content</label>
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) Which vulnerability allows including local files like <code>/etc/passwd</code> via manipulated URLs?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> Cross-Site Request Forgery (CSRF)</label>
+            <label><input type="radio" name="q7" value="b"/> Local File Inclusion (LFI)</label>
+            <label><input type="radio" name="q7" value="c"/> Brute-force</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>8. Which example demonstrates LFI?</h4>
-          <label class="quiz-option"><input type="radio" name="q8" value="a"> Accessing /etc/passwd through URL manipulation</label>
-          <label class="quiz-option"><input type="radio" name="q8" value="b"> Guessing weak passwords</label>
-          <label class="quiz-option"><input type="radio" name="q8" value="c"> Redirecting DNS</label>
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) Which is a recommended mitigation for file upload vulnerabilities?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> Accept any file and execute it</label>
+            <label><input type="radio" name="q8" value="b"/> Validate file types, restrict execution and store outside webroot</label>
+            <label><input type="radio" name="q8" value="c"/> Disable logging</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>9. What is the difference between a website and a web application?</h4>
-          <label class="quiz-option"><input type="radio" name="q9" value="a"> Website is static, Web app is interactive</label>
-          <label class="quiz-option"><input type="radio" name="q9" value="b"> Website is secure, Web app isn’t</label>
-          <label class="quiz-option"><input type="radio" name="q9" value="c"> Website is offline, Web app is online</label>
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) What makes HTTPS important?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> It encrypts traffic between client and server to protect confidentiality and integrity</label>
+            <label><input type="radio" name="q9" value="b"/> It makes pages load faster always</label>
+            <label><input type="radio" name="q9" value="c"/> It bypasses firewalls</label>
+          </div>
         </div>
 
-        <div class="quiz-question">
-          <h4>10. Which tool helps filter malicious traffic?</h4>
-          <label class="quiz-option"><input type="radio" name="q10" value="a"> Web Application Firewall</label>
-          <label class="quiz-option"><input type="radio" name="q10" value="b"> Text Editor</label>
-          <label class="quiz-option"><input type="radio" name="q10" value="c"> Paint</label>
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) Best practice when testing vulnerabilities like LFI:</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> Test only in authorized, isolated lab environments</label>
+            <label><input type="radio" name="q10" value="b"/> Run tests against public production sites without permission</label>
+            <label><input type="radio" name="q10" value="c"/> Share discovered vulnerabilities on social media immediately</label>
+          </div>
         </div>
 
-        <button type="button" class="btn btn-info mt-3" onclick="checkQuiz()">Submit Quiz</button>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
       </form>
-      <div id="quizResult" class="result"></div>
     </section>
 
-    <div class="text-center">
-      <a href="index.html" class="back-btn">⬅ Back to Homepage</a>
-    </div>
-  </div>
+    <footer class="container">
+      <p>© Learning Playground – Applications & Web Security • Lesson 5</p>
+    </footer>
+  </main>
 
   <script>
-    // GSAP animation
-    gsap.from("h1", {opacity:0, y:-50, duration:1.5, ease:"bounce"});
-    gsap.from(".card", {opacity:0, y:50, duration:1, stagger:0.3, ease:"power2.out"});
-
-    // Theme toggle
-    document.getElementById("toggleTheme").onclick = () => {
-      document.body.classList.toggle("light-mode");
-      document.body.classList.toggle("dark-mode");
-      localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson5-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
     };
-    const theme = localStorage.getItem("theme") || "dark";
-    document.body.classList.add(theme + "-mode");
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
 
-    // Quiz check
-    function checkQuiz() {
-      const answers = {
-        q1:"b", q2:"b", q3:"a", q4:"a", q5:"a",
-        q6:"b", q7:"b", q8:"a", q9:"a", q10:"a"
-      };
-      let score = 0;
-      let resultHTML = "<h4>Results:</h4><ul>";
-      for (const q in answers) {
-        const chosen = document.querySelector(`input[name=${q}]:checked`);
-        if (chosen) {
-          if (chosen.value === answers[q]) {
-            score++;
-            resultHTML += `<li class='correct'>${q.toUpperCase()}: Correct</li>`;
-          } else {
-            resultHTML += `<li class='incorrect'>${q.toUpperCase()}: Wrong (Correct: ${answers[q]})</li>`;
-          }
+    /* Download notes */
+    function downloadNotes() {
+      const title = 'Lesson5_Web_Security_Notes.txt';
+      const content = [
+        'Lesson 5 – Applications & Web Security',
+        '',
+        'Table of Content',
+        'What Is A Web Server?',
+        'Web Server Architecture',
+        'How Web Servers Work?',
+        'What Is Web Security?',
+        'Web Server Attacks',
+        'Countermeasures & Patch Management',
+        'Difference Between Websites & Web Applications',
+        'Web Application Architecture',
+        'Web Application Attacks',
+        '',
+        'Local File Inclusion (LFI) example steps for labs: check target IP, access bWAPP, select Directory Traversal, replace file parameter with traversal payload like ../../../../etc/passwd (labs only).',
+        '',
+        'Always test only in authorized labs.'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
+
+    /* Quiz logic */
+    const answers = { q1:'b', q2:'b', q3:'a', q4:'a', q5:'a', q6:'b', q7:'b', q8:'b', q9:'a', q10:'a' };
+    const explanations = {
+      q1: 'Web servers commonly use HTTP and HTTPS to serve webpages and APIs.',
+      q2: 'Multi-Tier (load-balanced) architectures use load balancers and multiple servers for scalability and fault tolerance.',
+      q3: 'A Web Application Firewall (WAF) is a common server-side countermeasure to filter malicious HTTP traffic.',
+      q4: 'XSS injects malicious scripts into pages which then run in other users’ browsers.',
+      q5: 'SQL Injection involves supplying malicious SQL through inputs to manipulate backend databases.',
+      q6: 'Hashing and salting passwords protects credentials even if a database is leaked.',
+      q7: 'Local File Inclusion (LFI) allows inclusion of local filesystem files via manipulated parameters/URLs.',
+      q8: 'Mitigate file uploads by validating file types, restricting execution and storing files outside the webroot.',
+      q9: 'HTTPS encrypts traffic between client and server to protect confidentiality and integrity.',
+      q10: 'Vulnerability testing should only be done in authorized, isolated lab environments.'
+    };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson5-web-score';
+    const attemptBtn = document.getElementById('attemptBtn');
+
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson5-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      // remove prior inline explanations
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        // clear previous highlight
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) { missed.push(q); continue; }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
         } else {
-          resultHTML += `<li class='incorrect'>${q.toUpperCase()}: Not answered</li>`;
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
         }
       }
-      resultHTML += "</ul>";
-      resultHTML += `<p>Your Score: ${score}/10</p>`;
-      document.getElementById("quizResult").innerHTML = resultHTML;
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
+
+      // remove old review box
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          // attach inline explanation under the missed question
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
+            }
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions. Explanations have been added under the missed questions.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
+      }
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson5-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
     }
   </script>
 </body>

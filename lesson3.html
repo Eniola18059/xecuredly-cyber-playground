@@ -1,191 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lesson 3 - Cryptography</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 3 – Cryptography</title>
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Share Tech Mono', monospace;
-      background-color: #000;
-      color: #00ffcc;
-      line-height: 1.6;
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
     }
-    h1, h2 {
-      text-align: center;
-      margin: 20px 0;
-      text-shadow: 0 0 10px #00ffc3;
-    }
-    .content {
-      padding: 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    .quiz {
-      background: #111;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px #00ffc3;
-      margin-top: 40px;
-    }
-    .quiz h2 {
-      text-align: center;
-    }
-    .quiz button {
-      margin-top: 15px;
-      background: linear-gradient(45deg, #ff0080, #7928ca);
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .quiz button:hover {
-      background: linear-gradient(45deg, #00ffe7, #0099ff);
-      color: #000;
-    }
-    .wrong {
-      color: red;
-      font-weight: bold;
-    }
-    .back-btn {
-      display: block;
-      margin: 30px auto;
-      padding: 10px 20px;
-      background: #111;
-      color: #00ffcc;
-      text-decoration: none;
-      border-radius: 6px;
-      box-shadow: 0 0 10px #00ffc3;
-      width: fit-content;
-    }
-    .back-btn:hover {
-      background: #00ffcc;
-      color: #000;
-    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .grid-2{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1fr 1fr}}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
+    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
+    .subtitle small{display:block;color:var(--muted);margin-top:6px}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
   </style>
 </head>
 <body>
-  <h1>Lesson 3: Cryptography</h1>
-  <div class="content">
-    <h2>🔐 Introduction</h2>
-    <p>Cryptography is the science of protecting information by transforming it into unreadable formats for unauthorized users. It ensures confidentiality, integrity, and authentication in modern digital systems.</p>
-
-    <h2>⚠️ Threats</h2>
-    <p>Cyber threats include viruses, data breaches, denial of service, and eavesdropping. Cryptography provides a shield against these by encoding data.</p>
-
-    <h2>🎯 Security Goals</h2>
-    <ul>
-      <li><b>Confidentiality:</b> Only intended parties can read the data.</li>
-      <li><b>Integrity:</b> Ensures data is not altered.</li>
-      <li><b>Authentication:</b> Confirms the identity of users.</li>
-      <li><b>Non-repudiation:</b> Prevents denial of actions by a sender.</li>
-    </ul>
-
-    <h2>🔑 Encryption & Decryption</h2>
-    <p><b>Encryption</b> converts plaintext into ciphertext. <b>Decryption</b> transforms it back. Together, they protect data during storage and transmission.</p>
-
-    <h2>🛠 Types of Cryptography</h2>
-    <p><b>Symmetric Key Cryptography:</b> Uses a single key for both encryption and decryption. Examples: DES, AES.</p>
-    <p><b>Asymmetric Key Cryptography:</b> Uses two keys (public and private). Example: RSA.</p>
-    <p><b>Hash Functions:</b> Irreversible, one-way algorithms. Used in password storage and blockchain.</p>
-
-    <h2>🔄 Ciphers</h2>
-    <p>Ciphers are algorithms for encryption/decryption. Examples include substitution ciphers (replace characters) and transposition ciphers (rearrange characters).</p>
-
-    <h2>🏛 Public Key Infrastructure (PKI)</h2>
-    <p>PKI issues digital certificates, manages public/private keys, and ensures secure communication in systems like banking and e-commerce.</p>
-
-    <h2>💥 Attacks on Cryptosystems</h2>
-    <ul>
-      <li><b>Passive Attacks:</b> Eavesdropping without altering data.</li>
-      <li><b>Active Attacks:</b> Modify or disrupt communication.</li>
-      <li><b>Ciphertext Only Attack:</b> Attacker only has encrypted text.</li>
-      <li><b>Brute Force Attack:</b> Trying all possible keys until success.</li>
-    </ul>
-
-    <h2>📌 Cryptography in Cybersecurity</h2>
-    <p>Used in ATM cards, passwords, and e-commerce. Ensures secure digital communication and trust between systems.</p>
-
-    <!-- QUIZ -->
-    <div class="quiz">
-      <h2>🧠 Quiz: Cryptography</h2>
-      <form id="quizForm">
-        <ol>
-          <li>What is cryptography?<br>
-            <input type="radio" name="q1" value="wrong"> A type of malware<br>
-            <input type="radio" name="q1" value="correct"> The science of protecting information through codes<br>
-            <input type="radio" name="q1" value="wrong"> A network monitoring tool<br>
-          </li>
-          <li>Which ensures data is not altered?<br>
-            <input type="radio" name="q2" value="correct"> Integrity<br>
-            <input type="radio" name="q2" value="wrong"> Confidentiality<br>
-            <input type="radio" name="q2" value="wrong"> Non-repudiation<br>
-          </li>
-          <li>Which uses the same key for encryption and decryption?<br>
-            <input type="radio" name="q3" value="correct"> Symmetric key<br>
-            <input type="radio" name="q3" value="wrong"> Asymmetric key<br>
-            <input type="radio" name="q3" value="wrong"> Hashing<br>
-          </li>
-          <li>RSA is an example of?<br>
-            <input type="radio" name="q4" value="wrong"> Symmetric key<br>
-            <input type="radio" name="q4" value="correct"> Asymmetric key<br>
-            <input type="radio" name="q4" value="wrong"> Hashing<br>
-          </li>
-          <li>Hash functions are?<br>
-            <input type="radio" name="q5" value="wrong"> Reversible<br>
-            <input type="radio" name="q5" value="correct"> Irreversible<br>
-            <input type="radio" name="q5" value="wrong"> Symmetric<br>
-          </li>
-          <li>What does PKI manage?<br>
-            <input type="radio" name="q6" value="wrong"> Malware<br>
-            <input type="radio" name="q6" value="correct"> Digital certificates and keys<br>
-            <input type="radio" name="q6" value="wrong"> Firewalls<br>
-          </li>
-          <li>Which attack involves trying all possible keys?<br>
-            <input type="radio" name="q7" value="correct"> Brute Force<br>
-            <input type="radio" name="q7" value="wrong"> Ciphertext Only<br>
-            <input type="radio" name="q7" value="wrong"> Passive Attack<br>
-          </li>
-          <li>Which is an example of a passive attack?<br>
-            <input type="radio" name="q8" value="correct"> Eavesdropping<br>
-            <input type="radio" name="q8" value="wrong"> Data modification<br>
-            <input type="radio" name="q8" value="wrong"> DoS<br>
-          </li>
-          <li>Which cipher rearranges characters?<br>
-            <input type="radio" name="q9" value="correct"> Transposition<br>
-            <input type="radio" name="q9" value="wrong"> Substitution<br>
-            <input type="radio" name="q9" value="wrong"> Hashing<br>
-          </li>
-          <li>Which goal prevents denial of actions by sender?<br>
-            <input type="radio" name="q10" value="wrong"> Confidentiality<br>
-            <input type="radio" name="q10" value="wrong"> Integrity<br>
-            <input type="radio" name="q10" value="correct"> Non-repudiation<br>
-          </li>
-        </ol>
-        <button type="button" onclick="checkQuiz()">Submit</button>
-      </form>
-      <p id="result"></p>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 3</span>
+        <div>
+          <strong>Cryptography — Lesson 3</strong>
+          <div class="small muted">Threats • Encryption • Hashes • Ciphers • PKI • Attacks</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
     </div>
+  </header>
 
-    <a href="index.html" class="back-btn">⬅ Back to Homepage</a>
-  </div>
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">Cryptography</h1>
+      <p class="subtitle">An overview of cryptography: goals, primitives (encryption, hashing, ciphers), PKI, attacks and how cryptography supports cybersecurity.</p>
+
+      <div class="chips">
+        <span class="chip">Encryption</span>
+        <span class="chip">Hash</span>
+        <span class="chip">Ciphers</span>
+        <span class="chip">PKI</span>
+        <span class="chip">Attacks</span>
+      </div>
+    </section>
+
+    <!-- TOC -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Content</h2>
+      <ol class="list">
+        <li>Threats</li>
+        <li>Security Goals</li>
+        <li>Encryption & Decryption</li>
+        <li>Cryptography — overview</li>
+        <li>Types of Cryptography</li>
+        <li>Hash Functions</li>
+        <li>Ciphers</li>
+        <li>Public Key Infrastructure (PKI)</li>
+        <li>Attacks on cryptosystems</li>
+        <li>Cryptography + Cyber Security</li>
+      </ol>
+    </section>
+
+    <!-- Threats -->
+    <section class="card long-read" aria-labelledby="threats">
+      <h2 id="threats" class="section-title">Threats</h2>
+      <p>A cyber or cybersecurity threat is a malicious act that seeks to damage data, steal data, or disrupt digital life. Cyber threats include computer viruses, data breaches, Denial of Service (DoS) attacks, and other attack vectors.</p>
+    </section>
+
+    <!-- Security Goals -->
+    <section class="card long-read" aria-labelledby="goals">
+      <h2 id="goals" class="section-title">Security Goals</h2>
+      <ul class="list">
+        <li><strong>Confidentiality</strong>
+          <ul>
+            <li>Encryption of data</li>
+            <li>Access control</li>
+            <li>Physical security</li>
+            <li>Non-disclosure agreements</li>
+            <li>Authentication and authorization</li>
+          </ul>
+        </li>
+        <li><strong>Integrity</strong>
+          <ul>
+            <li>Checksums</li>
+            <li>Data backups</li>
+            <li>Digital signatures</li>
+            <li>Error-correction codes</li>
+          </ul>
+        </li>
+        <li><strong>Availability</strong>
+          <ul>
+            <li>Redundancy</li>
+            <li>Programmed failovers</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Encryption & Decryption -->
+    <section class="card long-read" aria-labelledby="encdec">
+      <h2 id="encdec" class="section-title">Encryption & Decryption</h2>
+      <p>Encryption transforms readable plaintext into unreadable ciphertext using an algorithm and a key. Decryption reverses the process, using a key (same or paired) to recover plaintext from ciphertext. Proper key management is essential: strong algorithms are useless if keys are exposed.</p>
+    </section>
+
+    <!-- Cryptography overview -->
+    <section class="card long-read" aria-labelledby="crypto">
+      <h2 id="crypto" class="section-title">Cryptography — Overview</h2>
+      <p>Cryptography is the science of protecting information by transforming it into a secure format so only authorized parties can read it. It has been used for millennia and today protects bank cards, passwords, e-commerce and many Internet protocols.</p>
+
+      <h3>Basic vocabulary</h3>
+      <ul class="list">
+        <li><strong>Cryptography</strong> — the art/science of writing or solving codes.</li>
+        <li><strong>Cipher</strong> — an algorithm for performing encryption and decryption.</li>
+        <li><strong>Plaintext</strong> — the original readable message.</li>
+        <li><strong>Ciphertext</strong> — the encrypted output.</li>
+        <li><strong>Encode / Decode</strong> — transform to/from a coded form (not necessarily secret).</li>
+        <li><strong>Encipher / Decipher</strong> — encrypt / decrypt.</li>
+        <li><strong>Code</strong> — a broader substitution system for secrecy.</li>
+      </ul>
+    </section>
+
+    <!-- Types -->
+    <section class="card long-read" aria-labelledby="types">
+      <h2 id="types" class="section-title">Types of Cryptography</h2>
+      <ul class="list">
+        <li>Symmetric Key Cryptography</li>
+        <li>Asymmetric (Public-Key) Cryptography</li>
+        <li>Hash Functions (one-way)</li>
+      </ul>
+
+      <h3>Symmetric key</h3>
+      <p>Symmetric systems use a single shared key for encryption and decryption. They are fast and efficient but require secure key exchange. Examples: DES (historical), AES (current standard).</p>
+
+      <h3>Asymmetric (public-key)</h3>
+      <p>Uses a key pair: public key (shared) and private key (kept secret). It enables secure key exchange, digital signatures and certain encryption use-cases. Examples: RSA, ECC.</p>
+
+      <h3>Hash functions</h3>
+      <p>Hash functions compute a fixed-length digest from arbitrary input. They are one-way: you cannot (practically) recover the original input from the hash. Common uses: password storage, integrity checks (SHA-family).</p>
+    </section>
+
+    <!-- Did you know -->
+    <section class="card long-read" aria-labelledby="didyou">
+      <h2 id="didyou" class="section-title">Did You Know?</h2>
+      <p>The oldest known encoded messages date back thousands of years — early attempts at secrecy existed long before modern computers.</p>
+    </section>
+
+    <!-- Ciphers -->
+    <section class="card long-read" aria-labelledby="ciphers">
+      <h2 id="ciphers" class="section-title">Ciphers</h2>
+      <p>Ciphers are algorithms used to perform encryption and decryption.</p>
+      <ul class="list">
+        <li><strong>Transposition ciphers</strong> — reorder the bits/characters of the plaintext.</li>
+        <li><strong>Substitution ciphers</strong> — replace elements of plaintext with other symbols.</li>
+      </ul>
+    </section>
+
+    <!-- PKI -->
+    <section class="card long-read" aria-labelledby="pki">
+      <h2 id="pki" class="section-title">Public Key Infrastructure (PKI)</h2>
+      <p>PKI is the framework for issuing and managing digital certificates and public keys. It provides identity, trust and key lifecycle management so systems can authenticate public keys and trust communications. PKI components include Certificate Authorities (CAs), registration authorities, and certificate revocation lists/OCSP.</p>
+    </section>
+
+    <!-- Attacks -- passive/active -->
+    <section class="card long-read" aria-labelledby="attacks">
+      <h2 id="attacks" class="section-title">Attacks on Cryptosystems</h2>
+      <h3>Passive attacks</h3>
+      <p>Goal: obtain unauthorized access to information (e.g., eavesdropping, interception). Passive attacks typically do not alter data and can be hard to detect.</p>
+
+      <h3>Active attacks</h3>
+      <p>Goal: modify or disrupt communications (e.g., tampering, replay attacks, denial of service). Active attacks often cause detectable disruption.</p>
+
+      <h3>Other attack models</h3>
+      <ul class="list">
+        <li><strong>Ciphertext-only attack (COA)</strong> — attacker has ciphertexts and tries to deduce plaintext or keys.</li>
+        <li><strong>Brute-force attack (BFA)</strong> — attacker tries all possible keys; long keys make BFAs infeasible.</li>
+      </ul>
+    </section>
+
+    <!-- Crypto + cybersecurity -->
+    <section class="card long-read" aria-labelledby="cryptosec">
+      <h2 id="cryptosec" class="section-title">Cryptography + Cyber Security</h2>
+      <p>Cryptography underpins many security services: ATM cards, passwords, e-commerce transactions, secure email, VPNs and TLS/HTTPS. It supports confidentiality, integrity, authentication and non-repudiation— core pillars of information security.</p>
+    </section>
+
+    <!-- Download notes -->
+    <section class="card" aria-labelledby="notes">
+      <h2 id="notes" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a plain-text version of this lesson.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~15–25 mins</span></div>
+      </div>
+    </section>
+
+    <!-- QUIZ GATE -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 3 Quiz — Cryptography</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready — the quiz is gated so students finish reading first. The quiz has 10 questions; incorrect answers will be highlighted and explanations shown below each missed question.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
+      </div>
+
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) Which security goal ensures only authorized parties can read the data?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> Integrity</label>
+            <label><input type="radio" name="q1" value="b"/> Confidentiality</label>
+            <label><input type="radio" name="q1" value="c"/> Availability</label>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) Which of these is a symmetric-key algorithm?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> RSA</label>
+            <label><input type="radio" name="q2" value="b"/> AES</label>
+            <label><input type="radio" name="q2" value="c"/> ECC</label>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) What is a hash function used for?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Encrypting large files efficiently</label>
+            <label><input type="radio" name="q3" value="b"/> Producing a fixed-length digest for integrity checks</label>
+            <label><input type="radio" name="q3" value="c"/> Exchanging public keys</label>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) In public-key cryptography, what stays secret?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> The public key</label>
+            <label><input type="radio" name="q4" value="b"/> The private key</label>
+            <label><input type="radio" name="q4" value="c"/> The algorithm name</label>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) What does PKI primarily provide?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> Certificate issuance and trust management</label>
+            <label><input type="radio" name="q5" value="b"/> Faster symmetric encryption</label>
+            <label><input type="radio" name="q5" value="c"/> Password storage</label>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) Which attack tries all possible keys until the right one is found?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> Ciphertext-only attack</label>
+            <label><input type="radio" name="q6" value="b"/> Chosen-plaintext attack</label>
+            <label><input type="radio" name="q6" value="c"/> Brute-force attack</label>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) Which cipher type reorders the plaintext characters without substitution?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> Substitution cipher</label>
+            <label><input type="radio" name="q7" value="b"/> Transposition cipher</label>
+            <label><input type="radio" name="q7" value="c"/> Stream cipher</label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) Which is an example of an asymmetric algorithm?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> AES</label>
+            <label><input type="radio" name="q8" value="b"/> RSA</label>
+            <label><input type="radio" name="q8" value="c"/> 3DES</label>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) Why are long keys important?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> They make brute-force attacks harder</label>
+            <label><input type="radio" name="q9" value="b"/> They reduce network latency</label>
+            <label><input type="radio" name="q9" value="c"/> They always make algorithms faster</label>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) What property does a secure hash function require?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> It must be reversible (easy to get plaintext)</label>
+            <label><input type="radio" name="q10" value="b"/> Small output length regardless of input</label>
+            <label><input type="radio" name="q10" value="c"/> It must be collision-resistant (hard to find two inputs with same hash)</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <footer class="container">
+      <p>© Learning Playground – Cryptography • Lesson 3</p>
+    </footer>
+  </main>
 
   <script>
-    function checkQuiz() {
-      const form = document.getElementById('quizForm');
-      let score = 0;
-      const answers = form.querySelectorAll('input[type="radio"]:checked');
-      answers.forEach(a => {
-        if (a.value === "correct") score++;
-        else a.parentElement.innerHTML += " <span class='wrong'>(X)</span>";
-      });
-      document.getElementById('result').innerHTML =
-        "You scored " + score + "/10";
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson3-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
+
+    /* Download notes as text (Cryptography lesson) */
+    function downloadNotes() {
+      const title = 'Lesson3_Cryptography_Notes.txt';
+      const content = [
+        'Lesson 3 – Cryptography',
+        '',
+        'Table of Content',
+        'Threats',
+        'Security Goals',
+        'Encryption & Decryption',
+        'Cryptography overview',
+        'Types of Cryptography',
+        'Hash Functions',
+        'Ciphers',
+        'Public Key Infrastructure (PKI)',
+        'Attacks on cryptosystems',
+        'Cryptography + Cyber Security',
+        '',
+        'Threats: Malware, data breaches, DoS, and other attack vectors.',
+        '',
+        'Security goals: Confidentiality, Integrity, Availability (CIA).',
+        '',
+        'Encryption & Decryption: Transform plaintext into ciphertext and back using keys.',
+        '',
+        'Types: Symmetric (AES), Asymmetric (RSA/ECC), Hash functions (SHA).',
+        '',
+        'Ciphers: Transposition and Substitution examples.',
+        '',
+        'PKI: Certificate Authorities, digital certificates and trust.',
+        '',
+        'Attacks: Passive (eavesdropping), Active (tampering), Ciphertext-only, Brute-force.',
+        '',
+        'Cryptography supports secure transactions, authentication, integrity and confidentiality.'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
+
+    /* Quiz logic */
+    const answers = { q1:'b', q2:'b', q3:'b', q4:'b', q5:'a', q6:'c', q7:'b', q8:'b', q9:'a', q10:'c' };
+    const explanations = {
+      q1: 'Confidentiality ensures only authorized parties can read the data (enforced by encryption, access control).',
+      q2: 'AES is a symmetric-key algorithm; RSA and ECC are asymmetric (public-key) algorithms.',
+      q3: 'Hash functions produce fixed-length digests used for integrity checks and password storage.',
+      q4: 'In public-key cryptography the private key must stay secret; the public key is shared.',
+      q5: 'PKI provides certificate issuance and trust management for public keys and identities.',
+      q6: 'A brute-force attack tries all possible keys until the correct one is found.',
+      q7: 'Transposition ciphers reorder characters; substitution ciphers replace them with others.',
+      q8: 'RSA is a classic asymmetric (public-key) algorithm used for encryption and signatures.',
+      q9: 'Longer keys exponentially increase the cost of brute-force attacks, making them impractical.',
+      q10: 'Collision-resistance (hard to find two different inputs with the same hash) is a key property of secure hash functions.'
+    };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson3-crypto-score';
+    const attemptBtn = document.getElementById('attemptBtn');
+
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson3-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      // clear previous question explanations
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        // clear previous highlight
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) {
+          missed.push(q);
+          continue;
+        }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
+        }
+      }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
+
+      // remove old review
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          // append inline explanation under the missed question
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
+            }
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions. Explanations were added under each missed question.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
+      }
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson3-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
     }
   </script>
 </body>

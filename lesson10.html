@@ -1,123 +1,370 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Lesson 10 – Social Engineering</title>
+
   <style>
-    :root { --bg:#0b1220;--card:#111a2e;--muted:#8aa0c3;--text:#e7eefc;--accent:#6ea8ff;--accent-2:#7ef0c1;--warning:#ffdf6e;--danger:#ff7e93; }
-    *{box-sizing:border-box} html,body{margin:0;height:100%}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial;color:var(--text);background:linear-gradient(135deg,#0b1220 0%,#101b34 100%)}
-    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
     .container{max-width:1100px;margin:0 auto;padding:18px}
-    .title{font-size:clamp(28px,4vw,40px);line-height:1.2;margin:4px 0 10px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
     .subtitle{color:var(--muted);font-size:15px}
-    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase}
-    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-bottom:16px}
-    .list{padding-left:18px}.list li{margin:6px 0}
-    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
-    .video-wrap iframe{width:100%;height:100%;border:0;display:block}
-    .quiz .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
-    .q-options{display:grid;gap:6px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
     .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .result{font-size:18px;font-weight:700}.good{color:var(--accent-2)}.mid{color:var(--warning)}.bad{color:var(--danger)}
-    footer{opacity:.7;font-size:13px;padding:30px 0 60px;text-align:center}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .code-block{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;font-size:13px;color:var(--muted);background:rgba(255,255,255,0.03);padding:10px;border-radius:8px}
   </style>
 </head>
 <body>
   <header>
-    <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-      <div style="display:flex;align-items:center;gap:10px;">
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
         <span class="badge">Lesson 10</span>
-        <strong>Social Engineering</strong>
+        <div>
+          <strong>Social Engineering — Lesson 10</strong>
+          <div class="small muted">Psychology, attack types, real examples, and practical defenses</div>
+        </div>
       </div>
-      <div><button class="btn" id="toggleTheme">🌗 Theme</button></div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
     </div>
   </header>
 
   <main class="container">
-    <section class="card">
+    <section class="hero card">
       <h1 class="title">Social Engineering</h1>
-      <p class="subtitle">Exploiting human psychology instead of technical vulnerabilities.</p>
-    </section>
+      <p class="subtitle">People are the most targeted resource in security. Learn how social engineering works, why attackers use it, real scenarios, and how to protect yourself and your organization.</p>
 
-    <section class="card">
-      <h2>What is Social Engineering?</h2>
-      <p>Social engineering is the act of manipulating people into taking actions that may not be in their best interest. Attackers exploit human psychology rather than technical flaws.</p>
-    </section>
-
-    <section class="card">
-      <h2>Why Hackers Use Social Engineering</h2>
-      <ul class="list">
-        <li>Requires the least resistance</li>
-        <li>More effective than technical attacks</li>
-        <li>Common in almost all campaigns</li>
-        <li>Businesses face 700+ attacks yearly</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Common Goals</h2>
-      <ul class="list">
-        <li>Money</li>
-        <li>Ego / Revenge</li>
-        <li>Political or social causes</li>
-        <li>Entertainment</li>
-        <li>Knowledge</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Types of Social Engineering</h2>
-      <ul class="list">
-        <li><strong>Phishing:</strong> Fraudulent emails/messages</li>
-        <li><strong>Spear Phishing:</strong> Targeted phishing using personal data</li>
-        <li><strong>Baiting:</strong> Offering free goods/downloads</li>
-        <li><strong>Quid Pro Quo:</strong> Exchange of services for info</li>
-        <li><strong>Tailgating:</strong> Following someone into restricted areas</li>
-        <li><strong>Whaling:</strong> Targeting executives with sensitive access</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Real-World Example</h2>
-      <p>Between 2013–2015, attackers tricked Google and Facebook employees into paying fraudulent invoices, stealing over $100 million via a spear phishing scheme.</p>
-    </section>
-
-    <section class="card">
-      <h2>Prevention</h2>
-      <ul class="list">
-        <li>Educate employees with awareness training</li>
-        <li>Run phishing simulations</li>
-        <li>Encourage cybersecurity champions</li>
-        <li>Build a culture of continuous learning</li>
-        <li>Foster secure behavior across the organization</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Video Resource</h2>
-      <div class="video-wrap">
-        <iframe src="https://www.youtube.com/embed/lc7scxvKQOo" title="Social Engineering Explained" allowfullscreen></iframe>
+      <div class="chips">
+        <span class="chip">Phishing</span>
+        <span class="chip">Spear Phishing</span>
+        <span class="chip">Tailgating</span>
+        <span class="chip">Baiting</span>
+        <span class="chip">Awareness</span>
       </div>
     </section>
 
-    <section id="quiz" class="card quiz">
-      <h2>Lesson 10 Quiz</h2>
-      <form id="quizForm">
-        <div class="q-card"><h4>1) What is social engineering?</h4><div class="q-options"><label><input type="radio" name="q1" value="a"/> Manipulating people to act against their interest</label><label><input type="radio" name="q1" value="b"/> Upgrading network firewalls</label><label><input type="radio" name="q1" value="c"/> Debugging code</label></div></div>
-        <div class="q-card"><h4>2) Why is social engineering effective?</h4><div class="q-options"><label><input type="radio" name="q2" value="a"/> Exploits human psychology</label><label><input type="radio" name="q2" value="b"/> Requires advanced coding</label><label><input type="radio" name="q2" value="c"/> Needs expensive hardware</label></div></div>
-        <div class="q-card"><h4>3) On average, how many attacks do businesses face yearly?</h4><div class="q-options"><label><input type="radio" name="q3" value="a"/> Over 700</label><label><input type="radio" name="q3" value="b"/> About 70</label><label><input type="radio" name="q3" value="c"/> Less than 10</label></div></div>
-        <div class="q-card"><h4>4) Which is a common goal of social engineering?</h4><div class="q-options"><label><input type="radio" name="q4" value="a"/> Entertainment</label><label><input type="radio" name="q4" value="b"/> Money</label><label><input type="radio" name="q4" value="c"/> All of the above</label></div></div>
-        <div class="q-card"><h4>5) What is spear phishing?</h4><div class="q-options"><label><input type="radio" name="q5" value="a"/> General spam emails</label><label><input type="radio" name="q5" value="b"/> Targeted phishing using personal data</label><label><input type="radio" name="q5" value="c"/> Network intrusion</label></div></div>
-        <div class="q-card"><h4>6) What is baiting?</h4><div class="q-options"><label><input type="radio" name="q6" value="a"/> Offering free goods/downloads</label><label><input type="radio" name="q6" value="b"/> Asking security questions</label><label><input type="radio" name="q6" value="c"/> Encrypting data</label></div></div>
-        <div class="q-card"><h4>7) How does quid pro quo differ from baiting?</h4><div class="q-options"><label><input type="radio" name="q7" value="a"/> Exchange of services for info</label><label><input type="radio" name="q7" value="b"/> Malware emails</label><label><input type="radio" name="q7" value="c"/> Data encryption</label></div></div>
-        <div class="q-card"><h4>8) Tailgating relies on?</h4><div class="q-options"><label><input type="radio" name="q8" value="a"/> Following someone into restricted areas</label><label><input type="radio" name="q8" value="b"/> Encrypting passwords</label><label><input type="radio" name="q8" value="c"/> Building apps</label></div></div>
-        <div class="q-card"><h4>9) Whaling targets?</h4><div class="q-options"><label><input type="radio" name="q9" value="a"/> Executives</label><label><input type="radio" name="q9" value="b"/> Students</label><label><input type="radio" name="q9" value="c"/> Gamers</label></div></div>
-        <div class="q-card"><h4>10) The best defense against social engineering is?</h4><div class="q-options"><label><input type="radio" name="q10" value="a"/> Awareness and training</label><label><input type="radio" name="q10" value="b"/> Bigger offices</label><label><input type="radio" name="q10" value="c"/> Buying more servers</label></div></div>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:14px;">
+    <!-- TOC -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Content</h2>
+      <ol class="list">
+        <li>What is Social Engineering?</li>
+        <li>Why attackers use social engineering</li>
+        <li>Typical attacker goals</li>
+        <li>Psychology behind social engineering</li>
+        <li>Types of social engineering attacks (with examples)</li>
+        <li>Technical and human defenses</li>
+        <li>Incident handling & reporting</li>
+        <li>Practical tips & checklists</li>
+        <li>Quiz</li>
+      </ol>
+    </section>
+
+    <!-- What is -->
+    <section class="card long-read" id="what" aria-labelledby="what-title">
+      <h2 id="what-title" class="section-title">What is Social Engineering?</h2>
+      <p>Social engineering is the practice of manipulating people into performing actions or divulging confidential information. Rather than breaking software or hardware, attackers exploit human trust, curiosity, fear, or helpfulness.</p>
+      <div class="callout"><strong>Short:</strong> it's hacking people, not computers — but it often leads to both.</div>
+    </section>
+
+    <!-- Why use -->
+    <section class="card long-read" id="why" aria-labelledby="why-title">
+      <h2 id="why-title" class="section-title">Why attackers use Social Engineering</h2>
+      <p>Attackers choose social engineering because it often yields high returns with low technical effort. Humans make mistakes, can be rushed or distracted, and often have access that technology controls alone cannot replicate.</p>
+      <ul class="list">
+        <li>Low technical barrier — social techniques require little tooling.</li>
+        <li>High success rate — tailored attacks (spear phishing) are highly effective.</li>
+        <li>Can bypass technical controls — stolen credentials or a single click can defeat hardened systems.</li>
+      </ul>
+    </section>
+
+    <!-- goals -->
+    <section class="card long-read" id="goals" aria-labelledby="goals-title">
+      <h2 id="goals-title" class="section-title">Typical goals of social engineers</h2>
+      <ul class="list">
+        <li><strong>Money:</strong> financial fraud, extortion, or theft.</li>
+        <li><strong>Access / Credentials:</strong> obtain logins for later intrusion.</li>
+        <li><strong>Data theft:</strong> exfiltrate intellectual property or PII.</li>
+        <li><strong>Espionage:</strong> long-term surveillance or insider access.</li>
+        <li><strong>Disruption:</strong> sabotage reputations or operations.</li>
+        <li><strong>Reputation & Ego:</strong> bragging rights or demonstrating control.</li>
+      </ul>
+    </section>
+
+    <!-- psychology -->
+    <section class="card long-read" id="psych" aria-labelledby="psych-title">
+      <h2 id="psych-title" class="section-title">Psychology — why people fall for it</h2>
+      <p>Social engineering exploits common cognitive biases and triggers:</p>
+      <ul class="list">
+        <li><strong>Authority:</strong> people obey perceived authority figures (managers, IT staff).</li>
+        <li><strong>Urgency / Scarcity:</strong> "act now" pressures lead to mistakes.</li>
+        <li><strong>Reciprocity:</strong> people feel compelled to return favors or help.</li>
+        <li><strong>Social proof:</strong> if others appear to have approved something, it's trusted.</li>
+        <li><strong>Curiosity:</strong> enticing links or attachments prompt clicks.</li>
+      </ul>
+      <div class="explain">Understanding these triggers helps design training and controls that reduce human risk.</div>
+    </section>
+
+    <!-- types -->
+    <section class="card long-read" id="types" aria-labelledby="types-title">
+      <h2 id="types-title" class="section-title">Types of Social Engineering Attacks (with examples)</h2>
+
+      <h3>Phishing</h3>
+      <p>Mass emails pretending to be trusted senders asking recipients to click a link, open an attachment, or submit credentials. Example: fake password reset email linking to credential-harvesting site.</p>
+
+      <h3>Spear Phishing</h3>
+      <p>Highly targeted phishing that uses personal details (LinkedIn, company site) to craft believable messages to specific people. Example: an email to finance that appears to come from the CEO requesting an urgent wire transfer.</p>
+
+      <h3>Whaling</h3>
+      <p>Targeting executives and high-value personnel with specialized lures. The content is tailored, polished and often bypasses generic filters.</p>
+
+      <h3>Baiting</h3>
+      <p>Offering something enticing (free download, USB drop) to get the victim to install malware or reveal information. Example: a labelled USB stick left in a parking lot — curiosity leads to plugging it in.</p>
+
+      <h3>Pretexting</h3>
+      <p>Attacker fabricates a scenario to justify asking for information — e.g., posing as IT asking for credentials to fix "an urgent problem."</p>
+
+      <h3>Tailgating / Piggybacking</h3>
+      <p>Physical technique where an attacker follows an authorized person into a restricted area (holding the door, pretending to have forgotten a badge).</p>
+
+      <h3>Vishing & Smishing</h3>
+      <p>Vishing: voice phishing over phone. Smishing: phishing via SMS. Both use urgency and authority to harvest secrets or push malicious links.</p>
+
+      <h3>Water-holing</h3>
+      <p>Compromising a website frequently visited by a target group so that victims get infected when they visit.</p>
+    </section>
+
+    <!-- red-team -->
+    <section class="card long-read" id="red" aria-labelledby="red-title">
+      <h2 id="red-title" class="section-title">Red-team exercises and ethical social engineering</h2>
+      <p>Organizations use controlled social-engineering tests (phishing simulations, physical entry tests) to measure risk and train staff. These are ethical, planned, and consented exercises with clear rules of engagement and remediation plans.</p>
+    </section>
+
+    <!-- detection & technical -->
+    <section class="card long-read" id="defenses" aria-labelledby="defenses-title">
+      <h2 id="defenses-title" class="section-title">How to protect yourself — technical & human defenses</h2>
+
+      <h3>Human-centered defenses</h3>
+      <ul class="list">
+        <li><strong>Awareness training:</strong> regular, realistic training with examples and role-based scenarios.</li>
+        <li><strong>Phishing simulations:</strong> periodic safe tests that teach users to spot malicious messages.</li>
+        <li><strong>Clear reporting channels:</strong> easy “report phishing” button and follow-up response from security team.</li>
+        <li><strong>Positive culture:</strong> reward reporting and avoid punitive responses when employees report suspected phishing.</li>
+      </ul>
+
+      <h3>Technical controls</h3>
+      <ul class="list">
+        <li><strong>Email filtering & sandboxing:</strong> block known malicious attachments and detonate suspicious files in sandboxes.</li>
+        <li><strong>DMARC / SPF / DKIM:</strong> authenticate sender domains to reduce spoofed emails.</li>
+        <li><strong>Web filtering & URL reputation:</strong> block known malicious sites and warn for risky domains.</li>
+        <li><strong>MFA:</strong> multi-factor authentication limits account takeover even when credentials are stolen.</li>
+        <li><strong>Endpoint restrictions:</strong> limit ability to install software or run macros; use application allowlists.</li>
+        <li><strong>Physical access controls:</strong> badges, turnstiles, visitor logs, and tailgate detection sensors.</li>
+      </ul>
+    </section>
+
+    <!-- indicators -->
+    <section class="card long-read" id="indicators" aria-labelledby="indicators-title">
+      <h2 id="indicators-title" class="section-title">Indicators of social-engineering attempts</h2>
+      <ul class="list">
+        <li>Unexpected requests for credentials or sensitive data.</li>
+        <li>Emails with urgent calls to action, grammatical oddities, or slightly-off sender addresses.</li>
+        <li>Links with mismatched display text and actual URL (hover to check).</li>
+        <li>Unsolicited USB sticks, devices or visitors asking for badge access.</li>
+        <li>Requests to bypass normal processes (e.g., "skip approval — urgent").</li>
+      </ul>
+      <div class="explain">When in doubt: verify by another channel (call the sender on a known number), and report to security.</div>
+    </section>
+
+    <!-- handling -->
+    <section class="card long-read" id="handling" aria-labelledby="handling-title">
+      <h2 id="handling-title" class="section-title">If you suspect you've been targeted — quick steps</h2>
+      <ol class="list">
+        <li>Do not interact further with the message or link.</li>
+        <li>Take screenshots and save original email headers or SMS content.</li>
+        <li>Disconnect affected device from network if you clicked an attachment or plugged a suspicious USB.</li>
+        <li>Change passwords from a known-good device and enable MFA.</li>
+        <li>Report immediately to your IT/security team using the formal channel.</li>
+      </ol>
+    </section>
+
+    <!-- practical tips -->
+    <section class="card long-read" id="tips" aria-labelledby="tips-title">
+      <h2 id="tips-title" class="section-title">Practical tips & checklist</h2>
+      <ul class="list">
+        <li>Hover links before clicking; check full URL.</li>
+        <li>Verify unexpected requests by calling the sender on a trusted number.</li>
+        <li>Do not use personal devices to access sensitive work systems unless approved.</li>
+        <li>Never share OTPs, MFA push approvals, or passwords over email or phone.</li>
+        <li>Use password managers to avoid reuse and to detect fake login pages.</li>
+        <li>Report suspicious contacts even if you think they were harmless — early detection helps.</li>
+      </ul>
+    </section>
+
+    <!-- Download -->
+    <section class="card" id="notes" aria-labelledby="notes-title">
+      <h2 id="notes-title" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a text summary of this lesson for offline review.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~15–25 mins</span></div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 10 Quiz — Social Engineering</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready. The quiz has 10 questions; missed questions will provide explanations.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
+      </div>
+
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) What is social engineering?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> Manipulating people to obtain confidential info or cause actions</label>
+            <label><input type="radio" name="q1" value="b"/> A form of encryption</label>
+            <label><input type="radio" name="q1" value="c"/> A backup method for servers</label>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) Which psychological trigger do attackers commonly exploit?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> Urgency</label>
+            <label><input type="radio" name="q2" value="b"/> Color preferences</label>
+            <label><input type="radio" name="q2" value="c"/> CPU speed</label>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) What is spear phishing?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Targeted phishing tailored to a specific person or role</label>
+            <label><input type="radio" name="q3" value="b"/> A mass spam campaign</label>
+            <label><input type="radio" name="q3" value="c"/> Physical break-in</label>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) What technical control helps prevent email spoofing?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> DMARC / SPF / DKIM</label>
+            <label><input type="radio" name="q4" value="b"/> Disabling HTTPS</label>
+            <label><input type="radio" name="q4" value="c"/> Turning off antivirus</label>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) Which of these is a safe verification step when receiving an urgent request from a colleague?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> Call the colleague on their known phone number to confirm</label>
+            <label><input type="radio" name="q5" value="b"/> Immediately transfer funds</label>
+            <label><input type="radio" name="q5" value="c"/> Reply with your password</label>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) What is tailgating?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> Physically following someone into a restricted area without authorization</label>
+            <label><input type="radio" name="q6" value="b"/> Sending a phishing email</label>
+            <label><input type="radio" name="q6" value="c"/> A type of firewall</label>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) Which practice reduces the impact of credential theft?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> Using multi-factor authentication (MFA)</label>
+            <label><input type="radio" name="q7" value="b"/> Reusing the same password everywhere</label>
+            <label><input type="radio" name="q7" value="c"/> Sharing passwords over chat</label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) Which action should you take after clicking a suspicious attachment?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> Disconnect the device from the network and report to IT/security</label>
+            <label><input type="radio" name="q8" value="b"/> Forward it to everyone so they can see</label>
+            <label><input type="radio" name="q8" value="c"/> Continue using the device without mentioning it</label>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) A USB stick labeled "Payroll 2025" is found in the office car park. Best action?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> Do not plug it in — hand it to security for inspection</label>
+            <label><input type="radio" name="q9" value="b"/> Plug it into your laptop to see what's inside</label>
+            <label><input type="radio" name="q9" value="c"/> Take it home and plug into personal PC</label>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) Which is an indicator of a phishing email?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> Slightly misspelled sender domain or mismatched link on hover</label>
+            <label><input type="radio" name="q10" value="b"/> A perfectly formatted internal memo from your manager</label>
+            <label><input type="radio" name="q10" value="c"/> An email from your verified company address with expected content</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
           <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
           <button type="button" class="btn" id="resetQuiz">Reset</button>
           <span id="quizResult" class="result" aria-live="polite"></span>
@@ -125,30 +372,192 @@
       </form>
     </section>
 
-    <footer class="container"><p>© Learning Playground – Cybersecurity Course • Lesson 10</p></footer>
+    <footer class="container">
+      <p>© Learning Playground – Social Engineering • Lesson 10</p>
+    </footer>
   </main>
 
   <script>
-    const themeBtn=document.getElementById('toggleTheme');
-    const key='lesson10-theme';
-    const applyTheme=(mode)=>{if(mode==='light'){document.documentElement.style.setProperty('--bg','#f7f9ff');document.documentElement.style.setProperty('--card','#fff');document.documentElement.style.setProperty('--text','#0b1220');document.documentElement.style.setProperty('--muted','#4a5875');}else{document.documentElement.style.setProperty('--bg','#0b1220');document.documentElement.style.setProperty('--card','#111a2e');document.documentElement.style.setProperty('--text','#e7eefc');document.documentElement.style.setProperty('--muted','#8aa0c3');}};
-    const stored=localStorage.getItem(key)||'dark';applyTheme(stored);
-    themeBtn.addEventListener('click',()=>{const current=localStorage.getItem(key)||stored;const next=current==='dark'?'light':'dark';localStorage.setItem(key,next);applyTheme(next);});
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson10-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
 
-    const answers={q1:'a',q2:'a',q3:'a',q4:'c',q5:'b',q6:'a',q7:'a',q8:'a',q9:'a',q10:'a'};
-    const form=document.getElementById('quizForm');
-    const submitBtn=document.getElementById('submitQuiz');
-    const resetBtn=document.getElementById('resetQuiz');
-    const result=document.getElementById('quizResult');
-    const scoreKey='lesson10-score';
+    /* Download notes */
+    function downloadNotes() {
+      const title = 'Lesson10_SocialEngineering_Notes.txt';
+      const content = [
+        'Lesson 10 – Social Engineering',
+        '',
+        'Contents:',
+        '- What is Social Engineering',
+        '- Why attackers use social engineering',
+        '- Typical goals',
+        '- Psychology and triggers',
+        '- Types: Phishing, Spear Phishing, Whaling, Baiting, Pretexting, Tailgating, Vishing, Smishing',
+        '- Defenses: training, DMARC/SPF/DKIM, MFA, email filtering, physical controls',
+        '- Incident handling steps and practical checklist',
+        '',
+        'Quick checklist:',
+        '- Hover links before clicking',
+        '- Verify urgent requests by calling a known number',
+        '- Never share OTPs or passwords over email/phone',
+        '- Report suspicious emails via the security reporting channel',
+        '- Do not plug unknown USB devices into work machines'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
 
-    function gradeQuiz(){let score=0;let total=Object.keys(answers).length;for(const q of Object.keys(answers)){const chosen=form.querySelector(`input[name="${q}"]:checked`);if(chosen&&chosen.value===answers[q])score++;}
-      const pct=Math.round((score/total)*100);localStorage.setItem(scoreKey,pct);
-      result.textContent=`Score: ${score}/${total} (${pct}%)`;
-      result.className='result '+(pct>=80?'good':pct>=60?'mid':'bad');submitBtn.disabled=true;}
-    function resetQuiz(){form.reset();result.textContent='';submitBtn.disabled=false;localStorage.removeItem(scoreKey);}
-    submitBtn.addEventListener('click',gradeQuiz);resetBtn.addEventListener('click',resetQuiz);
-    const savedScore=localStorage.getItem(scoreKey);if(savedScore){result.textContent=`Previous Score: ${savedScore}%`;result.className='result';}
+    /* Quiz logic */
+    const answers = { q1:'a', q2:'a', q3:'a', q4:'a', q5:'a', q6:'a', q7:'a', q8:'a', q9:'a', q10:'a' };
+    const explanations = {
+      q1: 'Social engineering is about manipulating people to reveal information or take actions that compromise security.',
+      q2: 'Attackers often create a sense of urgency (e.g., "act now") to make victims click or bypass checks.',
+      q3: 'Spear phishing is a targeted attack tailored to a specific individual or role with personal details.',
+      q4: 'DMARC/SPF/DKIM are email authentication standards that help prevent spoofed emails.',
+      q5: 'Verifying urgent requests by calling on a trusted phone number prevents reply-to or forged-email scams.',
+      q6: 'Tailgating is physically following someone into a secured area without authorization.',
+      q7: 'Multi-factor authentication reduces the usefulness of stolen credentials because a second factor is required.',
+      q8: 'If you clicked a suspicious attachment, disconnect the device and report immediately to prevent further harm.',
+      q9: 'Unknown USB sticks may contain malware; hand them to security so they can be analyzed safely.',
+      q10: 'Phishing emails often use slightly misspelled domains or mismatched URLs — hover to inspect the real link.'
+    };
+
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson10-social-score';
+    const attemptBtn = document.getElementById('attemptBtn');
+
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson10-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) { missed.push(q); continue; }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
+        }
+      }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
+
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
+            }
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions. Explanations were added under the missed questions.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
+      }
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson10-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+    }
   </script>
 </body>
 </html>
+```

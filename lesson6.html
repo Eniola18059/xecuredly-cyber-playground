@@ -1,248 +1,555 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 6 - Identity & Access Management (IAM)</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 6 – Identity & Access Management (IAM)</title>
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Share Tech Mono', monospace;
-      background-color: #000;
-      color: #00ffcc;
-      padding: 20px;
-      line-height: 1.7;
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
     }
-    h1, h2, h3 {
-      text-shadow: 0 0 15px #00ffc3;
-    }
-    .content {
-      background: rgba(0,0,0,0.7);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px #00ffc3;
-      margin-bottom: 20px;
-      animation: fadeIn 1.5s ease;
-    }
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(20px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-    .quiz {
-      background: #111;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 30px;
-    }
-    .quiz h3 {
-      margin-bottom: 15px;
-    }
-    .btn-custom {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: linear-gradient(45deg, #ff0080, #7928ca);
-      border: none;
-      color: #fff;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .btn-custom:hover {
-      background: linear-gradient(45deg, #00ffe7, #0099ff);
-      color: #000;
-    }
-    .back-btn {
-      display: inline-block;
-      margin-top: 20px;
-      text-decoration: none;
-      background: #111;
-      color: #00ffcc;
-      padding: 10px 20px;
-      border-radius: 6px;
-      box-shadow: 0 0 15px #00ffc3;
-      transition: 0.3s;
-    }
-    .back-btn:hover {
-      background: #00ffcc;
-      color: #000;
-    }
-    .wrong { color: red; font-weight: bold; }
-    .correct { color: lime; font-weight: bold; }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .code-block{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;font-size:13px;color:var(--muted);background:rgba(255,255,255,0.03);padding:10px;border-radius:8px}
   </style>
 </head>
 <body>
-  <h1 class="text-center">Lesson 6: Identity & Access Management (IAM)</h1>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 6</span>
+        <div>
+          <strong>Identity & Access Management (IAM) — Lesson 6</strong>
+          <div class="small muted">Authentication • Authorization • Policies • Linux permissions (hands-on)</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
+    </div>
+  </header>
 
-  <div class="content">
-    <h2>🔑 What is IAM?</h2>
-    <p>Identity and Access Management (IAM) ensures the right individuals and job roles in an organization can access the tools and data they need. It manages not only <b>people</b>, but also <b>software, machines, IoT devices, and applications</b>.</p>
-    <p>IAM allows organizations to manage users, groups, and permissions without having to log into every system separately. With IAM, you can decide <i>who can do what</i> within a system.</p>
-  </div>
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">Identity & Access Management (IAM)</h1>
+      <p class="subtitle">Why identities matter, how authentication and authorization work, access regulation, password protection, identity theft and practical Linux permission management.</p>
 
-  <div class="content">
-    <h2>🆔 What is an Identity?</h2>
-    <p>A <b>digital identity</b> is a collection of unique identifiers that represent a human, system, or device in a computer network. Examples include:</p>
-    <ul>
-      <li>Email addresses</li>
-      <li>Login credentials (username & password)</li>
-      <li>Government IDs</li>
-      <li>IP addresses and MAC addresses</li>
-    </ul>
-    <p>Digital identities are essential for <b>authentication, authorization, communication, and transactions</b>.</p>
-  </div>
+      <div class="chips">
+        <span class="chip">IAM</span>
+        <span class="chip">Authentication</span>
+        <span class="chip">Authorization</span>
+        <span class="chip">RBAC</span>
+        <span class="chip">chmod</span>
+      </div>
+    </section>
 
-  <div class="content">
-    <h2>🔐 Authentication</h2>
-    <p>Authentication verifies <i>who you are</i>. Without it, systems cannot ensure that access requests are genuine. Methods include:</p>
-    <ul>
-      <li><b>Credentials Verification</b> – username and password</li>
-      <li><b>Multi-Factor Authentication (MFA)</b> – something you know (password), something you have (phone), something you are (biometrics)</li>
-      <li><b>Biometric Authentication</b> – fingerprint, iris, face recognition</li>
-    </ul>
-    <p><i>⚠️ Did you know? 61% of data breaches in 2021 involved stolen credentials.</i></p>
-  </div>
+    <!-- Table of content -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Content</h2>
+      <ol class="list">
+        <li>What is IAM?</li>
+        <li>What is an Identity?</li>
+        <li>Authentication & Authorization</li>
+        <li>How Does IAM Work?</li>
+        <li>Regulation of access</li>
+        <li>Password protection</li>
+        <li>Identity theft</li>
+        <li>IdAM (Hands-on) — Linux examples</li>
+        <li>Adding and granting permissions to users in Linux (examples)</li>
+      </ol>
+    </section>
 
-  <div class="content">
-    <h2>✅ Authorization</h2>
-    <p>Authorization defines <i>what you can do</i> once authenticated. Examples include:</p>
-    <ul>
-      <li><b>Access Control Lists (ACLs)</b> – permissions for files/resources</li>
-      <li><b>Role-Based Access Control (RBAC)</b> – permissions assigned based on job roles</li>
-      <li><b>Principle of Least Privilege</b> – users only get the minimum required access</li>
-    </ul>
-  </div>
+    <!-- What is IAM -->
+    <section class="card long-read" aria-labelledby="what-iam">
+      <h2 id="what-iam" class="section-title">What is IAM?</h2>
+      <p>Identity and Access Management (IAM) is the set of processes, policies and tools that ensure the right individuals and machines (identities) can access the right resources at the right time for the right reasons. IAM centralizes identity lifecycle, authentication methods, and authorization rules so administrators don't have to manage credentials in every app individually.</p>
+    </section>
 
-  <div class="content">
-    <h2>🛡️ How IAM Works</h2>
-    <p>IAM systems perform two main tasks:</p>
-    <ol>
-      <li><b>Authentication</b>: Verifying that the user/device is who they say they are.</li>
-      <li><b>Authorization</b>: Granting the correct level of access (e.g., viewer, editor, admin).</li>
-    </ol>
-    <p>Modern IAM solutions use <b>cloud identity tools</b> that are more secure and flexible than simple passwords.</p>
-  </div>
+    <!-- What is an Identity -->
+    <section class="card long-read" aria-labelledby="what-identity">
+      <h2 id="what-identity" class="section-title">What is an Identity?</h2>
+      <p>A digital identity is a collection of attributes and identifiers that uniquely represent a person, software component, machine, device or resource. Common identifiers include email addresses, usernames, government IDs, IP or MAC addresses, device certificates and service principals. Identities are used for authentication, authorization, auditing and communication.</p>
+      <ul class="list">
+        <li>Email address</li>
+        <li>Username / credentials</li>
+        <li>Government-issued ID (where applicable)</li>
+        <li>Device identifiers (MAC, IP, certificates)</li>
+      </ul>
+    </section>
 
-  <div class="content">
-    <h2>🔒 Password Protection</h2>
-    <p>Password security is critical to IAM:</p>
-    <ul>
-      <li>Enforce <b>strong, complex passwords</b></li>
-      <li>Use <b>MFA</b> to strengthen login security</li>
-      <li>Change passwords regularly</li>
-      <li>Use <b>Password Managers</b></li>
-      <li>Avoid password reuse across systems</li>
-    </ul>
-  </div>
+    <!-- Authentication & Authorization -->
+    <section class="card long-read" aria-labelledby="authn-authz">
+      <h2 id="authn-authz" class="section-title">Authentication & Authorization</h2>
+      <h3>Authentication</h3>
+      <p>Authentication proves an identity is who (or what) it claims to be. Typical mechanisms: passwords, multi-factor authentication (MFA), hardware tokens (YubiKey), biometrics, and X.509 certificates. Strong authentication reduces the likelihood of credential-based breaches.</p>
 
-  <div class="content">
-    <h2>👥 Identity Theft</h2>
-    <p>Identity theft occurs when attackers steal personal information (e.g., SSN, credit card numbers) to impersonate someone and commit fraud. Common methods include:</p>
-    <ul>
-      <li>Oversharing personal data on social media</li>
-      <li>Geo-tagging photos</li>
-      <li>Phishing and fake login sites</li>
-    </ul>
-  </div>
+      <h3>Authorization</h3>
+      <p>Authorization determines what an authenticated identity is allowed to do: which resources it can read, write or manage. Authorization is implemented via access control models (ACLs), Role-Based Access Control (RBAC), Attribute-Based Access Control (ABAC) or policy engines.</p>
+    </section>
 
-  <div class="quiz">
-    <h3>🧠 Lesson 6 Quiz: Identity & Access Management</h3>
-    <form id="quizForm">
-      <div>
-        <p>1. IAM ensures the right people have access to?</p>
-        <input type="radio" name="q1" value="wrong"> Social media<br>
-        <input type="radio" name="q1" value="correct"> Tools and data they need<br>
-        <input type="radio" name="q1" value="wrong"> Entertainment systems<br>
-      </div>
-      <div>
-        <p>2. Which of these is a digital identity?</p>
-        <input type="radio" name="q2" value="wrong"> Birthday cake<br>
-        <input type="radio" name="q2" value="correct"> Email address<br>
-        <input type="radio" name="q2" value="wrong"> Street sign<br>
-      </div>
-      <div>
-        <p>3. Authentication verifies?</p>
-        <input type="radio" name="q3" value="correct"> Who you are<br>
-        <input type="radio" name="q3" value="wrong"> What you can do<br>
-        <input type="radio" name="q3" value="wrong"> Your favorite color<br>
-      </div>
-      <div>
-        <p>4. Which method is strongest?</p>
-        <input type="radio" name="q4" value="wrong"> Password only<br>
-        <input type="radio" name="q4" value="correct"> Multi-Factor Authentication (MFA)<br>
-        <input type="radio" name="q4" value="wrong"> PIN only<br>
-      </div>
-      <div>
-        <p>5. Authorization defines?</p>
-        <input type="radio" name="q5" value="wrong"> Who you are<br>
-        <input type="radio" name="q5" value="correct"> What you can access/do<br>
-        <input type="radio" name="q5" value="wrong"> How long you stay logged in<br>
-      </div>
-      <div>
-        <p>6. Which is NOT an IAM task?</p>
-        <input type="radio" name="q6" value="wrong"> Authentication<br>
-        <input type="radio" name="q6" value="wrong"> Authorization<br>
-        <input type="radio" name="q6" value="correct"> Cooking dinner<br>
-      </div>
-      <div>
-        <p>7. What is RBAC?</p>
-        <input type="radio" name="q7" value="wrong"> Random Basic Access Control<br>
-        <input type="radio" name="q7" value="correct"> Role-Based Access Control<br>
-        <input type="radio" name="q7" value="wrong"> Rule-Breaking Account Control<br>
-      </div>
-      <div>
-        <p>8. A good password policy should enforce?</p>
-        <input type="radio" name="q8" value="correct"> Strong & complex passwords<br>
-        <input type="radio" name="q8" value="wrong"> Same password everywhere<br>
-        <input type="radio" name="q8" value="wrong"> Using birthdays<br>
-      </div>
-      <div>
-        <p>9. Identity theft can happen through?</p>
-        <input type="radio" name="q9" value="correct"> Oversharing personal info<br>
-        <input type="radio" name="q9" value="wrong"> Eating chocolate<br>
-        <input type="radio" name="q9" value="wrong"> Watching movies<br>
-      </div>
-      <div>
-        <p>10. Principle of least privilege means?</p>
-        <input type="radio" name="q10" value="correct"> Giving only minimum required access<br>
-        <input type="radio" name="q10" value="wrong"> Granting admin rights to all<br>
-        <input type="radio" name="q10" value="wrong"> Locking everyone out<br>
-      </div>
-      <button type="button" class="btn-custom" onclick="checkQuiz()">Submit</button>
-    </form>
-    <div id="quizResult"></div>
-  </div>
+    <!-- How IAM works -->
+    <section class="card long-read" aria-labelledby="how-works">
+      <h2 id="how-works" class="section-title">How Does IAM Work?</h2>
+      <p>At a high level IAM performs two tasks:</p>
+      <ol class="list">
+        <li><strong>Authenticate:</strong> verify an identity's presented credentials (password, token, certificate) against a trusted store or identity provider (IdP).</li>
+        <li><strong>Authorize:</strong> grant an appropriate level of access based on roles, policies or attributes (least privilege), and log the activity for audit.</li>
+      </ol>
+      <p>Modern IAM often integrates Single Sign-On (SSO), OAuth/OpenID Connect for delegated access, and automated provisioning/deprovisioning to manage identity lifecycle.</p>
+    </section>
 
-  <div class="text-center">
-    <a href="cyber-index.html" class="back-btn">⬅ Back to Cybersecurity Lessons</a>
-  </div>
+    <!-- Regulation of access -->
+    <section class="card long-read" aria-labelledby="regulation">
+      <h2 id="regulation" class="section-title">Regulation of Access</h2>
+      <p>Regulating access is about defining and enforcing who can do what, when and under what conditions. Key practices:</p>
+      <ul class="list">
+        <li><strong>Access control policies</strong> — codify allowed actions and constraints.</li>
+        <li><strong>Strong authentication</strong> — enforce MFA and modern auth flows.</li>
+        <li><strong>Role-Based Access Control (RBAC)</strong> — assign permissions to roles, then to users.</li>
+        <li><strong>Least privilege</strong> — give users the minimum access they need.</li>
+        <li><strong>Auditing & monitoring</strong> — log access and review for anomalies.</li>
+        <li><strong>Just-in-time access</strong> — temporary elevation reduces standing privileges.</li>
+      </ul>
+    </section>
+
+    <!-- Password protection -->
+    <section class="card long-read" aria-labelledby="passwords">
+      <h2 id="passwords" class="section-title">Password Protection</h2>
+      <p>Good password hygiene remains important even as organizations adopt MFA. Best practices:</p>
+      <ul class="list">
+        <li>Use unique, high-entropy passwords (or passphrases) per account.</li>
+        <li>Store salted, slow hashes (e.g., bcrypt, Argon2) — never plaintext.</li>
+        <li>Enforce MFA for privileged and remote access.</li>
+        <li>Use password managers to avoid reuse.</li>
+        <li>Rotate or revoke credentials when compromised or when employees leave.</li>
+      </ul>
+      <div class="callout">
+        <strong>Reality check:</strong> credential reuse is still common; attackers often succeed with stolen passwords paired with lack of MFA.
+      </div>
+    </section>
+
+    <!-- Identity theft -->
+    <section class="card long-read" aria-labelledby="identity-theft">
+      <h2 id="identity-theft" class="section-title">Identity Theft</h2>
+      <p>Identity theft happens when an attacker uses another person's identifying information to commit fraud. Common causes: oversharing personal info, phishing, social engineering, data breaches. Defenses include minimizing public personal data, monitoring for breaches, and rapid incident response.</p>
+    </section>
+
+    <!-- Hands-on IdAM -->
+    <section class="card long-read" aria-labelledby="hands-on">
+      <h2 id="hands-on" class="section-title">IdAM (Identity & Access Management) — Hands-On</h2>
+      <p>This section gives safe, local examples you can try in an isolated VM to practice identity and permission management.</p>
+
+      <h3>Linux: users, groups and permissions (practical examples)</h3>
+      <p>Common commands (run as root or with <code>sudo</code>):</p>
+      <div class="code-block">
+        <strong>Create a user:</strong><br>
+        <code>sudo useradd -m alice</code><br><br>
+
+        <strong>Create a group:</strong><br>
+        <code>sudo groupadd auditors</code><br><br>
+
+        <strong>Add user to a group:</strong><br>
+        <code>sudo usermod -aG auditors alice</code><br><br>
+
+        <strong>Change file owner/group:</strong><br>
+        <code>sudo chown alice:auditors /srv/report.txt</code><br><br>
+
+        <strong>Change permissions (symbolic):</strong><br>
+        <code>sudo chmod u=rw,g=r,o= /srv/report.txt</code><br><br>
+
+        <strong>Change permissions (numeric):</strong><br>
+        <code>sudo chmod 640 /srv/report.txt</code><br><br>
+
+        <strong>Set sticky bit or setgid (directory):</strong><br>
+        <code>sudo chmod g+s /srv/shared</code>
+      </div>
+
+      <h4>Short explanation of numeric modes</h4>
+      <p>Numeric permission bits: owner, group, others. Each is 4 (read) + 2 (write) + 1 (execute). Example: <code>640</code> = owner read/write (6), group read (4), others none (0).</p>
+
+      <h4>Example: grant temporary sudo (least privilege)</h4>
+      <div class="code-block">
+        <code>sudo usermod -aG sudo tempadmin</code><br>
+        <em>— or better: configure sudoers for specific commands with visudo for fine-grained privileges.</em>
+      </div>
+
+      <div class="callout">
+        <strong>Hands-on tip:</strong> Practice these commands in a disposable VM. Mistakes to root/group/permissions can lock out accounts—always snapshot before experimenting.
+      </div>
+    </section>
+
+    <!-- Adding permissions summary -->
+    <section class="card long-read" aria-labelledby="adding">
+      <h2 id="adding" class="section-title">Adding & Granting Permissions — Summary</h2>
+      <ul class="list">
+        <li>Use groups to manage access for multiple users rather than changing many file owners.</li>
+        <li>Favor least privilege: grant minimal permissions required for tasks.</li>
+        <li>Use sudoers and role-specific accounts instead of shared root credentials.</li>
+        <li>Audit group membership and sudo access regularly.</li>
+      </ul>
+    </section>
+
+    <!-- Download notes -->
+    <section class="card" aria-labelledby="notes">
+      <h2 id="notes" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a plain-text version of this lesson for offline reading.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~15 mins</span></div>
+      </div>
+    </section>
+
+    <!-- Quiz Gate -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 6 Quiz — Identity & Access Management</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready. The quiz has 10 questions; missed questions show inline explanations.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
+      </div>
+
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) What does IAM primarily do?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> Ensure the right identities have appropriate access to resources</label>
+            <label><input type="radio" name="q1" value="b"/> Replace all operating systems</label>
+            <label><input type="radio" name="q1" value="c"/> Backup data automatically every minute</label>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) Which of these is an example of a "digital identity" attribute?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> A coffee brand you like</label>
+            <label><input type="radio" name="q2" value="b"/> An email address or username</label>
+            <label><input type="radio" name="q2" value="c"/> The color of your chair</label>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) Authentication is best described as:</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Determining what resources a user can access</label>
+            <label><input type="radio" name="q3" value="b"/> Verifying that a user or device is who it claims to be</label>
+            <label><input type="radio" name="q3" value="c"/> Monitoring network traffic only</label>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) Authorization differs from authentication because it:</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> Verifies credentials</label>
+            <label><input type="radio" name="q4" value="b"/> Grants permissions to resources based on policies or roles</label>
+            <label><input type="radio" name="q4" value="c"/> Changes a user's password automatically</label>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) Which principle says users should have only the access they need?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> Least Privilege</label>
+            <label><input type="radio" name="q5" value="b"/> Maximum Accession</label>
+            <label><input type="radio" name="q5" value="c"/> Open Access</label>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) Best practice for storing passwords is to:</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> Store plaintext passwords in a file</label>
+            <label><input type="radio" name="q6" value="b"/> Store salted, slow hashes (e.g., bcrypt, Argon2)</label>
+            <label><input type="radio" name="q6" value="c"/> Email passwords to users daily</label>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) Which Linux command changes file ownership?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> chmod</label>
+            <label><input type="radio" name="q7" value="b"/> chown</label>
+            <label><input type="radio" name="q7" value="c"/> grep</label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) What does numeric permission mode 640 mean?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> owner read/write, group read, others none</label>
+            <label><input type="radio" name="q8" value="b"/> owner execute only, group write, others read</label>
+            <label><input type="radio" name="q8" value="c"/> everyone read/write/execute</label>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) Which is an effective way to defend against identity theft?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> Overshare personal details on social media</label>
+            <label><input type="radio" name="q9" value="b"/> Use MFA, monitor accounts and limit public personal info</label>
+            <label><input type="radio" name="q9" value="c"/> Reuse the same password everywhere</label>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) Which access model assigns permissions to roles and then roles to users?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> ABAC (Attribute-Based Access Control)</label>
+            <label><input type="radio" name="q10" value="b"/> RBAC (Role-Based Access Control)</label>
+            <label><input type="radio" name="q10" value="c"/> MAC (Mandatory Access Control) only</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <footer class="container">
+      <p>© Learning Playground – Identity & Access Management • Lesson 6</p>
+    </footer>
+  </main>
 
   <script>
-    function checkQuiz() {
-      let form = document.forms['quizForm'];
-      let score = 0;
-      let total = 10;
-      let feedback = "";
-      for (let i = 1; i <= total; i++) {
-        let q = form['q' + i];
-        let answered = false;
-        for (let opt of q) {
-          if (opt.checked) {
-            answered = true;
-            if (opt.value === "correct") {
-              score++;
-              feedback += "<p class='correct'>Q" + i + " ✅ Correct</p>";
-            } else {
-              feedback += "<p class='wrong'>Q" + i + " ❌ Wrong</p>";
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson6-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
+
+    /* Download notes */
+    function downloadNotes() {
+      const title = 'Lesson6_IAM_Notes.txt';
+      const content = [
+        'Lesson 6 – Identity & Access Management (IAM)',
+        '',
+        'Table of Content',
+        'What is IAM?',
+        'What is an Identity?',
+        'Authentication & Authorization',
+        'How Does IAM Work?',
+        'Regulation of access',
+        'Password protection',
+        'Identity theft',
+        'Adding and granting permissions to users in Linux (hands-on)',
+        '',
+        'Key commands:',
+        'useradd - create user',
+        'groupadd - create group',
+        'usermod -aG group user - add user to group',
+        'chown owner:group file - change owner/group',
+        'chmod 640 file - set permissions',
+        '',
+        'Best practices: MFA, least privilege, RBAC, audit logs, password hashing & salting, use password managers.'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
+
+    /* Quiz logic */
+    const answers = { q1:'a', q2:'b', q3:'b', q4:'b', q5:'a', q6:'b', q7:'b', q8:'a', q9:'b', q10:'b' };
+    const explanations = {
+      q1: 'IAM ensures the right identities have appropriate access to resources via authentication, authorization and policies.',
+      q2: 'An email address or username is a typical digital identity attribute.',
+      q3: 'Authentication is the process of verifying the identity (who you are).',
+      q4: 'Authorization grants permissions to resources based on policies, roles or attributes (what you can do).',
+      q5: 'Least privilege means giving users only the access they need to perform their job.',
+      q6: 'Passwords should be stored as salted, slow hashes (e.g., bcrypt, Argon2) rather than plaintext.',
+      q7: 'chown changes file ownership (owner and/or group). chmod changes permissions.',
+      q8: '640 = owner read/write (6), group read (4), others none (0).',
+      q9: 'Use MFA, monitoring and limit public personal info to reduce identity theft risk.',
+      q10: 'RBAC assigns permissions to roles which are then granted to users; it simplifies permission management.'
+    };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson6-iam-score';
+    const attemptBtn = document.getElementById('attemptBtn');
+
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson6-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      // remove prior inline explanations
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        // clear previous highlight
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) { missed.push(q); continue; }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
+        }
+      }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
+
+      // remove old review box
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          // attach inline explanation under the missed question
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
             }
           }
-        }
-        if (!answered) feedback += "<p class='wrong'>Q" + i + " ❌ Not Answered</p>";
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions. Explanations were added under each missed question.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
       }
-      document.getElementById("quizResult").innerHTML = 
-        "<h4>You scored " + score + "/" + total + "</h4>" + feedback;
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson6-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
     }
   </script>
 </body>

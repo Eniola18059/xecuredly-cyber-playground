@@ -1,191 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lesson 3 - Cryptography</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 4 – Computer Networks & Security</title>
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Share Tech Mono', monospace;
-      background-color: #000;
-      color: #00ffcc;
-      line-height: 1.6;
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
     }
-    h1, h2 {
-      text-align: center;
-      margin: 20px 0;
-      text-shadow: 0 0 10px #00ffc3;
-    }
-    .content {
-      padding: 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    .quiz {
-      background: #111;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px #00ffc3;
-      margin-top: 40px;
-    }
-    .quiz h2 {
-      text-align: center;
-    }
-    .quiz button {
-      margin-top: 15px;
-      background: linear-gradient(45deg, #ff0080, #7928ca);
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .quiz button:hover {
-      background: linear-gradient(45deg, #00ffe7, #0099ff);
-      color: #000;
-    }
-    .wrong {
-      color: red;
-      font-weight: bold;
-    }
-    .back-btn {
-      display: block;
-      margin: 30px auto;
-      padding: 10px 20px;
-      background: #111;
-      color: #00ffcc;
-      text-decoration: none;
-      border-radius: 6px;
-      box-shadow: 0 0 10px #00ffc3;
-      width: fit-content;
-    }
-    .back-btn:hover {
-      background: #00ffcc;
-      color: #000;
-    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .grid-2{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1fr 1fr}}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
+    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
+    .subtitle small{display:block;color:var(--muted);margin-top:6px}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
   </style>
 </head>
 <body>
-  <h1>Lesson 3: Cryptography</h1>
-  <div class="content">
-    <h2>🔐 Introduction</h2>
-    <p>Cryptography is the science of protecting information by transforming it into unreadable formats for unauthorized users. It ensures confidentiality, integrity, and authentication in modern digital systems.</p>
-
-    <h2>⚠️ Threats</h2>
-    <p>Cyber threats include viruses, data breaches, denial of service, and eavesdropping. Cryptography provides a shield against these by encoding data.</p>
-
-    <h2>🎯 Security Goals</h2>
-    <ul>
-      <li><b>Confidentiality:</b> Only intended parties can read the data.</li>
-      <li><b>Integrity:</b> Ensures data is not altered.</li>
-      <li><b>Authentication:</b> Confirms the identity of users.</li>
-      <li><b>Non-repudiation:</b> Prevents denial of actions by a sender.</li>
-    </ul>
-
-    <h2>🔑 Encryption & Decryption</h2>
-    <p><b>Encryption</b> converts plaintext into ciphertext. <b>Decryption</b> transforms it back. Together, they protect data during storage and transmission.</p>
-
-    <h2>🛠 Types of Cryptography</h2>
-    <p><b>Symmetric Key Cryptography:</b> Uses a single key for both encryption and decryption. Examples: DES, AES.</p>
-    <p><b>Asymmetric Key Cryptography:</b> Uses two keys (public and private). Example: RSA.</p>
-    <p><b>Hash Functions:</b> Irreversible, one-way algorithms. Used in password storage and blockchain.</p>
-
-    <h2>🔄 Ciphers</h2>
-    <p>Ciphers are algorithms for encryption/decryption. Examples include substitution ciphers (replace characters) and transposition ciphers (rearrange characters).</p>
-
-    <h2>🏛 Public Key Infrastructure (PKI)</h2>
-    <p>PKI issues digital certificates, manages public/private keys, and ensures secure communication in systems like banking and e-commerce.</p>
-
-    <h2>💥 Attacks on Cryptosystems</h2>
-    <ul>
-      <li><b>Passive Attacks:</b> Eavesdropping without altering data.</li>
-      <li><b>Active Attacks:</b> Modify or disrupt communication.</li>
-      <li><b>Ciphertext Only Attack:</b> Attacker only has encrypted text.</li>
-      <li><b>Brute Force Attack:</b> Trying all possible keys until success.</li>
-    </ul>
-
-    <h2>📌 Cryptography in Cybersecurity</h2>
-    <p>Used in ATM cards, passwords, and e-commerce. Ensures secure digital communication and trust between systems.</p>
-
-    <!-- QUIZ -->
-    <div class="quiz">
-      <h2>🧠 Quiz: Cryptography</h2>
-      <form id="quizForm">
-        <ol>
-          <li>What is cryptography?<br>
-            <input type="radio" name="q1" value="wrong"> A type of malware<br>
-            <input type="radio" name="q1" value="correct"> The science of protecting information through codes<br>
-            <input type="radio" name="q1" value="wrong"> A network monitoring tool<br>
-          </li>
-          <li>Which ensures data is not altered?<br>
-            <input type="radio" name="q2" value="correct"> Integrity<br>
-            <input type="radio" name="q2" value="wrong"> Confidentiality<br>
-            <input type="radio" name="q2" value="wrong"> Non-repudiation<br>
-          </li>
-          <li>Which uses the same key for encryption and decryption?<br>
-            <input type="radio" name="q3" value="correct"> Symmetric key<br>
-            <input type="radio" name="q3" value="wrong"> Asymmetric key<br>
-            <input type="radio" name="q3" value="wrong"> Hashing<br>
-          </li>
-          <li>RSA is an example of?<br>
-            <input type="radio" name="q4" value="wrong"> Symmetric key<br>
-            <input type="radio" name="q4" value="correct"> Asymmetric key<br>
-            <input type="radio" name="q4" value="wrong"> Hashing<br>
-          </li>
-          <li>Hash functions are?<br>
-            <input type="radio" name="q5" value="wrong"> Reversible<br>
-            <input type="radio" name="q5" value="correct"> Irreversible<br>
-            <input type="radio" name="q5" value="wrong"> Symmetric<br>
-          </li>
-          <li>What does PKI manage?<br>
-            <input type="radio" name="q6" value="wrong"> Malware<br>
-            <input type="radio" name="q6" value="correct"> Digital certificates and keys<br>
-            <input type="radio" name="q6" value="wrong"> Firewalls<br>
-          </li>
-          <li>Which attack involves trying all possible keys?<br>
-            <input type="radio" name="q7" value="correct"> Brute Force<br>
-            <input type="radio" name="q7" value="wrong"> Ciphertext Only<br>
-            <input type="radio" name="q7" value="wrong"> Passive Attack<br>
-          </li>
-          <li>Which is an example of a passive attack?<br>
-            <input type="radio" name="q8" value="correct"> Eavesdropping<br>
-            <input type="radio" name="q8" value="wrong"> Data modification<br>
-            <input type="radio" name="q8" value="wrong"> DoS<br>
-          </li>
-          <li>Which cipher rearranges characters?<br>
-            <input type="radio" name="q9" value="correct"> Transposition<br>
-            <input type="radio" name="q9" value="wrong"> Substitution<br>
-            <input type="radio" name="q9" value="wrong"> Hashing<br>
-          </li>
-          <li>Which goal prevents denial of actions by sender?<br>
-            <input type="radio" name="q10" value="wrong"> Confidentiality<br>
-            <input type="radio" name="q10" value="wrong"> Integrity<br>
-            <input type="radio" name="q10" value="correct"> Non-repudiation<br>
-          </li>
-        </ol>
-        <button type="button" onclick="checkQuiz()">Submit</button>
-      </form>
-      <p id="result"></p>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 4</span>
+        <div>
+          <strong>Computer Networks & Security — Lesson 4</strong>
+          <div class="small muted">Networks, Layers, Scanning, Threats</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
     </div>
+  </header>
 
-    <a href="index.html" class="back-btn">⬅ Back to Homepage</a>
-  </div>
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">Computer Networks & Security</h1>
+      <p class="subtitle">Overview of computer networks, architecture, layered models (OSI/TCP-IP), scanning & enumeration, and common network threats and attacks.</p>
+
+      <div class="chips">
+        <span class="chip">LAN</span>
+        <span class="chip">WAN</span>
+        <span class="chip">OSI</span>
+        <span class="chip">TCP/IP</span>
+        <span class="chip">Scanning</span>
+        <span class="chip">Threats</span>
+      </div>
+    </section>
+
+    <!-- Table of Content -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Content</h2>
+      <ol class="list">
+        <li>Definition of Computer Network</li>
+        <li>Basic Terminologies of Computer Networks</li>
+        <li>Types of Computer Network</li>
+        <li>Computer Networks – Architecture</li>
+        <li>Layered Architecture</li>
+        <li>OSI & TCP/IP Layers</li>
+        <li>Network Scanning & Enumeration</li>
+        <li>Common Network Threats/Attacks</li>
+      </ol>
+    </section>
+
+    <!-- Definition -->
+    <section class="card long-read" aria-labelledby="definition">
+      <h2 id="definition" class="section-title">Definition of Computer Network</h2>
+      <p>A computer network is the interconnection of two or more computers to enable communication and to share resources such as files, printers and internet access.</p>
+    </section>
+
+    <!-- Applications (placeholder) -->
+    <section class="card long-read" aria-labelledby="applications">
+      <h2 id="applications" class="section-title">Applications of Computer Networks</h2>
+      <p>Networks power email, the web, video conferencing, file and print sharing, cloud services, IoT devices, remote access, and many enterprise systems.</p>
+    </section>
+
+    <!-- Terminologies & Did you know -->
+    <section class="card long-read" aria-labelledby="terms">
+      <h2 id="terms" class="section-title">Basic Terminologies</h2>
+      <p>Common terms: host, client, server, router, switch, hub, firewall, IP address, subnet, MAC address, port, protocol.</p>
+      <div class="explain"><strong>Did you know?</strong> The first message sent over ARPANET (the Internet precursor) was "LO" — the system crashed while sending "LOGIN" (October 29, 1969).</div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="card long-read" aria-labelledby="architecture">
+      <h2 id="architecture" class="section-title">Computer Networks — Architecture</h2>
+      <p>Network architecture defines the physical and logical design: how devices are connected, which protocols run, and how data flows. Different architectures are chosen based on scale, performance and manageability.</p>
+
+      <h3>Peer-to-Peer (P2P)</h3>
+      <p>In P2P each device has equal status and can act as client and server. P2P networks are simple to set up but lack central management.</p>
+
+      <h3>Client-Server</h3>
+      <p>Client-server uses a central server to provide services to multiple clients. This model supports centralized control, easier management and security enforcement at scale.</p>
+    </section>
+
+    <!-- Types -->
+    <section class="card long-read" aria-labelledby="types">
+      <h2 id="types" class="section-title">Types of Computer Network</h2>
+      <ul class="list">
+        <li><strong>LAN (Local Area Network)</strong> — connects devices in a limited area (home, school, office).</li>
+        <li><strong>MAN (Metropolitan Area Network)</strong> — covers a city or campus.</li>
+        <li><strong>WAN (Wide Area Network)</strong> — spans large geographic areas (countries, the Internet).</li>
+      </ul>
+    </section>
+
+    <!-- Layered Architecture -->
+    <section class="card long-read" aria-labelledby="layered">
+      <h2 id="layered" class="section-title">Layered Architecture</h2>
+      <p>Layered architecture organizes networking functions into layers; each layer offers services to the layer above and uses services of the layer below. This modular approach simplifies design and troubleshooting.</p>
+    </section>
+
+    <!-- OSI vs TCP/IP -->
+    <section class="card long-read" aria-labelledby="models">
+      <h2 id="models" class="section-title">OSI & TCP/IP Layers</h2>
+      <p><strong>OSI model:</strong> conceptual 7-layer reference (Physical, Data Link, Network, Transport, Session, Presentation, Application). Useful as a teaching and design tool.</p>
+      <p><strong>TCP/IP model:</strong> practical 4-layer model (Link, Internet, Transport, Application) on which the Internet is based.</p>
+    </section>
+
+    <!-- Scanning & Enumeration -->
+    <section class="card long-read" aria-labelledby="scan">
+      <h2 id="scan" class="section-title">Network Scanning & Enumeration</h2>
+      <p>Network scanning identifies active hosts, open ports and the services running on them. Enumeration extracts further information (usernames, shares, banners) useful for mapping and assessment.</p>
+
+      <h3>Types</h3>
+      <ul class="list">
+        <li><strong>Port scanning</strong> — identifies open ports (example tool: nmap).</li>
+        <li><strong>Service enumeration</strong> — probes services such as FTP, SSH, SMB to learn versions and configuration.</li>
+        <li><strong>Web enumeration</strong> — finds virtual hosts, directories, and technologies (tools like Dirb, Gobuster).</li>
+      </ul>
+    </section>
+
+    <!-- Threats & Attacks -->
+    <section class="card long-read" aria-labelledby="threats">
+      <h2 id="threats" class="section-title">Common Network Threats & Attacks</h2>
+      <ul class="list">
+        <li><strong>Malware</strong> — viruses, worms, Trojans, ransomware, spyware.</li>
+        <li><strong>Phishing</strong> — deceptive attempts to obtain credentials or sensitive data (email, voice, SMS).</li>
+        <li><strong>Man-in-the-Middle (MitM)</strong> — intercepting and possibly altering communications (packet sniffing, session hijacking).</li>
+        <li><strong>Denial-of-Service (DoS)</strong> — overwhelming a service to make it unavailable.</li>
+        <li><strong>Distributed DoS (DDoS)</strong> — coordinated DoS using many compromised systems (botnets).</li>
+        <li><strong>Social Engineering</strong> — manipulating people to divulge secrets or perform unsafe actions.</li>
+      </ul>
+    </section>
+
+    <!-- Download notes -->
+    <section class="card" aria-labelledby="notes">
+      <h2 id="notes" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a plain-text version of this lesson.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~15 mins</span></div>
+      </div>
+    </section>
+
+    <!-- QUIZ GATE -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 4 Quiz — Computer Networks & Security</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready — the quiz is gated so students can finish reading first. There are 10 questions; incorrect answers will be highlighted and explanations shown.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
+      </div>
+
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) What is a computer network?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> Interconnection of two or more computers to enable communication and resource sharing</label>
+            <label><input type="radio" name="q1" value="b"/> A single powerful computer used alone</label>
+            <label><input type="radio" name="q1" value="c"/> A type of storage device</label>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) What does LAN stand for?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> Local Area Network</label>
+            <label><input type="radio" name="q2" value="b"/> Large Access Node</label>
+            <label><input type="radio" name="q2" value="c"/> Linked Application Network</label>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) Which architecture uses a central server to provide services to clients?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Peer-to-Peer</label>
+            <label><input type="radio" name="q3" value="b"/> Client-Server</label>
+            <label><input type="radio" name="q3" value="c"/> Mesh-only</label>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) How many layers does the OSI model define?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> Four</label>
+            <label><input type="radio" name="q4" value="b"/> Five</label>
+            <label><input type="radio" name="q4" value="c"/> Seven</label>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) Which tool is commonly used for port scanning?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> nmap</label>
+            <label><input type="radio" name="q5" value="b"/> Photoshop</label>
+            <label><input type="radio" name="q5" value="c"/> LibreOffice</label>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) What is the main goal of a Man-in-the-Middle (MitM) attack?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> Intercept and possibly alter communications between two parties</label>
+            <label><input type="radio" name="q6" value="b"/> Physically steal a server</label>
+            <label><input type="radio" name="q6" value="c"/> Improve network speed</label>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) What distinguishes a DDoS from a DoS attack?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> DDoS is always smaller in scale</label>
+            <label><input type="radio" name="q7" value="b"/> DDoS uses multiple compromised systems to overwhelm a target</label>
+            <label><input type="radio" name="q7" value="c"/> DDoS encrypts traffic</label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) Which protocol is connectionless and typically used for streaming?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> TCP</label>
+            <label><input type="radio" name="q8" value="b"/> HTTP</label>
+            <label><input type="radio" name="q8" value="c"/> UDP</label>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) Which activity is an example of enumeration?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> Listing usernames and shares on a target system</label>
+            <label><input type="radio" name="q9" value="b"/> Installing a printer driver</label>
+            <label><input type="radio" name="q9" value="c"/> Rebooting your own PC</label>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) Which is a recommended defense against phishing?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> User training plus email filtering and MFA</label>
+            <label><input type="radio" name="q10" value="b"/> Disabling encryption on the mail server</label>
+            <label><input type="radio" name="q10" value="c"/> Posting credentials publicly</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <footer class="container">
+      <p>© Learning Playground – Computer Networks & Security • Lesson 4</p>
+    </footer>
+  </main>
 
   <script>
-    function checkQuiz() {
-      const form = document.getElementById('quizForm');
-      let score = 0;
-      const answers = form.querySelectorAll('input[type="radio"]:checked');
-      answers.forEach(a => {
-        if (a.value === "correct") score++;
-        else a.parentElement.innerHTML += " <span class='wrong'>(X)</span>";
-      });
-      document.getElementById('result').innerHTML =
-        "You scored " + score + "/10";
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson4-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
+
+    /* Download notes as text (Network lesson) */
+    function downloadNotes() {
+      const title = 'Lesson4_Computer_Networks_Notes.txt';
+      const content = [
+        'Lesson 4 – Computer Networks & Security',
+        '',
+        'Table of Content',
+        'Definition of Computer Network',
+        'Basic Terminologies',
+        'Types of computer network',
+        'Computer Networks – Architecture',
+        'Layered architecture',
+        'OSI & TCP/IP Layers',
+        'Network Scanning & Enumeration',
+        'Common Network Threats/Attacks',
+        '',
+        'Definition: Interconnection of two or more computers for communication and resource sharing.',
+        '',
+        'Applications: Email, web, file sharing, remote access, cloud services.',
+        '',
+        'Types: LAN, MAN, WAN.',
+        '',
+        'Scanning & enumeration: nmap, service probing, web enumeration tools.',
+        '',
+        'Threats: Malware, phishing, MitM, DoS/DDoS, social engineering.'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
+
+    /* Quiz logic */
+    const answers = { q1:'a', q2:'a', q3:'b', q4:'c', q5:'a', q6:'a', q7:'b', q8:'c', q9:'a', q10:'a' };
+    const explanations = {
+      q1: 'A computer network is the interconnection of computers to enable communication and resource sharing.',
+      q2: 'LAN stands for Local Area Network — a network within a limited area like an office or school.',
+      q3: 'Client-server architecture uses a central server to provide services to clients.',
+      q4: 'The OSI model defines seven layers (Physical, Data Link, Network, Transport, Session, Presentation, Application).',
+      q5: 'nmap is a common and powerful tool for port scanning and network discovery.',
+      q6: 'Man-in-the-Middle attacks intercept communication and may alter it without either party knowing.',
+      q7: 'DDoS attacks use many compromised systems (botnets) to flood a target, unlike single-source DoS.',
+      q8: 'UDP is a connectionless protocol commonly used for streaming and real-time traffic.',
+      q9: 'Enumeration includes activities like listing usernames, shares and other data about network resources.',
+      q10: 'User awareness training, email filtering and Multi-Factor Authentication (MFA) are effective defenses against phishing.'
+    };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson4-network-score';
+    const attemptBtn = document.getElementById('attemptBtn');
+
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson4-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      // remove previous inline explanations
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        // clear previous highlight
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) {
+          missed.push(q);
+          continue;
+        }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
+        }
+      }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
+
+      // remove old review box
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          // append explanation below the missed question
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
+            }
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions. Explanations were added under each missed question.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
+      }
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson4-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
     }
   </script>
 </body>

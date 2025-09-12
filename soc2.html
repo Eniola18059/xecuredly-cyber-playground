@@ -1,195 +1,622 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lesson 2 - Web Servers & Architecture</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 2 – Introduction to Linux</title>
+
   <style>
-    body {
-      font-family: 'Share Tech Mono', monospace;
-      background-color: #000;
-      color: #00ffcc;
-      padding: 40px 20px;
-      transition: background-color 0.3s ease;
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
     }
-    .light-mode {
-      background-color: #f8f9fa;
-      color: #000;
-    }
-    h1, h3 {
-      text-align: center;
-      text-shadow: 0 0 10px #00ffc3;
-    }
-    .container {
-      max-width: 900px;
-    }
-    .quiz-box {
-      display: none;
-      background: rgba(0, 255, 204, 0.07);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px #00ffc3;
-      margin-top: 30px;
-    }
-    .btn-primary, .btn-secondary {
-      background: linear-gradient(45deg, #00ffe7, #0099ff);
-      border: none;
-      font-weight: bold;
-      color: #000;
-    }
-    #toggleTheme {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-      padding: 6px 14px;
-      border-radius: 10px;
-      border: none;
-      background: #333;
-      color: #fff;
-      cursor: pointer;
-    }
-    #result {
-      font-weight: bold;
-      margin-top: 20px;
-    }
-    .back-home {
-      margin-top: 20px;
-      display: block;
-    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .grid-2{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1fr 1fr}}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
+    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
+    .subtitle small{display:block;color:var(--muted);margin-top:6px}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    /* responsive spacing for long lesson */
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
   </style>
 </head>
-<body class="dark-mode">
-
-  <button id="toggleTheme">🌙 Toggle Theme</button>
-  <a href="index.html" class="btn btn-outline-light back-home">⬅ Back to Home</a>
-
-  <div class="container">
-    <h1>Lesson 2</h1>
-    <h3>Understanding Web Servers & Architecture</h3>
-
-    <div class="ratio ratio-16x9 mb-4">
-      <iframe src="https://www.youtube.com/embed/gh3FYtQfux8" allowfullscreen></iframe>
+<body>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 2</span>
+        <div>
+          <strong>Introduction to Linux — Full Module</strong>
+          <div class="small muted">OS Basics • Kernel • Distros • Editors • Commands • Comparisons</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
     </div>
+  </header>
 
-    <p><strong>What is a Web Server?</strong></p>
-    <p>A web server is a software and hardware system that uses HTTP and other protocols to respond to client requests made over the World Wide Web. It stores, processes, and delivers web pages to users.</p>
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">Introduction to Linux</h1>
+      <p class="subtitle">A compact introduction to Linux: what it is, its architecture, distributions, common commands, editors, strengths and limitations.</p>
 
-    <p><strong>How Web Servers Work:</strong></p>
-    <ul>
-      <li>Client (browser) sends a request for a webpage (e.g., www.xecuredly.com)</li>
-      <li>DNS resolves the domain to an IP address</li>
-      <li>Web server receives the request and returns the webpage files (HTML, CSS, JS)</li>
-      <li>The browser renders the webpage for the user</li>
-    </ul>
+      <div class="chips">
+        <span class="chip">Linux</span>
+        <span class="chip">Kernel</span>
+        <span class="chip">Distributions</span>
+        <span class="chip">Commands</span>
+        <span class="chip">Editors</span>
+        <span class="chip">Comparisons</span>
+      </div>
+    </section>
 
-    <p><strong>Web Architecture Components:</strong></p>
-    <ul>
-      <li><strong>Client:</strong> Browser/device sending the request</li>
-      <li><strong>Web Server:</strong> Receives request, serves web pages</li>
-      <li><strong>Application Server:</strong> Handles logic, authentication, etc.</li>
-      <li><strong>Database Server:</strong> Stores and retrieves data</li>
-    </ul>
+    <!-- Table of contents -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Contents</h2>
+      <ol class="list">
+        <li>Introduction to Linux</li>
+        <li>Introduction to Operating Systems</li>
+        <li>Understanding Linux — Components, Features & Architecture</li>
+        <li>Linux Distributions</li>
+        <li>Linux Editors</li>
+        <li>Linux vs Windows</li>
+        <li>Linux vs macOS</li>
+        <li>Common Linux Commands</li>
+        <li>Why Linux?</li>
+        <li>Merits and Demerits of Linux</li>
+        <li>Conclusion</li>
+      </ol>
+    </section>
 
-    <p><strong>Common Web Technologies:</strong></p>
-    <ul>
-      <li>HTTP / HTTPS</li>
-      <li>TCP/IP Protocol</li>
-      <li>DNS (Domain Name System)</li>
-      <li>Load Balancers</li>
-    </ul>
+    <!-- Fun fact -->
+    <section class="card long-read" aria-labelledby="funfact">
+      <h2 id="funfact" class="section-title">Fun Fact</h2>
+      <p>90% of Hollywood's special effects are made on Linux.</p>
+    </section>
 
-    <p><strong>Web Server Software:</strong></p>
-    <ul>
-      <li>Apache HTTP Server</li>
-      <li>Nginx</li>
-      <li>Microsoft IIS</li>
-    </ul>
+    <!-- Operating Systems intro -->
+    <section class="card long-read" aria-labelledby="osintro">
+      <h2 id="osintro" class="section-title">Introduction to Operating Systems</h2>
+      <p>
+        An operating system is the most important software that runs on a computer. It manages the computer's memory and processes, as well as all of its software and hardware.
+        It also allows you to communicate with the computer without knowing the machine language directly.
+      </p>
+    </section>
 
-    <p><strong>Common Web Server Vulnerabilities:</strong></p>
-    <ul>
-      <li>Directory Traversal Attacks</li>
-      <li>Misconfigured Permissions</li>
-      <li>Unpatched Server Software</li>
-      <li>Information Disclosure</li>
-    </ul>
+    <!-- What is Linux -->
+    <section class="card long-read" aria-labelledby="whatlinux">
+      <h2 id="whatlinux" class="section-title">What is Linux?</h2>
+      <p>
+        Linux is a Unix-like operating system originally created by Linus Torvalds with contributions from a global community.
+        Unix is a multitasking, multi-user operating system first developed in the 1970s at Bell Labs.
+        Linux and Unix aim for POSIX compatibility; many servers and devices run Linux variants — for example, Android and some e-readers.
+      </p>
+    </section>
 
-    <button class="btn btn-primary mt-3" onclick="showQuiz()">🧠 Attempt Quiz</button>
+    <!-- Components -->
+    <section class="card long-read" aria-labelledby="components">
+      <h2 id="components" class="section-title">Components of a Linux System</h2>
+      <ul class="list">
+        <li><strong>Kernel</strong> — the core part of Linux responsible for low-level tasks and managing hardware.</li>
+        <li><strong>System Libraries</strong> — functions and libraries applications use to interact with the kernel.</li>
+        <li><strong>System Utilities</strong> — programs that provide user-level functionality and system management tools.</li>
+      </ul>
+    </section>
 
-    <form class="quiz-box" id="quizBox">
-      <div class="question mt-4">
-        <h5>1. What is the primary role of a web server?</h5>
-        <div><input type="radio" name="q1" value="1"> Serve webpages over HTTP/HTTPS</div>
-        <div><input type="radio" name="q1" value="0"> Manage employee records</div>
-        <div><input type="radio" name="q1" value="0"> Scan for malware</div>
+    <!-- Features -->
+    <section class="card long-read" aria-labelledby="features">
+      <h2 id="features" class="section-title">Basic Features of Linux</h2>
+      <ul class="list">
+        <li><strong>Portable</strong> — runs on many hardware platforms.</li>
+        <li><strong>Open source</strong> — source code is freely available and community-developed.</li>
+        <li><strong>Multiprogramming</strong> — can run many applications simultaneously.</li>
+        <li><strong>Security</strong> — provides user authentication, file permissions and encryption support.</li>
+      </ul>
+    </section>
+
+    <!-- Architecture -->
+    <section class="card long-read" aria-labelledby="architecture">
+      <h2 id="architecture" class="section-title">Architecture of Linux</h2>
+      <p>The Linux architecture contains multiple layers:</p>
+      <ul class="list">
+        <li><strong>Hardware layer</strong> — physical components (CPU, RAM, disk, peripherals).</li>
+        <li><strong>Kernel</strong> — interacts directly with hardware and provides services to upper layers.</li>
+        <li><strong>Shell</strong> — interprets user commands and requests kernel services.</li>
+        <li><strong>Utilities</strong> — user-level programs that provide most of the OS functionality.</li>
+      </ul>
+      <div class="explain"><strong>Did you know?</strong> Linus Torvalds originally considered naming the project "Freax" before choosing "Linux".</div>
+    </section>
+
+    <!-- Kernel -->
+    <section class="card long-read" aria-labelledby="kernel">
+      <h2 id="kernel" class="section-title">The Kernel</h2>
+      <p>
+        The kernel interacts with hardware in machine-level operations. It handles file management, data transfer, memory management, scheduling, and interrupt handling.
+        It is the central controller of the operating system.
+      </p>
+    </section>
+
+    <!-- User Interface -->
+    <section class="card long-read" aria-labelledby="ui">
+      <h2 id="ui" class="section-title">User Interface of Linux</h2>
+      <p>
+        Linux offers both Command-Line Interfaces (CLI) and Graphical User Interfaces (GUI). CLI shells are text-based and powerful for scripting and administration.
+        On desktops, GUIs (often based on the X Window System or Wayland) provide user-friendly graphical environments.
+      </p>
+    </section>
+
+    <!-- Distributions -->
+    <section class="card long-read" aria-labelledby="distros">
+      <h2 id="distros" class="section-title">Linux Distributions</h2>
+      <p>
+        Distributions (distros) are packaged versions of Linux that include the kernel, utilities, package managers and desktop environments.
+        Examples: Ubuntu, Debian, Fedora, CentOS/Rocky, Arch Linux. Choose a distro depending on stability, support, and package philosophies.
+      </p>
+    </section>
+
+    <!-- Editors -->
+    <section class="card long-read" aria-labelledby="editors">
+      <h2 id="editors" class="section-title">Linux Editors</h2>
+      <p>Common editors available on Linux include:</p>
+      <ul class="list">
+        <li>Vi / Vim — powerful terminal editor</li>
+        <li>Gedit — simple GUI editor</li>
+        <li>Nano — easy terminal editor for beginners</li>
+        <li>GNU Emacs — extensible and powerful editor</li>
+        <li>Kate / KWrite — KDE text editors</li>
+        <li>Other modern editors like VS Code and Sublime are also widely used</li>
+      </ul>
+    </section>
+
+    <!-- Comparisons -->
+    <section class="card long-read" aria-labelledby="compare">
+      <h2 id="compare" class="section-title">Linux vs Windows / macOS</h2>
+      <h3>Linux vs Windows</h3>
+      <p>
+        Linux is freely available and open-source; Windows is usually distributed as a commercial product with licensing.
+        Update strategies and software ecosystems differ between them; Linux often provides more granular package updates and strong backward compatibility for many server tools.
+      </p>
+
+      <h3>Linux vs macOS</h3>
+      <ul class="list">
+        <li><strong>Hardware:</strong> macOS runs on Apple hardware only; Linux can run on wide range of hardware.</li>
+        <li><strong>Customizability:</strong> Linux is highly customizable; macOS is curated for consistency.</li>
+        <li><strong>Security:</strong> Both are secure in different ways; administration and update models differ.</li>
+      </ul>
+    </section>
+
+    <!-- Commands -->
+    <section class="card long-read" aria-labelledby="commands">
+      <h2 id="commands" class="section-title">Common Linux Commands</h2>
+      <p>Some essential commands:</p>
+      <ul class="list">
+        <li><code>ls</code> — list files and directories</li>
+        <li><code>mv</code> — move or rename files</li>
+        <li><code>mkdir</code> — create directories</li>
+        <li><code>rmdir</code> or <code>rm -r</code> — remove directories</li>
+        <li><code>pwd</code> — print working directory</li>
+        <li><code>cd</code> — change directory</li>
+        <li><code>cat</code> — view file contents or create small files</li>
+        <li><code>cp</code> — copy files</li>
+        <li><code>rm</code> — remove files (use with care)</li>
+        <li><code>locate</code> — find files quickly (index-based)</li>
+        <li><code>sudo</code> — run commands as administrator</li>
+        <li><code>head</code> / <code>tail</code> — view start/end of files</li>
+      </ul>
+    </section>
+
+    <!-- Why Linux -->
+    <section class="card long-read" aria-labelledby="why">
+      <h2 id="why" class="section-title">Why Linux?</h2>
+      <ul class="list">
+        <li>Free or low-cost</li>
+        <li>Stable and reliable for servers</li>
+        <li>Powerful and flexible for developers and administrators</li>
+        <li>Strong security model and permission system</li>
+      </ul>
+    </section>
+
+    <!-- Merits/Demerits -->
+    <section class="card long-read" aria-labelledby="proscons">
+      <h2 id="proscons" class="section-title">Merits and Demerits of Linux</h2>
+      <ul class="list">
+        <li>Works well on older hardware and in constrained environments</li>
+        <li>Excellent for programming, servers and automation</li>
+        <li>Steeper learning curve for beginners compared with consumer OSes</li>
+        <li>Gaming compatibility has improved but some titles remain better supported on Windows</li>
+      </ul>
+    </section>
+
+    <!-- Conclusion -->
+    <section class="card long-read" aria-labelledby="conclusion">
+      <h2 id="conclusion" class="section-title">Conclusion</h2>
+      <p>
+        When to use Linux and when to prefer another OS depends on the user and the task.
+        Linux is ideal for programmers, servers, and power users; other operating systems may be better for specific consumer workflows or specialized software.
+      </p>
+    </section>
+
+    <!-- Download notes -->
+    <section class="card" aria-labelledby="notes">
+      <h2 id="notes" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a plain-text version of this lesson.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotes">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~10–20 mins</span></div>
+      </div>
+    </section>
+
+    <!-- QUIZ GATE -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 1 Quiz — Introduction to Linux</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready — the quiz is gated so students can finish reading first. The quiz has 10 questions; incorrect answers will be highlighted and explanations shown.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
       </div>
 
-      <div class="question mt-3">
-        <h5>2. What resolves domain names to IP addresses?</h5>
-        <div><input type="radio" name="q2" value="0"> HTTP</div>
-        <div><input type="radio" name="q2" value="1"> DNS</div>
-        <div><input type="radio" name="q2" value="0"> FTP</div>
-      </div>
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) What is the primary role of an operating system?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> To make the computer display nicer graphics</label>
+            <label><input type="radio" name="q1" value="b"/> To manage memory, processes, hardware and provide a platform for applications</label>
+            <label><input type="radio" name="q1" value="c"/> To act as a web browser</label>
+          </div>
+        </div>
 
-      <div class="question mt-3">
-        <h5>3. Which of these is NOT a layer in web architecture?</h5>
-        <div><input type="radio" name="q3" value="0"> Web Server</div>
-        <div><input type="radio" name="q3" value="0"> Application Server</div>
-        <div><input type="radio" name="q3" value="1"> Photoshop Engine</div>
-      </div>
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) Who is credited with creating Linux?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> Linus Torvalds</label>
+            <label><input type="radio" name="q2" value="b"/> Bill Gates</label>
+            <label><input type="radio" name="q2" value="c"/> Steve Jobs</label>
+          </div>
+        </div>
 
-      <div class="question mt-3">
-        <h5>4. Which is a common web server?</h5>
-        <div><input type="radio" name="q4" value="0"> VLC</div>
-        <div><input type="radio" name="q4" value="1"> Apache</div>
-        <div><input type="radio" name="q4" value="0"> Adobe Reader</div>
-      </div>
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) What is the core component of Linux that interacts with hardware?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Shell</label>
+            <label><input type="radio" name="q3" value="b"/> Kernel</label>
+            <label><input type="radio" name="q3" value="c"/> Text editor</label>
+          </div>
+        </div>
 
-      <div class="question mt-3">
-        <h5>5. What’s a common web server vulnerability?</h5>
-        <div><input type="radio" name="q5" value="1"> Misconfigured permissions</div>
-        <div><input type="radio" name="q5" value="0"> Slow downloads</div>
-        <div><input type="radio" name="q5" value="0"> Password hints</div>
-      </div>
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) Which command lists files and directories in the current folder?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> pwd</label>
+            <label><input type="radio" name="q4" value="b"/> ls</label>
+            <label><input type="radio" name="q4" value="c"/> cd</label>
+          </div>
+        </div>
 
-      <button type="submit" class="btn btn-secondary mt-3">Submit Quiz</button>
-      <div id="result"></div>
-    </form>
-  </div>
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) Which command would you use to run a command with administrative privileges?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> runas</label>
+            <label><input type="radio" name="q5" value="b"/> sudo</label>
+            <label><input type="radio" name="q5" value="c"/> admin</label>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) Which editor is a simple terminal-based editor suited for beginners?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> Vim</label>
+            <label><input type="radio" name="q6" value="b"/> Nano</label>
+            <label><input type="radio" name="q6" value="c"/> Emacs</label>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) Which of these is NOT a Linux distribution?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> Ubuntu</label>
+            <label><input type="radio" name="q7" value="b"/> Fedora</label>
+            <label><input type="radio" name="q7" value="c"/> Windows</label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) What does 'open source' mean for Linux?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> The source code is available for anyone to view, modify and distribute</label>
+            <label><input type="radio" name="q8" value="b"/> It is free of any bugs</label>
+            <label><input type="radio" name="q8" value="c"/> It can only be used on servers</label>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) Which command shows your current working directory?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> ls</label>
+            <label><input type="radio" name="q9" value="b"/> pwd</label>
+            <label><input type="radio" name="q9" value="c"/> whoami</label>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) Which Linux feature is especially useful for servers and developers?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> High customizability and strong command-line tooling</label>
+            <label><input type="radio" name="q10" value="b"/> Built-in social media apps</label>
+            <label><input type="radio" name="q10" value="c"/> Mandatory touchscreen support</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+
+      </form>
+    </section>
+
+    <footer class="container">
+      <p>© Learning Playground – Introduction to Linux • Lesson 1</p>
+    </footer>
+  </main>
 
   <script>
-    function showQuiz() {
-      const quiz = document.getElementById("quizBox");
-      quiz.style.display = "block";
-      gsap.from(quiz, {opacity: 0, y: 40, duration: 1});
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson1-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
+
+    /* Download notes as text (Linux lesson) */
+    function downloadNotes() {
+      const title = 'Lesson1_Introduction_to_Linux_Notes.txt';
+      const content = [
+        'Lesson 1 – Introduction to Linux',
+        '',
+        'Table of Contents',
+        '1. Introduction to Linux',
+        '2. Introduction to Operating Systems',
+        '3. Understanding Linux — Components, Features & Architecture',
+        '4. Linux Distributions',
+        '5. Linux Editors',
+        '6. Linux vs Windows',
+        '7. Linux vs macOS',
+        '8. Common Linux Commands',
+        '9. Why Linux?',
+        '10. Merits and Demerits of Linux',
+        '11. Conclusion',
+        '',
+        'Fun Fact:',
+        '90% of Hollywood\'s special effects are made on Linux.',
+        '',
+        'What is Linux?',
+        'Linux is a Unix-like OS created by Linus Torvalds with community contributions.',
+        '',
+        'Components:',
+        '- Kernel (core), System Libraries, System Utilities',
+        '',
+        'Features:',
+        '- Portable, Open source, Multiprogramming, Secure',
+        '',
+        'Common Commands:',
+        'ls, mv, mkdir, rmdir, pwd, cd, cat, cp, rm, locate, sudo, head',
+        '',
+        'Editors:',
+        'Vim, Nano, Emacs, Gedit, Kate, VS Code',
+        '',
+        'Why Linux?',
+        'Free, stable, reliable, powerful, secure',
+        '',
+        'Conclusion:',
+        'Use the OS that fits your needs; Linux suits developers, servers and power-users.'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotes').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
+
+    /* Quiz logic */
+    const answers = { q1:'b', q2:'a', q3:'b', q4:'b', q5:'b', q6:'b', q7:'c', q8:'a', q9:'b', q10:'a' };
+    const explanations = {
+      q1: 'An operating system manages hardware, memory, processes and provides a platform for applications.',
+      q2: 'Linus Torvalds started the Linux project and coordinated early development.',
+      q3: 'The kernel is the core component that interacts directly with hardware.',
+      q4: 'The "ls" command lists files and directories; "pwd" prints the current directory.',
+      q5: '"sudo" is used to run commands with administrative (superuser) privileges.',
+      q6: 'Nano is a simple, beginner-friendly terminal editor. Vim and Emacs are more powerful but steeper.',
+      q7: 'Windows is not a Linux distribution — Ubuntu and Fedora are examples of distributions.',
+      q8: 'Open source means the source code is available to view, modify and redistribute under its license.',
+      q9: '"pwd" prints the current working directory path.',
+      q10: 'Linux is highly customizable and has strong command-line tooling, making it ideal for servers and developers.'
+    };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson1-linux-score';
+
+    const attemptBtn = document.getElementById('attemptBtn');
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson1-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        const display = document.getElementById('quizResult');
+        display.textContent = `Previous Score: ${saved}%`;
+        display.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      // clear previous per-question explanations
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        // clear previous highlight
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) {
+          missed.push(q);
+          continue;
+        }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
+        }
+      }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
+      // show explanations inline for missed questions
+      // remove any existing reviewBox
+      const existingBox = document.getElementById('reviewBox'); if (existingBox) existingBox.remove();
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          // also append short explanation under the question
+          const qCard = form.querySelector(`input[name="${m}"]`).closest('.q-card');
+          if (qCard) {
+            const ex = document.createElement('div');
+            ex.className = 'explain';
+            ex.textContent = explanations[m];
+            qCard.appendChild(ex);
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        // friendly popup
+        setTimeout(()=>{ alert('You missed some questions. Explanations have been added under the missed questions.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
+      }
+      submitBtn.disabled = true;
     }
 
-    document.getElementById("quizBox").onsubmit = function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      let score = 0;
-      for (let entry of formData.entries()) {
-        score += parseInt(entry[1]);
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson1-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
       }
-      const percent = Math.round((score / 5) * 100);
-      document.getElementById("result").innerHTML = `✅ You scored ${percent}%`;
-      localStorage.setItem("lesson2_score", percent);
-    };
-
-    // Theme toggle
-    const toggleBtn = document.getElementById("toggleTheme");
-    toggleBtn.onclick = () => {
-      const isLight = document.body.classList.contains("light-mode");
-      document.body.classList.toggle("light-mode", !isLight);
-      document.body.classList.toggle("dark-mode", isLight);
-      localStorage.setItem("theme", isLight ? "dark" : "light");
-    };
-
-    const savedTheme = localStorage.getItem("theme") || "dark";
-    document.body.classList.add(`${savedTheme}-mode`);
+    }
   </script>
 </body>
 </html>

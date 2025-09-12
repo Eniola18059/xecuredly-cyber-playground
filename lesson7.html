@@ -1,264 +1,595 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 6 - Vulnerability Analysis & System Hacking</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 7 – Vulnerability Assessment & System Hacking</title>
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Share Tech Mono', monospace;
-      background: #000;
-      color: #00ffcc;
-      padding: 20px;
-      overflow-x: hidden;
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
     }
-
-    h1, h2 {
-      text-align: center;
-      text-shadow: 0 0 12px #00ffe7;
-      margin-bottom: 20px;
-    }
-
-    .content {
-      background: rgba(0, 0, 0, 0.8);
-      border: 1px solid #00ffcc;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 0 20px #00ffcc;
-      line-height: 1.6;
-    }
-
-    ul li {
-      margin-bottom: 10px;
-    }
-
-    .quiz {
-      margin-top: 30px;
-    }
-
-    .question {
-      margin-bottom: 20px;
-      padding: 15px;
-      border: 1px solid #00ffe7;
-      border-radius: 8px;
-      background: rgba(0, 255, 200, 0.05);
-    }
-
-    button {
-      background: linear-gradient(45deg, #ff0080, #7928ca);
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      margin-top: 15px;
-    }
-
-    button:hover {
-      background: linear-gradient(45deg, #00ffe7, #0099ff);
-      color: #000;
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #00ffe7;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 1.3rem;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .back-btn {
-      display: block;
-      text-align: center;
-      margin-top: 30px;
-      padding: 10px;
-      background: #111;
-      border-radius: 8px;
-      color: #00ffcc;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .back-btn:hover {
-      background: #00ffcc;
-      color: #000;
-    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
+    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
+    .subtitle small{display:block;color:var(--muted);margin-top:6px}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .code-block{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;font-size:13px;color:var(--muted);background:rgba(255,255,255,0.03);padding:10px;border-radius:8px}
   </style>
 </head>
 <body>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 7</span>
+        <div>
+          <strong>Vulnerability Assessment & System Hacking — Lesson 7</strong>
+          <div class="small muted">Discovery • Prioritization • Tools • Defensive controls • Safe labs</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
+    </div>
+  </header>
 
-  <h1>Lesson 7: Vulnerability Analysis & System Hacking</h1>
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">Vulnerability Assessment & System Hacking</h1>
+      <p class="subtitle">How to find, score, and manage security weaknesses — plus high-level coverage of system-hacking techniques and how defenders reduce risk.</p>
 
-  <div class="content">
-    <h2>🔍 Introduction</h2>
-    <p>
-      Vulnerability analysis is the process of identifying, quantifying, and prioritizing weaknesses in systems,
-      applications, and networks. These weaknesses, if exploited by attackers, can lead to unauthorized access,
-      data breaches, or complete system compromise.
-    </p>
+      <div class="chips">
+        <span class="chip">Vulnerability</span>
+        <span class="chip">Assessment</span>
+        <span class="chip">Scanning</span>
+        <span class="chip">CVE</span>
+        <span class="chip">Password Cracking</span>
+      </div>
+    </section>
 
-    <h2>⚡ Phases of Vulnerability Assessment</h2>
-    <ul>
-      <li><b>Information Gathering:</b> Collecting data about systems (OS, services, applications).</li>
-      <li><b>Vulnerability Detection:</b> Using scanners and tools to identify potential flaws.</li>
-      <li><b>Analysis:</b> Prioritizing based on severity, exploitability, and business impact.</li>
-      <li><b>Remediation:</b> Patching, reconfiguring, or mitigating identified vulnerabilities.</li>
-    </ul>
+    <!-- TOC -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Content</h2>
+      <ol class="list">
+        <li>What Is a Vulnerability?</li>
+        <li>Vulnerability Assessment and Process</li>
+        <li>Types of Vulnerability Analysis</li>
+        <li>Vulnerability Management Lifecycle</li>
+        <li>Vulnerability Assessment Tools</li>
+        <li>Vulnerability Scoring Systems</li>
+        <li>Vulnerability Assessment Report</li>
+        <li>System Hacking (conceptual)</li>
+        <li>Scan and Find Vulnerabilities with Tools (high level)</li>
+        <li>Password Breaking (overview)</li>
+        <li>Keyloggers & Keystroke Capture (overview)</li>
+      </ol>
+    </section>
 
-    <h2>🛠 Tools for Vulnerability Analysis</h2>
-    <ul>
-      <li><b>Nessus:</b> Industry-standard vulnerability scanner.</li>
-      <li><b>OpenVAS:</b> Open-source vulnerability assessment tool.</li>
-      <li><b>Nmap:</b> Port scanner with scripting capabilities to detect weaknesses.</li>
-      <li><b>Burp Suite:</b> Web application vulnerability testing tool.</li>
-      <li><b>Metasploit:</b> Exploitation framework for testing identified vulnerabilities.</li>
-    </ul>
+    <!-- What is a vulnerability -->
+    <section class="card long-read" aria-labelledby="what">
+      <h2 id="what" class="section-title">What Is a Vulnerability?</h2>
+      <p>A vulnerability is any flaw, misconfiguration, weakness or missing control in hardware, software, or processes that can be used by an attacker to compromise confidentiality, integrity or availability. Examples include unpatched software, weak passwords, open ports, default credentials, insecure configurations, and logical application bugs.</p>
+      <div class="callout">
+        <strong>Risk vs. vulnerability:</strong> a vulnerability is a technical weakness; risk is the combination of vulnerability, likelihood, and impact on the business.
+      </div>
+    </section>
 
-    <h2>💣 System Hacking</h2>
-    <p>
-      System hacking involves exploiting vulnerabilities to gain unauthorized access. Hackers use it to elevate
-      privileges, steal data, or disrupt services. Ethical hackers simulate this to strengthen defenses.
-    </p>
+    <!-- Vulnerability Assessment -->
+    <section class="card long-read" aria-labelledby="vuln-assess">
+      <h2 id="vuln-assess" class="section-title">Vulnerability Assessment — Purpose & Process</h2>
+      <p>Vulnerability assessment is a repeatable process that discovers weaknesses, quantifies their severity, and helps prioritize remediation. The goal is not just to find issues but to inform decision makers about fixes and compensating controls.</p>
+      <h3>Typical steps</h3>
+      <ol class="list">
+        <li><strong>Scope definition:</strong> assets, networks, applications and constraints.</li>
+        <li><strong>Asset discovery:</strong> identify hosts, services, and owners.</li>
+        <li><strong>Automated scanning:</strong> run authenticated and unauthenticated scans with vetted tools.</li>
+        <li><strong>Manual verification:</strong> reduce false positives and validate findings.</li>
+        <li><strong>Prioritization:</strong> rank by severity, exploitability and business impact.</li>
+        <li><strong>Reporting & remediation:</strong> deliver actionable reports and track fixes.</li>
+        <li><strong>Re-scan & verify:</strong> confirm remediation and close the loop.</li>
+      </ol>
+    </section>
 
-    <h2>⚙️ System Hacking Techniques</h2>
-    <ul>
-      <li><b>Password Cracking:</b> Brute force, dictionary, and rainbow table attacks.</li>
-      <li><b>Privilege Escalation:</b> Exploiting misconfigurations to gain higher access.</li>
-      <li><b>Keylogging:</b> Recording keystrokes to capture credentials.</li>
-      <li><b>Spyware:</b> Malicious software for monitoring user activities.</li>
-      <li><b>Covering Tracks:</b> Deleting logs to avoid detection.</li>
-    </ul>
+    <!-- Types -->
+    <section class="card long-read" aria-labelledby="types">
+      <h2 id="types" class="section-title">Types of Vulnerability Analysis</h2>
+      <p>Different scopes require different techniques. Common types:</p>
+      <ul class="list">
+        <li><strong>Network-based scanning:</strong> discover live hosts, open ports and network-exposed services.</li>
+        <li><strong>Host-based scanning:</strong> inspect installed software, missing patches, insecure configurations and local policy issues.</li>
+        <li><strong>Wireless scanning:</strong> assess Wi-Fi configuration, encryption and rogue access points.</li>
+        <li><strong>Application scanning:</strong> scan web and mobile apps for injection flaws, insecure authentication, and misconfigurations.</li>
+        <li><strong>Database scanning:</strong> identify misconfigurations, weak accounts and injection points specific to DB engines.</li>
+      </ul>
+      <div class="explain">Note: automated scanners are powerful but produce false positives — manual validation is essential.</div>
+    </section>
 
-    <h2>🛡 Countermeasures</h2>
-    <ul>
-      <li>Regular patch management.</li>
-      <li>Strong password policies & MFA.</li>
-      <li>Log monitoring and anomaly detection.</li>
-      <li>Running periodic vulnerability scans.</li>
-      <li>Implementing intrusion detection and prevention systems.</li>
-    </ul>
-  </div>
+    <!-- Lifecycle -->
+    <section class="card long-read" aria-labelledby="lifecycle">
+      <h2 id="lifecycle" class="section-title">Vulnerability Management Lifecycle</h2>
+      <p>A mature vulnerability program treats vulnerabilities as lifecycle items:</p>
+      <ol class="list">
+        <li><strong>Discovery:</strong> continuous asset and vulnerability discovery.</li>
+        <li><strong>Assessment:</strong> scan and classify findings.</li>
+        <li><strong>Prioritization:</strong> combine CVSS, exploitability, asset criticality, threat intelligence.</li>
+        <li><strong>Remediation:</strong> patch, reconfigure, or mitigate (apply compensating controls).</li>
+        <li><strong>Verification:</strong> re-scan to confirm fixes.</li>
+        <li><strong>Reporting & metrics:</strong> track mean time to remediation (MTTR), patch coverage and residual risk.</li>
+      </ol>
+    </section>
 
-  <div class="quiz">
-    <h2>🧠 Lesson 7 Quiz</h2>
+    <!-- Tools -->
+    <section class="card long-read" aria-labelledby="tools">
+      <h2 id="tools" class="section-title">Vulnerability Assessment Tools (overview)</h2>
+      <p>There are many commercial and open-source tools. Below are categories and notable examples (high-level descriptions only):</p>
+      <ul class="list">
+        <li><strong>Network scanners:</strong> tools that map hosts and ports to find exposed services (example: Nmap).</li>
+        <li><strong>Vulnerability scanners:</strong> software that checks services and software versions against known vulnerabilities (e.g., Nessus, OpenVAS).</li>
+        <li><strong>Web scanners / proxy suites:</strong> designed for web apps, find injection flaws, authentication issues and business logic errors (e.g., Burp Suite).</li>
+        <li><strong>Packet capture/analysis:</strong> Wireshark for inspecting network traffic for anomalies and protocol issues.</li>
+        <li><strong>Exploit frameworks (defensive study):</strong> used by red teams and researchers to validate vulnerabilities in controlled labs (e.g., Metasploit). Use only in authorized environments.</li>
+      </ul>
+      <div class="callout">
+        <strong>Safety note:</strong> Tools that can exploit vulnerabilities should only be used in isolated labs or on systems where you have explicit permission.
+      </div>
+    </section>
 
-    <form id="quizForm">
-      <div class="question">
-        <p>1. What is vulnerability analysis?</p>
-        <label><input type="radio" name="q1" value="a"> Installing antivirus software</label><br>
-        <label><input type="radio" name="q1" value="b"> Identifying and prioritizing system weaknesses</label><br>
-        <label><input type="radio" name="q1" value="c"> Writing secure code only</label>
+    <!-- Scoring -->
+    <section class="card long-read" aria-labelledby="scoring">
+      <h2 id="scoring" class="section-title">Vulnerability Scoring Systems</h2>
+      <p>Scoring systems (like CVSS) help quantify severity so teams can prioritize. Scores consider base impact, exploitability, and environmental factors. Scores typically range 0 (none) to 10 (critical). Scores should be combined with business context — a low CVSS on a critical customer database may be more urgent than a high CVSS on a development server.</p>
+    </section>
+
+    <!-- Reporting -->
+    <section class="card long-read" aria-labelledby="report">
+      <h2 id="report" class="section-title">Vulnerability Assessment Report</h2>
+      <p>A good report is actionable and tailored to the audience. Typical sections:</p>
+      <ul class="list">
+        <li><strong>Executive summary:</strong> high-level risk picture and recommended business actions.</li>
+        <li><strong>Finding listing:</strong> each vulnerability with description, affected assets, severity, CVSS score and evidence (screenshots/log snippets).</li>
+        <li><strong>Remediation guidance:</strong> step-by-step or references for patches, configuration changes or compensating controls.</li>
+        <li><strong>Risk acceptance:</strong> documented decisions if a vulnerability is deferred, with compensating controls and review dates.</li>
+        <li><strong>Appendices:</strong> raw scanner output, mitigation timelines and change requests.</li>
+      </ul>
+    </section>
+
+    <!-- System hacking -->
+    <section class="card long-read" aria-labelledby="sys-hack">
+      <h2 id="sys-hack" class="section-title">System Hacking — Conceptual Overview</h2>
+      <p><strong>System hacking</strong> refers to techniques attackers use to breach systems and escalate access. Ethical security professionals study these techniques to design better defenses and detection. Below we describe common techniques at a conceptual level — we do not provide step-by-step exploitation instructions.</p>
+
+      <h3>Password Cracking (overview)</h3>
+      <p>Password cracking means attempting to recover or guess passwords using various methods. Common high-level approaches:</p>
+      <ul class="list">
+        <li><strong>Brute force:</strong> try every possible combination. Computationally expensive; effective only for short/weak passwords.</li>
+        <li><strong>Dictionary attacks:</strong> try words and variants from curated lists (rockyou, breached-password lists) and common patterns.</li>
+        <li><strong>Hybrid attacks:</strong> dictionary plus mutations (adding digits, symbols).</li>
+        <li><strong>Offline cracking:</strong> attackers recover password hashes (e.g., from a database) and try to crack offline where speed is higher.</li>
+        <li><strong>Defensive note:</strong> enforce long passphrases, rate-limiting, account lockouts, MFA, and hashed+salted storage (bcrypt/Argon2).</li>
+      </ul>
+
+      <h3>Privilege Escalation</h3>
+      <p>After initial access, an attacker often tries to gain higher privileges. Two types:</p>
+      <ul class="list">
+        <li><strong>Vertical escalation:</strong> gain admin/root privileges from a normal user.</li>
+        <li><strong>Horizontal escalation:</strong> access another user's account with similar privileges to move laterally.</li>
+      </ul>
+      <p>Defenders reduce risk by applying least privilege, patching known privilege-escalation bugs, and monitoring for anomalous process starts and unusual use of administrative tools.</p>
+
+      <h3>Executing Applications & Persistence</h3>
+      <p>Attackers may drop and run tools to maintain access. Defenders use endpoint protection (EDR), application allowlists, and integrity monitoring to detect and block unauthorized binaries.</p>
+
+      <h3>Hiding Files & Anti-Forensics</h3>
+      <p>Techniques to hide presence include manipulating logs or using obscure file locations. Good monitoring, immutable logs and rapid incident response reduce the value of these techniques.</p>
+    </section>
+
+    <!-- Scan and find vulnerabilities -->
+    <section class="card long-read" aria-labelledby="scan-find">
+      <h2 id="scan-find" class="section-title">Scan and Find Vulnerabilities — High-level Workflow</h2>
+      <p>A responsible assessment follows a predictable workflow:</p>
+      <ol class="list">
+        <li><strong>Define scope & rules of engagement:</strong> which systems, times, and methods are allowed.</li>
+        <li><strong>Discovery and mapping:</strong> identify hosts and services (safe, non-invasive methods first).</li>
+        <li><strong>Automated scanning:</strong> run scanners with approved credentials where appropriate (authenticated scans find more issues).</li>
+        <li><strong>Manual review:</strong> validate findings and investigate business logic issues that tools miss.</li>
+        <li><strong>Deliver findings:</strong> prioritized, with remediation steps and timelines.</li>
+      </ol>
+      <div class="callout">
+        <strong>Lab safety:</strong> perform scans and any validation only against systems you own or have explicit written permission to test.
+      </div>
+    </section>
+
+    <!-- Password breaking / defenses -->
+    <section class="card long-read" aria-labelledby="password-break">
+      <h2 id="password-break" class="section-title">Password Breaking — Defenses & Detection</h2>
+      <p>Defensive controls that make password attacks impractical:</p>
+      <ul class="list">
+        <li><strong>MFA:</strong> even a compromised password often isn't enough when MFA is enforced.</li>
+        <li><strong>Rate limiting & account lockouts:</strong> block repeated login attempts and detect brute-force patterns.</li>
+        <li><strong>Strong hashing:</strong> store salted, slow hashes to slow offline cracking.</li>
+        <li><strong>Credential monitoring:</strong> check whether corporate credentials appear in breach collections and force resets when found.</li>
+      </ul>
+    </section>
+
+    <!-- Keyloggers -->
+    <section class="card long-read" aria-labelledby="keylog">
+      <h2 id="keylog" class="section-title">Keyloggers & Keystroke Capture — Overview & Mitigations</h2>
+      <p>Keyloggers record keystrokes and are typically delivered by malware or physical access. They can capture passwords and other sensitive input. Mitigations:</p>
+      <ul class="list">
+        <li>Use full-disk and file-system protections, endpoint detection and response (EDR) to detect suspicious processes.</li>
+        <li>Avoid entering sensitive data on untrusted devices; use MFA and one-time passwords where possible.</li>
+        <li>Keep systems patched, apply application allowlisting and remove unnecessary admin rights to limit malware installation.</li>
+      </ul>
+    </section>
+
+    <!-- Practical / safe labs reminder -->
+    <section class="card long-read" aria-labelledby="labs">
+      <h2 id="labs" class="section-title">Hands-On & Labs (Safe Practices)</h2>
+      <p>Practice vulnerability scanning and defensive tuning in isolated lab environments (VMs, vulnerable intentionally apps, or purpose-built range). Always obtain written permission for any activity on systems you do not own. Recommended safe lab resources include intentionally vulnerable VMs and local isolated networks.</p>
+    </section>
+
+    <!-- Download notes -->
+    <section class="card" aria-labelledby="notes">
+      <h2 id="notes" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a plain-text version of this lesson.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~20–30 mins</span></div>
+      </div>
+    </section>
+
+    <!-- QUIZ GATE -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 7 Quiz — Vulnerability Assessment & System Hacking</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready. The quiz is gated so students can finish the reading first. There are 10 questions; missed ones show inline explanations.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
       </div>
 
-      <div class="question">
-        <p>2. Which tool is widely used for vulnerability scanning?</p>
-        <label><input type="radio" name="q2" value="a"> Photoshop</label><br>
-        <label><input type="radio" name="q2" value="b"> Nessus</label><br>
-        <label><input type="radio" name="q2" value="c"> Excel</label>
-      </div>
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) Which of the following best defines a vulnerability?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> A weakness that can be exploited to harm confidentiality, integrity or availability</label>
+            <label><input type="radio" name="q1" value="b"/> A new feature added to software</label>
+            <label><input type="radio" name="q1" value="c"/> A backup file</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>3. Which of the following is a phase of vulnerability assessment?</p>
-        <label><input type="radio" name="q3" value="a"> Information Gathering</label><br>
-        <label><input type="radio" name="q3" value="b"> Image Editing</label><br>
-        <label><input type="radio" name="q3" value="c"> Music Production</label>
-      </div>
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) What is the first step in a responsible vulnerability assessment?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> Asset discovery and scope definition</label>
+            <label><input type="radio" name="q2" value="b"/> Immediately running destructive tests</label>
+            <label><input type="radio" name="q2" value="c"/> Publishing findings online</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>4. What does privilege escalation involve?</p>
-        <label><input type="radio" name="q4" value="a"> Gaining unauthorized higher-level access</label><br>
-        <label><input type="radio" name="q4" value="b"> Installing new software</label><br>
-        <label><input type="radio" name="q4" value="c"> Deleting files</label>
-      </div>
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) Which tool category is used to capture and inspect network traffic?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Packet analyzers (e.g., Wireshark)</label>
+            <label><input type="radio" name="q3" value="b"/> Word processors</label>
+            <label><input type="radio" name="q3" value="c"/> Media players</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>5. Which tool is commonly used for web application testing?</p>
-        <label><input type="radio" name="q5" value="a"> Burp Suite</label><br>
-        <label><input type="radio" name="q5" value="b"> MS Word</label><br>
-        <label><input type="radio" name="q5" value="c"> AutoCAD</label>
-      </div>
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) Which statement about vulnerability scanners is correct?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> They always find every possible issue automatically</label>
+            <label><input type="radio" name="q4" value="b"/> They are useful but can produce false positives and need manual validation</label>
+            <label><input type="radio" name="q4" value="c"/> They are illegal to use under any circumstance</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>6. What is keylogging?</p>
-        <label><input type="radio" name="q6" value="a"> Recording user keystrokes</label><br>
-        <label><input type="radio" name="q6" value="b"> Encrypting files</label><br>
-        <label><input type="radio" name="q6" value="c"> Blocking websites</label>
-      </div>
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) What does CVSS provide?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> A numerical severity score for vulnerabilities</label>
+            <label><input type="radio" name="q5" value="b"/> A mechanism to encrypt traffic</label>
+            <label><input type="radio" name="q5" value="c"/> A protocol for file transfer</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>7. Which is NOT a countermeasure?</p>
-        <label><input type="radio" name="q7" value="a"> Strong passwords</label><br>
-        <label><input type="radio" name="q7" value="b"> Regular patching</label><br>
-        <label><input type="radio" name="q7" value="c"> Ignoring logs</label>
-      </div>
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) Which password storage method is recommended?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> Plaintext files</label>
+            <label><input type="radio" name="q6" value="b"/> Salted, slow hashes (e.g., bcrypt, Argon2)</label>
+            <label><input type="radio" name="q6" value="c"/> Storing passwords in emails</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>8. Which framework is used for exploitation?</p>
-        <label><input type="radio" name="q8" value="a"> Metasploit</label><br>
-        <label><input type="radio" name="q8" value="b"> Google Docs</label><br>
-        <label><input type="radio" name="q8" value="c"> Slack</label>
-      </div>
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) What is an important defensive control against keyloggers?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> Use privileged accounts for daily browsing</label>
+            <label><input type="radio" name="q7" value="b"/> Endpoint protection (EDR), application allowlisting and least privilege</label>
+            <label><input type="radio" name="q7" value="c"/> Disable MFA</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>9. Covering tracks means?</p>
-        <label><input type="radio" name="q9" value="a"> Deleting logs to avoid detection</label><br>
-        <label><input type="radio" name="q9" value="b"> Installing patches</label><br>
-        <label><input type="radio" name="q9" value="c"> Backing up data</label>
-      </div>
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) Which lifecycle activity confirms that a previously reported vulnerability has been fixed?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> Discovery</label>
+            <label><input type="radio" name="q8" value="b"/> Verification / re-scan</label>
+            <label><input type="radio" name="q8" value="c"/> Decommission only</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>10. Which is an open-source vulnerability scanner?</p>
-        <label><input type="radio" name="q10" value="a"> OpenVAS</label><br>
-        <label><input type="radio" name="q10" value="b"> Paint</label><br>
-        <label><input type="radio" name="q10" value="c"> Notepad</label>
-      </div>
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) Which scanning approach is best for catching application logic issues?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> Automated-only scanning</label>
+            <label><input type="radio" name="q9" value="b"/> Combination of automated scanning and manual testing</label>
+            <label><input type="radio" name="q9" value="c"/> Ignoring the app entirely</label>
+          </div>
+        </div>
 
-      <button type="button" onclick="checkAnswers()">Submit Quiz</button>
-    </form>
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) What should you always do before scanning or testing systems you don't own?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> Obtain explicit written permission and define rules of engagement</label>
+            <label><input type="radio" name="q10" value="b"/> Start immediately without telling anyone</label>
+            <label><input type="radio" name="q10" value="c"/> Publish target details publicly</label>
+          </div>
+        </div>
 
-    <div id="result"></div>
-  </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
 
-  <a href="cyber-index.html" class="back-btn">⬅ Back to Cybersecurity Lessons</a>
+    <footer class="container">
+      <p>© Learning Playground – Vulnerability Assessment & System Hacking • Lesson 7</p>
+    </footer>
+  </main>
 
   <script>
-    function checkAnswers() {
-      const correctAnswers = {
-        q1: "b", q2: "b", q3: "a", q4: "a", q5: "a",
-        q6: "a", q7: "c", q8: "a", q9: "a", q10: "a"
-      };
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson7-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
 
-      let score = 0;
-      let resultText = "";
+    /* Download notes */
+    function downloadNotes() {
+      const title = 'Lesson7_Vulnerability_Assessment_Notes.txt';
+      const content = [
+        'Lesson 7 – Vulnerability Assessment & System Hacking',
+        '',
+        'Table of Content',
+        'What Is a Vulnerability?',
+        'Vulnerability Assessment and Process',
+        'Types of Vulnerability Analysis',
+        'Vulnerability Management Lifecycle',
+        'Vulnerability Assessment Tools',
+        'Vulnerability Scoring Systems',
+        'Vulnerability Assessment Report',
+        'System Hacking (conceptual)',
+        'Scan workflow and safe lab practices',
+        'Password breaking defensive measures',
+        'Keyloggers overview & mitigations',
+        '',
+        'Key defensive takeaways:',
+        '- Use authenticated scans where possible',
+        '- Validate scanner findings manually',
+        '- Prioritize by business impact and exploitability',
+        '- Patch, mitigate, verify, and measure time-to-remediate',
+        '- Always test only in authorized labs'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
 
-      for (let q in correctAnswers) {
-        const answer = document.querySelector(`input[name="${q}"]:checked`);
-        if (answer) {
-          if (answer.value === correctAnswers[q]) {
-            score++;
-            answer.parentElement.style.color = "lime";
-          } else {
-            answer.parentElement.style.color = "red";
-          }
+    /* Quiz logic */
+    const answers = { q1:'a', q2:'a', q3:'a', q4:'b', q5:'a', q6:'b', q7:'b', q8:'b', q9:'b', q10:'a' };
+    const explanations = {
+      q1: 'A vulnerability is a weakness that can be exploited to harm confidentiality, integrity or availability.',
+      q2: 'Before testing you should identify assets and define the scope (and rules) for the assessment.',
+      q3: 'Packet analyzers like Wireshark capture and inspect network traffic for analysis.',
+      q4: 'Scanners are useful but can produce false positives and require manual validation.',
+      q5: 'CVSS provides a numerical severity score for vulnerabilities to aid prioritization.',
+      q6: 'Passwords should be stored as salted, slow hashes (bcrypt, Argon2) — not plaintext.',
+      q7: 'Endpoint protection (EDR), allowlisting and least privilege help defend against keyloggers.',
+      q8: 'Verification or re-scanning confirms whether a previously reported vulnerability was actually fixed.',
+      q9: 'Application logic issues are best found by combining automated tools with manual testing.',
+      q10: 'Always obtain explicit written permission and define rules of engagement before testing systems you don’t own.'
+    };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson7-vuln-score';
+    const attemptBtn = document.getElementById('attemptBtn');
+
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson7-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      // remove prior inline explanations
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        // clear previous highlight
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) { missed.push(q); continue; }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
         }
       }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
 
-      resultText = `You scored ${score}/10`;
-      document.getElementById("result").innerText = resultText;
+      // remove old review box
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          // attach inline explanation under the missed question
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
+            }
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions. Explanations were added under the missed questions.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
+      }
+      submitBtn.disabled = true;
     }
 
-    // Animate content
-    gsap.from("h1", { duration: 1, y: -50, opacity: 0, ease: "bounce.out" });
-    gsap.from(".content", { duration: 1.2, x: -100, opacity: 0, ease: "power2.out" });
-    gsap.from(".question", { duration: 1, opacity: 0, y: 30, stagger: 0.2, ease: "back.out(1.7)" });
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson7-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+    }
   </script>
 </body>
 </html>

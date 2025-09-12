@@ -1,264 +1,574 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 6 - Vulnerability Analysis & System Hacking</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 8 – Malware & Sniffing</title>
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Share Tech Mono', monospace;
-      background: #000;
-      color: #00ffcc;
-      padding: 20px;
-      overflow-x: hidden;
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
     }
-
-    h1, h2 {
-      text-align: center;
-      text-shadow: 0 0 12px #00ffe7;
-      margin-bottom: 20px;
-    }
-
-    .content {
-      background: rgba(0, 0, 0, 0.8);
-      border: 1px solid #00ffcc;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 0 20px #00ffcc;
-      line-height: 1.6;
-    }
-
-    ul li {
-      margin-bottom: 10px;
-    }
-
-    .quiz {
-      margin-top: 30px;
-    }
-
-    .question {
-      margin-bottom: 20px;
-      padding: 15px;
-      border: 1px solid #00ffe7;
-      border-radius: 8px;
-      background: rgba(0, 255, 200, 0.05);
-    }
-
-    button {
-      background: linear-gradient(45deg, #ff0080, #7928ca);
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      margin-top: 15px;
-    }
-
-    button:hover {
-      background: linear-gradient(45deg, #00ffe7, #0099ff);
-      color: #000;
-      transform: scale(1.05);
-      box-shadow: 0 0 20px #00ffe7;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 1.3rem;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .back-btn {
-      display: block;
-      text-align: center;
-      margin-top: 30px;
-      padding: 10px;
-      background: #111;
-      border-radius: 8px;
-      color: #00ffcc;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .back-btn:hover {
-      background: #00ffcc;
-      color: #000;
-    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .code-block{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;font-size:13px;color:var(--muted);background:rgba(255,255,255,0.03);padding:10px;border-radius:8px}
   </style>
 </head>
 <body>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 8</span>
+        <div>
+          <strong>Malware & Sniffing — Lesson 8</strong>
+          <div class="small muted">Types, real cases, detection, and network sniffing concepts</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
+    </div>
+  </header>
 
-  <h1>Lesson 7: Vulnerability Analysis & System Hacking</h1>
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">Malware & Sniffing</h1>
+      <p class="subtitle">Overview of malicious software — how it behaves, how defenders detect and respond, and an introduction to network sniffing and its mitigations.</p>
 
-  <div class="content">
-    <h2>🔍 Introduction</h2>
-    <p>
-      Vulnerability analysis is the process of identifying, quantifying, and prioritizing weaknesses in systems,
-      applications, and networks. These weaknesses, if exploited by attackers, can lead to unauthorized access,
-      data breaches, or complete system compromise.
-    </p>
+      <div class="chips">
+        <span class="chip">Malware</span>
+        <span class="chip">Ransomware</span>
+        <span class="chip">Worms</span>
+        <span class="chip">Sniffing</span>
+        <span class="chip">EDR</span>
+      </div>
+    </section>
 
-    <h2>⚡ Phases of Vulnerability Assessment</h2>
-    <ul>
-      <li><b>Information Gathering:</b> Collecting data about systems (OS, services, applications).</li>
-      <li><b>Vulnerability Detection:</b> Using scanners and tools to identify potential flaws.</li>
-      <li><b>Analysis:</b> Prioritizing based on severity, exploitability, and business impact.</li>
-      <li><b>Remediation:</b> Patching, reconfiguring, or mitigating identified vulnerabilities.</li>
-    </ul>
+    <!-- TOC -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Content</h2>
+      <ol class="list">
+        <li>What Is Malware?</li>
+        <li>Common Types of Malware (with behavior)</li>
+        <li>Protection Against Malware (defenses & detection)</li>
+        <li>Real Cases of Malware Attacks (lessons learned)</li>
+        <li>Sniffing (what, why it's used)</li>
+        <li>Types of Sniffing (passive, active, ARP spoofing etc.)</li>
+        <li>Mitigations & Best Practices</li>
+      </ol>
+    </section>
 
-    <h2>🛠 Tools for Vulnerability Analysis</h2>
-    <ul>
-      <li><b>Nessus:</b> Industry-standard vulnerability scanner.</li>
-      <li><b>OpenVAS:</b> Open-source vulnerability assessment tool.</li>
-      <li><b>Nmap:</b> Port scanner with scripting capabilities to detect weaknesses.</li>
-      <li><b>Burp Suite:</b> Web application vulnerability testing tool.</li>
-      <li><b>Metasploit:</b> Exploitation framework for testing identified vulnerabilities.</li>
-    </ul>
+    <!-- What is malware -->
+    <section class="card long-read" aria-labelledby="what">
+      <h2 id="what" class="section-title">What Is Malware?</h2>
+      <p>Malware — short for <em>malicious software</em> — is any software designed to perform unwanted, intrusive or harmful actions on computing devices. Attackers build malware to steal data, disrupt services, create persistent access, or monetize compromises (for example via ransomware).</p>
+      <div class="callout">
+        <strong>Remember:</strong> malware is a tool — the intent and context (attacker vs. researcher) determine whether activity is malicious. This lesson focuses on defender perspective and safe labs.
+      </div>
+    </section>
 
-    <h2>💣 System Hacking</h2>
-    <p>
-      System hacking involves exploiting vulnerabilities to gain unauthorized access. Hackers use it to elevate
-      privileges, steal data, or disrupt services. Ethical hackers simulate this to strengthen defenses.
-    </p>
+    <!-- Purpose & characteristics -->
+    <section class="card long-read" aria-labelledby="purpose">
+      <h2 id="purpose" class="section-title">Purpose & Characteristics of Malware</h2>
+      <p><strong>Common purposes:</strong></p>
+      <ul class="list">
+        <li>Data theft (credentials, PII, intellectual property)</li>
+        <li>Financial gain (ransomware extortion, banking trojans)</li>
+        <li>Surveillance (spyware)</li>
+        <li>Service disruption (DDoS, wipers)</li>
+        <li>Building botnets for later abuse (spam, DDoS)</li>
+      </ul>
 
-    <h2>⚙️ System Hacking Techniques</h2>
-    <ul>
-      <li><b>Password Cracking:</b> Brute force, dictionary, and rainbow table attacks.</li>
-      <li><b>Privilege Escalation:</b> Exploiting misconfigurations to gain higher access.</li>
-      <li><b>Keylogging:</b> Recording keystrokes to capture credentials.</li>
-      <li><b>Spyware:</b> Malicious software for monitoring user activities.</li>
-      <li><b>Covering Tracks:</b> Deleting logs to avoid detection.</li>
-    </ul>
+      <p><strong>Typical characteristics:</strong></p>
+      <ul class="list">
+        <li>Stealth — attempts to avoid detection (obfuscation, packing)</li>
+        <li>Persistence — installing mechanisms to survive reboots</li>
+        <li>Propagation — ability to spread across systems or networks</li>
+        <li>Payload — what the malware actually does once in place</li>
+      </ul>
+    </section>
 
-    <h2>🛡 Countermeasures</h2>
-    <ul>
-      <li>Regular patch management.</li>
-      <li>Strong password policies & MFA.</li>
-      <li>Log monitoring and anomaly detection.</li>
-      <li>Running periodic vulnerability scans.</li>
-      <li>Implementing intrusion detection and prevention systems.</li>
-    </ul>
-  </div>
+    <!-- Common types -->
+    <section class="card long-read" aria-labelledby="types">
+      <h2 id="types" class="section-title">Common Types of Malware (what they do)</h2>
 
-  <div class="quiz">
-    <h2>🧠 Lesson 7 Quiz</h2>
+      <h3>Virus</h3>
+      <p>Attaches to files or code and executes when the host runs the infected file. Historically spread via removable media, email attachments, or infected installers. Modern examples are rare compared to other types, but the concept still appears inside compound malware.</p>
 
-    <form id="quizForm">
-      <div class="question">
-        <p>1. What is vulnerability analysis?</p>
-        <label><input type="radio" name="q1" value="a"> Installing antivirus software</label><br>
-        <label><input type="radio" name="q1" value="b"> Identifying and prioritizing system weaknesses</label><br>
-        <label><input type="radio" name="q1" value="c"> Writing secure code only</label>
+      <h3>Worm</h3>
+      <p>Self-replicating malware that spreads across networks by exploiting vulnerabilities or weak credentials. Worms often aim to propagate quickly and can cause network congestion and downtime.</p>
+
+      <h3>Trojan</h3>
+      <p>Disguises itself as legitimate software to trick users into executing it. Once executed, a Trojan typically drops backdoors, steals data, or downloads additional payloads.</p>
+
+      <h3>Ransomware</h3>
+      <p>Encrypts victim files (or exfiltrates data) and demands payment for decryption keys. Modern ransomware often combines encryption with data theft and public shaming (double extortion).</p>
+
+      <h3>Spyware / Keyloggers</h3>
+      <p>Secretly monitors activity and exfiltrates information — keystrokes, clipboard contents, screenshots, browser history and more. Used for espionage or credential theft.</p>
+
+      <h3>Adware</h3>
+      <p>Displays unwanted advertisements, often for monetization. Adware can decrease performance and sometimes open additional attack surfaces.</p>
+
+      <h3>Botnet</h3>
+      <p>A network of compromised devices under centralized control (C2). Botnets are rented or used for large attacks (DDoS), spam campaigns, or cryptocurrency mining.</p>
+
+      <h3>Fileless malware</h3>
+      <p>Resides in memory or abuses legitimate tools (PowerShell, WMI) to avoid dropping files to disk, making detection harder for classic signature-based antivirus.</p>
+    </section>
+
+    <!-- Protection -->
+    <section class="card long-read" aria-labelledby="protection">
+      <h2 id="protection" class="section-title">Protection Against Malware — Layers of defense</h2>
+      <p>Effective defense relies on multiple layers — prevention, detection, containment, and recovery.</p>
+
+      <h3>Prevention</h3>
+      <ul class="list">
+        <li>Keep software and OS patched (reduce exploitability).</li>
+        <li>Use strong authentication and MFA to protect accounts.</li>
+        <li>Restrict admin rights; apply least privilege.</li>
+        <li>Use application allowlisting where possible.</li>
+        <li>Harden endpoints and remove unnecessary services.</li>
+      </ul>
+
+      <h3>Detection</h3>
+      <ul class="list">
+        <li>Endpoint Detection & Response (EDR) to detect suspicious behavior (process launches, anomalous persistence).</li>
+        <li>Network detection (IDS/IPS) to spot suspicious connections or unusual data flows.</li>
+        <li>Log aggregation and SIEM for correlation and alerting.</li>
+        <li>Threat intelligence to map indicators (IPs, domains, hashes) to known campaigns.</li>
+      </ul>
+
+      <h3>Containment & Response</h3>
+      <ul class="list">
+        <li>Isolate infected hosts quickly (network segmentation, NAC).</li>
+        <li>Collect forensic artifacts (memory, disk images) for analysis.</li>
+        <li>Rotate and revoke credentials that may have been stolen.</li>
+        <li>Restore from verified backups; test restore procedures regularly.</li>
+      </ul>
+
+      <h3>Recovery & Lessons</h3>
+      <ul class="list">
+        <li>Perform root-cause analysis to close gaps.</li>
+        <li>Improve patching, monitoring, and training based on findings.</li>
+      </ul>
+    </section>
+
+    <!-- Real cases -->
+    <section class="card long-read" aria-labelledby="cases">
+      <h2 id="cases" class="section-title">Real Cases of Malware Attacks — Key lessons</h2>
+      <p>Studying incidents helps defenders prioritize controls. High-level summaries and lessons:</p>
+
+      <ul class="list">
+        <li><strong>I Love You</strong> — an email-propagating worm that spread via attachments. <em>Lesson:</em> email hygiene, attachment filtering and endpoint scanning matter.</li>
+        <li><strong>WannaCry</strong> — worm-like ransomware that leveraged a network worm to spread rapidly using an SMB exploit. <em>Lesson:</em> rapid patching and network segmentation reduce worm impact.</li>
+        <li><strong>NotPetya</strong> — destructive wiper masquerading as ransomware, spread via update mechanisms and laterally. <em>Lesson:</em> supply-chain trust, isolated update testing, backups and immutable logging are critical.</li>
+      </ul>
+
+      <div class="explain">Note: these summaries are high level; use them to derive defensive controls rather than to replicate behavior.</div>
+    </section>
+
+    <!-- Sniffing -->
+    <section class="card long-read" aria-labelledby="sniffing">
+      <h2 id="sniffing" class="section-title">Sniffing — What is it?</h2>
+      <p>Sniffing is the interception and capture of network packets to examine their contents. Attackers use sniffers to harvest unencrypted credentials, session tokens, or other sensitive data. Network defenders use the same techniques (legally and in controlled environments) for troubleshooting, traffic analysis and intrusion detection.</p>
+    </section>
+
+    <!-- Types -->
+    <section class="card long-read" aria-labelledby="types-sniff">
+      <h2 id="types-sniff" class="section-title">Types of Sniffing</h2>
+
+      <h3>Passive sniffing</h3>
+      <p>Occurs on a non-switched network segment (or on a network tap). The sniffer listens to traffic without modifying it. On modern switched networks passive sniffing from a single host is limited unless tapping or mirror ports are used.</p>
+
+      <h3>Active sniffing</h3>
+      <p>Involves techniques that manipulate the network so traffic is forwarded to the attacker. Common active techniques include ARP spoofing/poisoning or DHCP spoofing. Active sniffing can be detected because it typically changes ARP tables, causes duplicate IPs, or triggers network alarms.</p>
+
+      <h3>ARP spoofing (example concept)</h3>
+      <p>By sending forged ARP messages an attacker can associate their MAC address with another host's IP (e.g., the gateway), causing traffic to be routed through the attacker's machine. This enables interception and possible tampering. Defenders detect this through static ARP entries, dynamic ARP inspection, and network monitoring.</p>
+
+      <h3>Promiscuous mode & port mirroring</h3>
+      <p>Network interfaces can be set to promiscuous mode to capture all frames the NIC receives. Network switches support port mirroring (SPAN) for legitimate monitoring; attackers may abuse misconfigurations or compromised switches.</p>
+    </section>
+
+    <!-- Mitigations -->
+    <section class="card long-read" aria-labelledby="mitigate">
+      <h2 id="mitigate" class="section-title">Mitigations & Best Practices</h2>
+      <p>Practical steps to reduce risk from malware and sniffing:</p>
+      <ul class="list">
+        <li><strong>Encrypt in transit:</strong> use TLS/HTTPS, SSH, VPNs so intercepted traffic is not useful.</li>
+        <li><strong>Network segmentation:</strong> separate critical assets so network-level spread is limited.</li>
+        <li><strong>Use strong authentication & MFA:</strong> even intercepted credentials are less useful when MFA is enforced.</li>
+        <li><strong>Harden endpoints:</strong> EDR, application allowlists, timely patching, and minimal admin rights.</li>
+        <li><strong>Secure network infrastructure:</strong> enable port security, dynamic ARP inspection, and limit management interfaces.</li>
+        <li><strong>Visibility & logging:</strong> collect logs, monitor for anomalous network flows, and trigger alerts for unusual ARP activity or new devices.</li>
+        <li><strong>User training:</strong> phishing awareness to reduce malware delivery vectors.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Operational tip:</strong> assume compromise — have backups, tested incident response playbooks, and a clean-room recovery process.
+      </div>
+    </section>
+
+    <!-- Download notes -->
+    <section class="card" aria-labelledby="notes">
+      <h2 id="notes" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a plain-text copy of this lesson for offline study.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~20 mins</span></div>
+      </div>
+    </section>
+
+    <!-- QUIZ GATE -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 8 Quiz — Malware & Sniffing</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready. The quiz has 10 questions; missed questions will show explanations.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
       </div>
 
-      <div class="question">
-        <p>2. Which tool is widely used for vulnerability scanning?</p>
-        <label><input type="radio" name="q2" value="a"> Photoshop</label><br>
-        <label><input type="radio" name="q2" value="b"> Nessus</label><br>
-        <label><input type="radio" name="q2" value="c"> Excel</label>
-      </div>
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) What is malware?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> Software designed to perform harmful or unauthorized actions</label>
+            <label><input type="radio" name="q1" value="b"/> A type of printer driver</label>
+            <label><input type="radio" name="q1" value="c"/> A harmless system update</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>3. Which of the following is a phase of vulnerability assessment?</p>
-        <label><input type="radio" name="q3" value="a"> Information Gathering</label><br>
-        <label><input type="radio" name="q3" value="b"> Image Editing</label><br>
-        <label><input type="radio" name="q3" value="c"> Music Production</label>
-      </div>
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) Which malware type typically encrypts files and demands payment?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> Ransomware</label>
+            <label><input type="radio" name="q2" value="b"/> Adware</label>
+            <label><input type="radio" name="q2" value="c"/> Worms always do that</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>4. What does privilege escalation involve?</p>
-        <label><input type="radio" name="q4" value="a"> Gaining unauthorized higher-level access</label><br>
-        <label><input type="radio" name="q4" value="b"> Installing new software</label><br>
-        <label><input type="radio" name="q4" value="c"> Deleting files</label>
-      </div>
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) What is a botnet used for?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> A network of compromised devices used for DDoS, spam, or other coordinated attacks</label>
+            <label><input type="radio" name="q3" value="b"/> A local build server cluster</label>
+            <label><input type="radio" name="q3" value="c"/> A VPN service</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>5. Which tool is commonly used for web application testing?</p>
-        <label><input type="radio" name="q5" value="a"> Burp Suite</label><br>
-        <label><input type="radio" name="q5" value="b"> MS Word</label><br>
-        <label><input type="radio" name="q5" value="c"> AutoCAD</label>
-      </div>
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) Which control helps detect malicious activity on endpoints?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> Endpoint Detection & Response (EDR)</label>
+            <label><input type="radio" name="q4" value="b"/> Turning off logging</label>
+            <label><input type="radio" name="q4" value="c"/> Disabling antivirus permanently</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>6. What is keylogging?</p>
-        <label><input type="radio" name="q6" value="a"> Recording user keystrokes</label><br>
-        <label><input type="radio" name="q6" value="b"> Encrypting files</label><br>
-        <label><input type="radio" name="q6" value="c"> Blocking websites</label>
-      </div>
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) What is sniffing?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> Capturing and analyzing network packets</label>
+            <label><input type="radio" name="q5" value="b"/> Encrypting traffic with TLS</label>
+            <label><input type="radio" name="q5" value="c"/> A type of malware</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>7. Which is NOT a countermeasure?</p>
-        <label><input type="radio" name="q7" value="a"> Strong passwords</label><br>
-        <label><input type="radio" name="q7" value="b"> Regular patching</label><br>
-        <label><input type="radio" name="q7" value="c"> Ignoring logs</label>
-      </div>
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) Which sniffing technique is active?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> ARP spoofing (poisoning)</label>
+            <label><input type="radio" name="q6" value="b"/> Listening on a hub (passive)</label>
+            <label><input type="radio" name="q6" value="c"/> Reading a local file</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>8. Which framework is used for exploitation?</p>
-        <label><input type="radio" name="q8" value="a"> Metasploit</label><br>
-        <label><input type="radio" name="q8" value="b"> Google Docs</label><br>
-        <label><input type="radio" name="q8" value="c"> Slack</label>
-      </div>
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) Which measure reduces the usefulness of intercepted network traffic?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> Encrypting traffic with TLS/HTTPS</label>
+            <label><input type="radio" name="q7" value="b"/> Using plain HTTP everywhere</label>
+            <label><input type="radio" name="q7" value="c"/> Disabling MFA</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>9. Covering tracks means?</p>
-        <label><input type="radio" name="q9" value="a"> Deleting logs to avoid detection</label><br>
-        <label><input type="radio" name="q9" value="b"> Installing patches</label><br>
-        <label><input type="radio" name="q9" value="c"> Backing up data</label>
-      </div>
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) What is a good detection method for ARP spoofing?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> Static ARP entries or Dynamic ARP Inspection on switches</label>
+            <label><input type="radio" name="q8" value="b"/> Disabling all network monitoring</label>
+            <label><input type="radio" name="q8" value="c"/> Publishing ARP tables publicly</label>
+          </div>
+        </div>
 
-      <div class="question">
-        <p>10. Which is an open-source vulnerability scanner?</p>
-        <label><input type="radio" name="q10" value="a"> OpenVAS</label><br>
-        <label><input type="radio" name="q10" value="b"> Paint</label><br>
-        <label><input type="radio" name="q10" value="c"> Notepad</label>
-      </div>
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) Which practice helps limit malware spread within a network?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> Network segmentation and least privilege</label>
+            <label><input type="radio" name="q9" value="b"/> Using the same admin password everywhere</label>
+            <label><input type="radio" name="q9" value="c"/> Opening all firewall ports</label>
+          </div>
+        </div>
 
-      <button type="button" onclick="checkAnswers()">Submit Quiz</button>
-    </form>
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) Best practice if a host is suspected to be infected?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> Isolate the host, collect evidence, and follow incident response procedures</label>
+            <label><input type="radio" name="q10" value="b"/> Keep it online and continue normal activity</label>
+            <label><input type="radio" name="q10" value="c"/> Share credentials broadly</label>
+          </div>
+        </div>
 
-    <div id="result"></div>
-  </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
 
-  <a href="cyber-index.html" class="back-btn">⬅ Back to Cybersecurity Lessons</a>
+    <footer class="container">
+      <p>© Learning Playground – Malware & Sniffing • Lesson 8</p>
+    </footer>
+  </main>
 
   <script>
-    function checkAnswers() {
-      const correctAnswers = {
-        q1: "b", q2: "b", q3: "a", q4: "a", q5: "a",
-        q6: "a", q7: "c", q8: "a", q9: "a", q10: "a"
-      };
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson8-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
 
-      let score = 0;
-      let resultText = "";
+    /* Download notes */
+    function downloadNotes() {
+      const title = 'Lesson8_Malware_Sniffing_Notes.txt';
+      const content = [
+        'Lesson 8 – Malware & Sniffing',
+        '',
+        'Table of Content',
+        'What Is Malware?',
+        'Common Types Of Malware',
+        'Protection Against Malware',
+        'Real Cases Of Malware Attacks',
+        'Sniffing',
+        'Types Of Sniffing',
+        'Mitigations & Best Practices',
+        '',
+        'Key takeaways:',
+        '- Use layered defenses (patching, EDR, network controls, backups)',
+        '- Encrypt traffic (TLS) to reduce sniffing risk',
+        '- Segment networks and enforce least privilege',
+        '- Monitor for anomalies (ARP spoofing, unusual process activity)',
+        '- Practice safe incident response and test backups regularly'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
 
-      for (let q in correctAnswers) {
-        const answer = document.querySelector(`input[name="${q}"]:checked`);
-        if (answer) {
-          if (answer.value === correctAnswers[q]) {
-            score++;
-            answer.parentElement.style.color = "lime";
-          } else {
-            answer.parentElement.style.color = "red";
-          }
+    /* Quiz logic */
+    const answers = { q1:'a', q2:'a', q3:'a', q4:'a', q5:'a', q6:'a', q7:'a', q8:'a', q9:'a', q10:'a' };
+    const explanations = {
+      q1: 'Malware is software created to perform harmful or unauthorized actions on systems.',
+      q2: 'Ransomware encrypts files and demands payment for recovery.',
+      q3: 'A botnet is a network of compromised devices used for coordinated attacks like DDoS or spam.',
+      q4: 'EDR tools observe endpoint behavior and help detect malicious activity.',
+      q5: 'Sniffing is capturing and analyzing network packets to inspect their contents.',
+      q6: 'ARP spoofing is an active sniffing technique that poisons ARP tables to intercept traffic.',
+      q7: 'Encrypting traffic (TLS/HTTPS) prevents attackers from reading intercepted network data.',
+      q8: 'Static ARP entries or dynamic ARP inspection can help detect or prevent ARP spoofing.',
+      q9: 'Network segmentation and least privilege reduce lateral movement and limit malware spread.',
+      q10: 'Isolate suspected infected hosts, collect evidence, and follow incident response procedures.'
+    };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson8-malware-score';
+    const attemptBtn = document.getElementById('attemptBtn');
+
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson8-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      // remove prior inline explanations
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        // clear previous highlight
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) { missed.push(q); continue; }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
         }
       }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
 
-      resultText = `You scored ${score}/10`;
-      document.getElementById("result").innerText = resultText;
+      // remove old review box
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          // attach inline explanation under the missed question
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
+            }
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions. Explanations have been added under the missed questions.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
+      }
+      submitBtn.disabled = true;
     }
 
-    // Animate content
-    gsap.from("h1", { duration: 1, y: -50, opacity: 0, ease: "bounce.out" });
-    gsap.from(".content", { duration: 1.2, x: -100, opacity: 0, ease: "power2.out" });
-    gsap.from(".question", { duration: 1, opacity: 0, y: 30, stagger: 0.2, ease: "back.out(1.7)" });
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson8-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+    }
   </script>
 </body>
 </html>

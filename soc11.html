@@ -1,123 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lesson 10 – Social Engineering</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 11 – Threat Detection & Response</title>
+
   <style>
-    :root { --bg:#0b1220;--card:#111a2e;--muted:#8aa0c3;--text:#e7eefc;--accent:#6ea8ff;--accent-2:#7ef0c1;--warning:#ffdf6e;--danger:#ff7e93; }
-    *{box-sizing:border-box} html,body{margin:0;height:100%}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial;color:var(--text);background:linear-gradient(135deg,#0b1220 0%,#101b34 100%)}
-    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
     .container{max-width:1100px;margin:0 auto;padding:18px}
-    .title{font-size:clamp(28px,4vw,40px);line-height:1.2;margin:4px 0 10px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
     .subtitle{color:var(--muted);font-size:15px}
-    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase}
-    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-bottom:16px}
-    .list{padding-left:18px}.list li{margin:6px 0}
-    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
-    .video-wrap iframe{width:100%;height:100%;border:0;display:block}
-    .quiz .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
-    .q-options{display:grid;gap:6px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
     .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .result{font-size:18px;font-weight:700}.good{color:var(--accent-2)}.mid{color:var(--warning)}.bad{color:var(--danger)}
-    footer{opacity:.7;font-size:13px;padding:30px 0 60px;text-align:center}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    table th, table td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
   </style>
 </head>
 <body>
   <header>
-    <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="badge">Lesson 10</span>
-        <strong>Social Engineering</strong>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 11</span>
+        <div>
+          <strong>Threat Detection & Response — Lesson 11</strong>
+          <div class="small muted">SIEM, IDS/EDR, incident response, hunting and MDR</div>
+        </div>
       </div>
-      <div><button class="btn" id="toggleTheme">🌗 Theme</button></div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
     </div>
   </header>
 
   <main class="container">
-    <section class="card">
-      <h1 class="title">Social Engineering</h1>
-      <p class="subtitle">Exploiting human psychology instead of technical vulnerabilities.</p>
-    </section>
+    <section class="hero card">
+      <h1 class="title">Threat Detection & Response (TDR)</h1>
+      <p class="subtitle">Detect threats early, respond quickly and reduce impact. This lesson covers key terms (events/alerts/incidents), SIEM, detection techniques, the incident lifecycle, threat hunting, and MDR.</p>
 
-    <section class="card">
-      <h2>What is Social Engineering?</h2>
-      <p>Social engineering is the act of manipulating people into taking actions that may not be in their best interest. Attackers exploit human psychology rather than technical flaws.</p>
-    </section>
-
-    <section class="card">
-      <h2>Why Hackers Use Social Engineering</h2>
-      <ul class="list">
-        <li>Requires the least resistance</li>
-        <li>More effective than technical attacks</li>
-        <li>Common in almost all campaigns</li>
-        <li>Businesses face 700+ attacks yearly</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Common Goals</h2>
-      <ul class="list">
-        <li>Money</li>
-        <li>Ego / Revenge</li>
-        <li>Political or social causes</li>
-        <li>Entertainment</li>
-        <li>Knowledge</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Types of Social Engineering</h2>
-      <ul class="list">
-        <li><strong>Phishing:</strong> Fraudulent emails/messages</li>
-        <li><strong>Spear Phishing:</strong> Targeted phishing using personal data</li>
-        <li><strong>Baiting:</strong> Offering free goods/downloads</li>
-        <li><strong>Quid Pro Quo:</strong> Exchange of services for info</li>
-        <li><strong>Tailgating:</strong> Following someone into restricted areas</li>
-        <li><strong>Whaling:</strong> Targeting executives with sensitive access</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Real-World Example</h2>
-      <p>Between 2013–2015, attackers tricked Google and Facebook employees into paying fraudulent invoices, stealing over $100 million via a spear phishing scheme.</p>
-    </section>
-
-    <section class="card">
-      <h2>Prevention</h2>
-      <ul class="list">
-        <li>Educate employees with awareness training</li>
-        <li>Run phishing simulations</li>
-        <li>Encourage cybersecurity champions</li>
-        <li>Build a culture of continuous learning</li>
-        <li>Foster secure behavior across the organization</li>
-      </ul>
-    </section>
-
-    <section class="card">
-      <h2>Video Resource</h2>
-      <div class="video-wrap">
-        <iframe src="https://www.youtube.com/embed/lc7scxvKQOo" title="Social Engineering Explained" allowfullscreen></iframe>
+      <div class="chips">
+        <span class="chip">SIEM</span>
+        <span class="chip">EDR</span>
+        <span class="chip">SOAR</span>
+        <span class="chip">Threat Hunting</span>
+        <span class="chip">IR</span>
       </div>
     </section>
 
-    <section id="quiz" class="card quiz">
-      <h2>Lesson 10 Quiz</h2>
-      <form id="quizForm">
-        <div class="q-card"><h4>1) What is social engineering?</h4><div class="q-options"><label><input type="radio" name="q1" value="a"/> Manipulating people to act against their interest</label><label><input type="radio" name="q1" value="b"/> Upgrading network firewalls</label><label><input type="radio" name="q1" value="c"/> Debugging code</label></div></div>
-        <div class="q-card"><h4>2) Why is social engineering effective?</h4><div class="q-options"><label><input type="radio" name="q2" value="a"/> Exploits human psychology</label><label><input type="radio" name="q2" value="b"/> Requires advanced coding</label><label><input type="radio" name="q2" value="c"/> Needs expensive hardware</label></div></div>
-        <div class="q-card"><h4>3) On average, how many attacks do businesses face yearly?</h4><div class="q-options"><label><input type="radio" name="q3" value="a"/> Over 700</label><label><input type="radio" name="q3" value="b"/> About 70</label><label><input type="radio" name="q3" value="c"/> Less than 10</label></div></div>
-        <div class="q-card"><h4>4) Which is a common goal of social engineering?</h4><div class="q-options"><label><input type="radio" name="q4" value="a"/> Entertainment</label><label><input type="radio" name="q4" value="b"/> Money</label><label><input type="radio" name="q4" value="c"/> All of the above</label></div></div>
-        <div class="q-card"><h4>5) What is spear phishing?</h4><div class="q-options"><label><input type="radio" name="q5" value="a"/> General spam emails</label><label><input type="radio" name="q5" value="b"/> Targeted phishing using personal data</label><label><input type="radio" name="q5" value="c"/> Network intrusion</label></div></div>
-        <div class="q-card"><h4>6) What is baiting?</h4><div class="q-options"><label><input type="radio" name="q6" value="a"/> Offering free goods/downloads</label><label><input type="radio" name="q6" value="b"/> Asking security questions</label><label><input type="radio" name="q6" value="c"/> Encrypting data</label></div></div>
-        <div class="q-card"><h4>7) How does quid pro quo differ from baiting?</h4><div class="q-options"><label><input type="radio" name="q7" value="a"/> Exchange of services for info</label><label><input type="radio" name="q7" value="b"/> Malware emails</label><label><input type="radio" name="q7" value="c"/> Data encryption</label></div></div>
-        <div class="q-card"><h4>8) Tailgating relies on?</h4><div class="q-options"><label><input type="radio" name="q8" value="a"/> Following someone into restricted areas</label><label><input type="radio" name="q8" value="b"/> Encrypting passwords</label><label><input type="radio" name="q8" value="c"/> Building apps</label></div></div>
-        <div class="q-card"><h4>9) Whaling targets?</h4><div class="q-options"><label><input type="radio" name="q9" value="a"/> Executives</label><label><input type="radio" name="q9" value="b"/> Students</label><label><input type="radio" name="q9" value="c"/> Gamers</label></div></div>
-        <div class="q-card"><h4>10) The best defense against social engineering is?</h4><div class="q-options"><label><input type="radio" name="q10" value="a"/> Awareness and training</label><label><input type="radio" name="q10" value="b"/> Bigger offices</label><label><input type="radio" name="q10" value="c"/> Buying more servers</label></div></div>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:14px;">
+    <section class="card long-read" aria-labelledby="terms">
+      <h2 id="terms" class="section-title">Important Terms — Event, Alert, Incident</h2>
+      <p><strong>Event</strong> — any logged action or change (login, file write, configuration change, network flow). Events are raw telemetry.</p>
+      <p><strong>Alert</strong> — a flagged condition produced by analytics/rules (for example "multiple failed logins then successful login"). Alerts need triage.</p>
+      <p><strong>Incident</strong> — confirmed or highly likely malicious activity that requires investigation and response (e.g., confirmed credential theft, malware foothold).</p>
+      <div class="explain">Good detection systems reduce false positives and provide context so analysts can quickly decide whether an alert becomes an incident.</div>
+    </section>
+
+    <section class="card long-read" aria-labelledby="siem">
+      <h2 id="siem" class="section-title">SIEM — Security Information & Event Management</h2>
+      <p>SIEM systems collect logs and telemetry from many sources (firewalls, proxies, servers, endpoints, cloud services), normalize the data, apply correlation rules and analytics, and generate alerts. Modern SIEMs also integrate threat intelligence, user and entity behavior analytics (UEBA), and retention for forensic searches.</p>
+
+      <h3>SIEM core capabilities</h3>
+      <ul class="list">
+        <li>Centralized log collection and normalization</li>
+        <li>Correlation rules and detection analytics</li>
+        <li>Alerting, dashboards and investigation workflows</li>
+        <li>Long-term storage for compliance and forensics</li>
+      </ul>
+
+      <h3>Logs you should ingest (examples)</h3>
+      <ul class="list">
+        <li>Authentication logs (AD, LDAP, cloud SSO)</li>
+        <li>Endpoint events (EDR alerts, process launch, file changes)</li>
+        <li>Network flows / firewall logs</li>
+        <li>Web proxy and DNS logs</li>
+        <li>Application logs and database access</li>
+      </ul>
+    </section>
+
+    <section class="card long-read" aria-labelledby="what-is-threat">
+      <h2 id="what-is-threat" class="section-title">What is a Threat?</h2>
+      <p>A threat is any potential cause of an unwanted incident that may harm an organization. That includes threat actors (criminal groups, insiders), threat vectors (phishing, exploit), and threat events (malware, data exfiltration).</p>
+    </section>
+
+    <section class="card long-read" aria-labelledby="tdr">
+      <h2 id="tdr" class="section-title">Threat Detection & Response (TDR) — overview</h2>
+      <p>TDR combines continuous monitoring (detection) with the capability to act (response) — ideally in an automated, repeatable way. Teams use SIEM, EDR, NIDS/HIDS, SOAR playbooks and human analysts to detect, investigate, contain and remediate threats.</p>
+
+      <h3>Detection types</h3>
+      <ul class="list">
+        <li><strong>Signature-based:</strong> detect known bad patterns (malware hashes, IOC matches). Fast but limited to known threats.</li>
+        <li><strong>Anomaly-based / Behavioral:</strong> baseline normal behavior and flag deviations (UEBA). Good for detecting novel attacks but may need tuning.</li>
+        <li><strong>Heuristic / Rule-based:</strong> combination rules (e.g., admin login from new country + atypical data transfer).</li>
+        <li><strong>Threat intelligence matching:</strong> matching external IOCs (bad IPs, domains) with internal telemetry.</li>
+      </ul>
+    </section>
+
+    <section class="card long-read" aria-labelledby="process">
+      <h2 id="process" class="section-title">Threat detection & response process</h2>
+      <p>An effective TDR pipeline typically follows:</p>
+      <ol class="list">
+        <li><strong>Collection:</strong> ingest logs and telemetry centrally (agents, flows, API pulls).</li>
+        <li><strong>Normalize & enrich:</strong> add context (asset owner, geo, business criticality, threat intel).</li>
+        <li><strong>Detection:</strong> run rules, analytics, and machine learning to surface suspicious activity.</li>
+        <li><strong>Alerting & triage:</strong> prioritize and assign alerts to analysts; reduce noise through tuning.</li>
+        <li><strong>Investigation:</strong> gather additional data, pivot through logs and endpoint artifacts to confirm scope.</li>
+        <li><strong>Response & containment:</strong> isolate hosts, block IOCs, revoke credentials, run playbooks.</li>
+        <li><strong>Eradication & recovery:</strong> remove malware, patch vulnerabilities, restore systems from clean backups.</li>
+        <li><strong>Lessons learned:</strong> update detections, playbooks and harden systems to prevent recurrence.</li>
+      </ol>
+    </section>
+
+    <section class="card long-read" aria-labelledby="ir">
+      <h2 id="ir" class="section-title">Incident — what it means and classification</h2>
+      <p>An incident is any event that actually or potentially jeopardizes the confidentiality, integrity, or availability of an organization's systems. Incidents are often classified by impact and severity (low / medium / high / critical) and by type (malware, data breach, insider threat).</p>
+    </section>
+
+    <section class="card long-read" aria-labelledby="6phases">
+      <h2 id="6phases" class="section-title">6 Phases of the Incident Response Lifecycle</h2>
+      <ol class="list">
+        <li><strong>Preparation:</strong> policies, playbooks, tooling, backups, runbooks, training and communication plans.</li>
+        <li><strong>Identification:</strong> detect suspicious activity and confirm whether it’s an incident.</li>
+        <li><strong>Containment:</strong> short-term containment (isolate host) and long-term containment (network segmentation).</li>
+        <li><strong>Eradication:</strong> remove root cause (malware, backdoors) and close exploited vectors.</li>
+        <li><strong>Recovery:</strong> restore systems to normal operation, monitor for recurrence.</li>
+        <li><strong>Lessons Learned:</strong> post-incident review, update controls and playbooks, and share findings with stakeholders.</li>
+      </ol>
+
+      <div class="callout"><strong>Note:</strong> invest heavily in Preparation — it reduces confusion and speeds response during an incident.</div>
+    </section>
+
+    <section class="card long-read" aria-labelledby="hunting">
+      <h2 id="hunting" class="section-title">Threat Hunting — proactive detection</h2>
+      <p>Threat hunting is a proactive search for threats that bypass automated detections. Hunters formulate hypotheses (e.g., "Are there any unusual PowerShell usage patterns?"), collect relevant telemetry, and investigate anomalies.</p>
+
+      <h3>Hunt workflow</h3>
+      <ol class="list">
+        <li>Hypothesis (based on intel or analytics)</li>
+        <li>Data collection and enrichment (EDR, logs, flows)</li>
+        <li>Investigation and pivoting</li>
+        <li>Containment & remediation if confirmed</li>
+        <li>Feed findings back into detection rules</li>
+      </ol>
+
+      <h3>Skills & tools</h3>
+      <ul class="list">
+        <li>Proficient query skills (SIEM search, Yara, Sigma)</li>
+        <li>Knowledge of attacker TTPs (MITRE ATT&CK)</li>
+        <li>Strong forensics and endpoint knowledge (EDR)</li>
+      </ul>
+    </section>
+
+    <section class="card long-read" aria-labelledby="mdr">
+      <h2 id="mdr" class="section-title">Managed Detection & Response (MDR)</h2>
+      <p>MDR vendors provide outsourced detection, investigation and response capabilities — useful for organizations without mature SOCs. MDR offerings often include managed SIEM/EDR, dedicated analysts, threat hunting, and incident response support.</p>
+
+      <h3>When to consider MDR</h3>
+      <ul class="list">
+        <li>Limited internal staff or SOC maturity</li>
+        <li>Need 24/7 monitoring without building in-house team</li>
+        <li>Want fast access to experienced threat hunters and IR expertise</li>
+      </ul>
+    </section>
+
+    <section class="card long-read" aria-labelledby="practicals">
+      <h2 id="practicals" class="section-title">Practical controls, KPIs & playbook items</h2>
+      <h3>Key controls to implement</h3>
+      <ul class="list">
+        <li>Deploy central logging and retain for investigations</li>
+        <li>Use EDR on endpoints to capture process, network, and file activity</li>
+        <li>Implement network flow collection (NetFlow/IPFIX) and DNS logging</li>
+        <li>Enrich alerts with asset criticality and owner data</li>
+        <li>Use automated containment via SOAR for high-confidence alerts</li>
+      </ul>
+
+      <h3>Useful KPIs</h3>
+      <ul class="list">
+        <li>Mean time to detection (MTTD)</li>
+        <li>Mean time to respond/contain (MTTR)</li>
+        <li>Number of alerts per analyst per day</li>
+        <li>False positive rate</li>
+        <li>% of alerts closed with automated playbooks</li>
+      </ul>
+
+      <h3>Example runbook checklist for suspected malware</h3>
+      <ol class="list">
+        <li>Isolate host, preserve volatile data (memory, active connections).</li>
+        <li>Collect EDR artifacts (process tree, parent/child relationships, file hashes).</li>
+        <li>Block known IOCs at network edge and on endpoint.</li>
+        <li>Identify initial access vector (phishing, RDP, exploit) and patch or disable it.</li>
+        <li>Reimage host if necessary and restore from trusted backup.</li>
+      </ol>
+    </section>
+
+    <section class="card" aria-labelledby="download">
+      <h2 id="download" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a short summary of this lesson for offline reference.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotes">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~20 mins</span></div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 11 Quiz — Threat Detection & Response</h2>
+      <p class="muted">When ready, click <strong>Attempt Quiz</strong>. The quiz has 10 questions and explanations appear for missed items.</p>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~6–12 mins</span></div>
+      </div>
+
+      <form id="quizForm" style="display:none;margin-top:14px;">
+        <!-- Q1 -->
+        <div class="q-card">
+          <h4>1) Which statement best describes a SIEM?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> A platform that collects, normalizes and correlates logs to produce security alerts</label>
+            <label><input type="radio" name="q1" value="b"/> A backup product for file recovery</label>
+            <label><input type="radio" name="q1" value="c"/> A tool that only blocks spam emails</label>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="q-card">
+          <h4>2) Which detection type is best for known malware signatures?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> Signature-based detection</label>
+            <label><input type="radio" name="q2" value="b"/> UEBA anomaly detection</label>
+            <label><input type="radio" name="q2" value="c"/> Manual log review only</label>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="q-card">
+          <h4>3) Which of these is NOT a phase of the incident response lifecycle?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Eradication</label>
+            <label><input type="radio" name="q3" value="b"/> Monetization</label>
+            <label><input type="radio" name="q3" value="c"/> Recovery</label>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="q-card">
+          <h4>4) Threat hunting is best described as:</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> Actively searching your environment for hidden threats</label>
+            <label><input type="radio" name="q4" value="b"/> Passive collection of DNS logs only</label>
+            <label><input type="radio" name="q4" value="c"/> Only deploying firewalls</label>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="q-card">
+          <h4>5) Which data source is most useful for investigating a suspected endpoint compromise?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> Endpoint Detection & Response (EDR) process and file artifacts</label>
+            <label><input type="radio" name="q5" value="b"/> Parking lot CCTV footage</label>
+            <label><input type="radio" name="q5" value="c"/> Marketing email opens</label>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="q-card">
+          <h4>6) What is a useful KPI for SOC performance?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> Mean Time To Detect (MTTD)</label>
+            <label><input type="radio" name="q6" value="b"/> Number of coffee breaks per analyst</label>
+            <label><input type="radio" name="q6" value="c"/> Number of unique wallpapers</label>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="q-card">
+          <h4>7) Which automation tool can help orchestrate repeated IR steps?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> SOAR (Security Orchestration, Automation and Response)</label>
+            <label><input type="radio" name="q7" value="b"/> A simple spreadsheet</label>
+            <label><input type="radio" name="q7" value="c"/> A text editor with no integration</label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="q-card">
+          <h4>8) Which approach reduces false positives in detection?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> Tuning rules, enriching alerts with context and using baselines</label>
+            <label><input type="radio" name="q8" value="b"/> Turning off all alerts</label>
+            <label><input type="radio" name="q8" value="c"/> Doubling the alert volume</label>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="q-card">
+          <h4>9) When should you engage your ISP or upstream provider during a major network-based attack?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> When attack traffic saturates links and local mitigations are insufficient</label>
+            <label><input type="radio" name="q9" value="b"/> Only after months</label>
+            <label><input type="radio" name="q9" value="c"/> Never contact them</label>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="q-card">
+          <h4>10) What is an advantage of using MDR services?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> Access to experienced analysts and 24/7 monitoring without building a full in-house SOC</label>
+            <label><input type="radio" name="q10" value="b"/> It removes the need for any internal security processes</label>
+            <label><input type="radio" name="q10" value="c"/> It guarantees no incidents will ever happen</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
           <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
           <button type="button" class="btn" id="resetQuiz">Reset</button>
           <span id="quizResult" class="result" aria-live="polite"></span>
@@ -125,30 +359,189 @@
       </form>
     </section>
 
-    <footer class="container"><p>© Learning Playground – Cybersecurity Course • Lesson 10</p></footer>
+    <footer class="container">
+      <p>© Learning Playground – Threat Detection & Response • Lesson 11</p>
+    </footer>
   </main>
 
   <script>
-    const themeBtn=document.getElementById('toggleTheme');
-    const key='lesson10-theme';
-    const applyTheme=(mode)=>{if(mode==='light'){document.documentElement.style.setProperty('--bg','#f7f9ff');document.documentElement.style.setProperty('--card','#fff');document.documentElement.style.setProperty('--text','#0b1220');document.documentElement.style.setProperty('--muted','#4a5875');}else{document.documentElement.style.setProperty('--bg','#0b1220');document.documentElement.style.setProperty('--card','#111a2e');document.documentElement.style.setProperty('--text','#e7eefc');document.documentElement.style.setProperty('--muted','#8aa0c3');}};
-    const stored=localStorage.getItem(key)||'dark';applyTheme(stored);
-    themeBtn.addEventListener('click',()=>{const current=localStorage.getItem(key)||stored;const next=current==='dark'?'light':'dark';localStorage.setItem(key,next);applyTheme(next);});
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson11-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+      }
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
 
-    const answers={q1:'a',q2:'a',q3:'a',q4:'c',q5:'b',q6:'a',q7:'a',q8:'a',q9:'a',q10:'a'};
-    const form=document.getElementById('quizForm');
-    const submitBtn=document.getElementById('submitQuiz');
-    const resetBtn=document.getElementById('resetQuiz');
-    const result=document.getElementById('quizResult');
-    const scoreKey='lesson10-score';
+    /* Download notes */
+    function downloadNotes() {
+      const title = 'Lesson11_ThreatDetection_Response_Notes.txt';
+      const content = [
+        'Lesson 11 – Threat Detection & Response',
+        '',
+        'Contents:',
+        '- Important terms: Event, Alert, Incident',
+        '- SIEM & what logs to ingest',
+        '- Detection types: signature, anomaly, heuristic, TI',
+        '- Incident Response Lifecycle: Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned',
+        '- Threat Hunting workflow and MDR overview',
+        '- Practical KPIs and runbook checklist',
+        '',
+        'Key reminders:',
+        '- Collect central logs and EDR telemetry',
+        '- Tune detections to reduce noise',
+        '- Practice playbooks and keep contacts for ISP/MDR',
+        '- Use automation (SOAR) for repeatable containment'
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotes').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
 
-    function gradeQuiz(){let score=0;let total=Object.keys(answers).length;for(const q of Object.keys(answers)){const chosen=form.querySelector(`input[name="${q}"]:checked`);if(chosen&&chosen.value===answers[q])score++;}
-      const pct=Math.round((score/total)*100);localStorage.setItem(scoreKey,pct);
-      result.textContent=`Score: ${score}/${total} (${pct}%)`;
-      result.className='result '+(pct>=80?'good':pct>=60?'mid':'bad');submitBtn.disabled=true;}
-    function resetQuiz(){form.reset();result.textContent='';submitBtn.disabled=false;localStorage.removeItem(scoreKey);}
-    submitBtn.addEventListener('click',gradeQuiz);resetBtn.addEventListener('click',resetQuiz);
-    const savedScore=localStorage.getItem(scoreKey);if(savedScore){result.textContent=`Previous Score: ${savedScore}%`;result.className='result';}
+    /* Quiz logic */
+    const answers = { q1:'a', q2:'a', q3:'b', q4:'a', q5:'a', q6:'a', q7:'a', q8:'a', q9:'a', q10:'a' };
+    const explanations = {
+      q1: 'A SIEM collects, normalizes and correlates logs to produce actionable alerts.',
+      q2: 'Signature-based detection is used for known malware patterns (hashes, signatures).',
+      q3: 'Monetization is not a phase in the IR lifecycle; the lifecycle includes preparation, identification, containment, eradication, recovery and lessons learned.',
+      q4: 'Threat hunting is proactive analysis searching for unknown threats inside your environment.',
+      q5: 'EDR provides endpoint artifacts (process, file, registry) useful to investigate compromises.',
+      q6: 'MTTD (Mean Time To Detect) is a common SOC KPI to measure detection speed.',
+      q7: 'SOAR automates and orchestrates repeated incident response steps (containment, enrichment, ticketing).',
+      q8: 'Tuning rules and enriching alerts with context reduces false positives and focuses analysts on real threats.',
+      q9: 'Engage ISP/upstream provider when attack traffic saturates links and local controls are insufficient.',
+      q10: 'MDR gives you access to experienced analysts and 24/7 monitoring without building a full in-house SOC.'
+    };
+
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson11-tdr-score';
+    const attemptBtn = document.getElementById('attemptBtn');
+
+    attemptBtn.addEventListener('click', () => {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      localStorage.setItem('lesson11-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) { missed.push(q); continue; }
+        if (el.value === answers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
+        }
+      }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
+
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
+            }
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions — explanations were added under the missed questions.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
+      }
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson11-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+    }
   </script>
 </body>
 </html>

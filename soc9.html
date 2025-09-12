@@ -1,427 +1,570 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Lesson 8 — Malware & Sniffing</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 9 – DoS / DDoS & Session Hijacking</title>
 
   <style>
-    :root{
-      --cyber: #00ffe7;
-      --cyber2:#00ffc3;
-      --magenta:#ff0080;
-      --violet:#7928ca;
-      --bg:#000;
-      --card:#0b0b0f;
-      --ink:#d9fff9;
+    :root {
+      --bg: #0b1220;
+      --card: #111a2e;
+      --muted: #8aa0c3;
+      --text: #e7eefc;
+      --accent: #6ea8ff;
+      --accent-2: #7ef0c1;
+      --warning: #ffdf6e;
+      --danger: #ff7e93;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:'Share Tech Mono',monospace;
-      background: var(--bg);
-      color: var(--ink);
-      overflow-x:hidden;
-      min-height:100vh;
-    }
-
-    /* Matrix rain background */
-    #matrix{
-      position:fixed; inset:0; z-index:0; pointer-events:none;
-      filter: blur(0.6px) contrast(140%);
-      opacity:.35;
-    }
-
-    .wrap{
-      position:relative; z-index:2;
-      padding: clamp(16px,2vw,24px);
-      max-width: 1100px; margin: 0 auto;
-    }
-
-    h1,h2,h3{
-      color: var(--cyber);
-      text-shadow: 0 0 10px var(--cyber2);
-      letter-spacing: .5px;
-    }
-    .title-badge{
-      display:inline-block; padding:6px 12px; border:1px solid var(--cyber2);
-      border-radius:999px; background:#061214a6; box-shadow:0 0 14px #00ffc33d inset, 0 0 18px #00ffc33d;
-      margin-bottom:12px; color:#aefcf3
-    }
-
-    .card-cyber{
-      background: var(--card);
-      border:1px solid var(--cyber2);
-      border-radius:14px;
-      box-shadow: 0 0 20px #00ffc355, 0 0 60px #00ffc31f inset;
-      padding: clamp(18px,2.4vw,28px);
-      margin: 16px 0;
-      line-height:1.7;
-    }
-    .tag{
-      display:inline-block; font-size:.85rem; padding:2px 8px; border:1px dashed var(--cyber2);
-      border-radius:6px; margin-right:8px; color:#9af9ef;
-    }
-
-    .grid-2{
-      display:grid; gap:16px;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-    }
-    @media (max-width: 900px){
-      .grid-2{ grid-template-columns: 1fr; }
-    }
-
-    .btn-cyber{
-      display:inline-block; border:none; cursor:pointer; text-decoration:none;
-      padding:12px 20px; border-radius:10px; font-weight:700;
-      background: linear-gradient(45deg, var(--magenta), var(--violet));
-      color:#fff; box-shadow:0 0 16px var(--magenta);
-      transition:.25s;
-    }
-    .btn-cyber:hover{
-      transform: translateY(-2px) scale(1.02);
-      background: linear-gradient(45deg, var(--cyber), #0099ff);
-      color:#000; box-shadow:0 0 22px var(--cyber);
-    }
-
-    .back-btn{
-      display:inline-block; margin-top:24px;
-      padding:10px 16px; border-radius:8px; text-decoration:none;
-      background:#111; color:var(--cyber); border:1px solid var(--cyber2);
-      box-shadow:0 0 12px var(--cyber2);
-    }
-    .back-btn:hover{ background:var(--cyber); color:#000 }
-
-    .note-callout{
-      border-left:3px solid var(--cyber2); padding-left:14px; opacity:.95;
-    }
-
-    /* Quiz */
-    .quiz-wrap{ margin-top:26px }
-    .question{
-      border:1px solid var(--cyber2); border-radius:10px; background:#031315b3;
-      padding:14px; margin-bottom:14px;
-    }
-    .question legend{ font-size:1.05rem; margin-bottom:8px }
-    .question label{ display:block; padding:8px 10px; border-radius:8px; cursor:pointer }
-    .question input{ margin-right:8px }
-    .question label:hover{ background:#062428 }
-    .wrong{ color:#ff6b6b; font-weight:700 }
-    .correct{ color:#10ff86; font-weight:700 }
-    #resultBox{
-      border:1px solid var(--cyber2); border-radius:12px; padding:16px; margin-top:16px;
-      background:#001214ad;
-    }
-
-    /* Subtle floating animation for cards */
-    .floaty{ animation: floaty 6s ease-in-out infinite }
-    @keyframes floaty{
-      0%,100%{ transform: translateY(0) }
-      50%{ transform: translateY(-6px) }
-    }
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .list{margin:0;padding-left:18px}
+    .list li{margin:8px 0}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .btn.ghost{background:transparent}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .section-title{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
+    .meta{display:flex;gap:8px;flex-wrap:wrap}
+    .attempt-btn{margin-top:12px}
+    .long-read{line-height:1.65;font-size:15px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
   </style>
 </head>
 <body>
-  <canvas id="matrix"></canvas>
-
-  <main class="wrap">
-    <span class="title-badge">CYBERSECURITY • Lesson 8</span>
-    <h1>Malware & Sniffing — How Attacks Spread and How to Defend</h1>
-    <p class="note-callout">
-      In this lesson you’ll learn what malware is (with real cases), how sniffing attacks capture sensitive traffic,
-      and the concrete defenses you can deploy immediately. At the end, take a 10-question quiz and see exactly
-      which ones you missed.
-    </p>
-
-    <!-- Malware Overview -->
-    <section class="card-cyber floaty">
-      <h2>🔬 What Is Malware?</h2>
-      <div class="tag">Viruses</div><div class="tag">Worms</div><div class="tag">Trojans</div>
-      <div class="tag">Ransomware</div><div class="tag">Spyware</div>
-      <p>
-        <b>Malware</b> (malicious software) is any code intentionally designed to <b>disrupt</b>, <b>damage</b>,
-        or <b>gain unauthorized access</b> to systems. It can arrive via phishing attachments, pirated software,
-        drive-by downloads, USB media, or supply-chain updates.
-      </p>
-      <div class="grid-2">
-        <div class="card-cyber">
-          <h3>Common Types</h3>
-          <ul>
-            <li><b>Virus</b> — attaches to files/programs and spreads when executed.</li>
-            <li><b>Worm</b> — self-replicates over networks; can exhaust bandwidth and crash hosts.</li>
-            <li><b>Trojan</b> — disguises as legit software; opens backdoors, exfiltrates data.</li>
-            <li><b>Ransomware</b> — encrypts files, demands payment for the key.</li>
-            <li><b>Spyware</b> — silently monitors activity, keystrokes, and browser data.</li>
-          </ul>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 9</span>
+        <div>
+          <strong>DoS / DDoS & Session Hijacking — Lesson 9</strong>
+          <div class="small muted">Availability attacks, detection, mitigation, sessions and hijacking defenses</div>
         </div>
-        <div class="card-cyber">
-          <h3>Real-World Cases</h3>
-          <ul>
-            <li><b>WannaCry (2017)</b> — global ransomware exploiting SMBv1, billions in damage.</li>
-            <li><b>ILOVEYOU (2000)</b> — emailed worm that overwrote files & mailed itself to contacts.</li>
-            <li><b>CovidLock (2020)</b> — Android ransomware posing as a COVID tracker app.</li>
-          </ul>
-          <p class="note-callout mb-0"><b>Lesson:</b> patch aggressively, disable legacy protocols, and never sideload untrusted apps.</p>
-        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <h1 class="title">DoS / DDoS Attacks & Session Hijacking</h1>
+      <p class="subtitle">Understand availability attacks (DoS/DDoS), how attackers hijack sessions, indicators of compromise, defensive controls and incident response best practices.</p>
+
+      <div class="chips">
+        <span class="chip">DoS</span>
+        <span class="chip">DDoS</span>
+        <span class="chip">Session Hijacking</span>
+        <span class="chip">IDS</span>
+        <span class="chip">Honeypot</span>
       </div>
     </section>
 
-    <!-- Protection -->
-    <section class="card-cyber">
-      <h2>🛡️ Defending Against Malware</h2>
-      <ul>
-        <li>Use reputable <b>endpoint protection</b> (AV/EDR) with real-time scanning.</li>
-        <li><b>Patch</b> OS, browsers, and apps promptly; remove legacy services (e.g., SMBv1).</li>
-        <li><b>Least privilege</b>, application allow-listing, and script control (e.g., block Office macros).</li>
-        <li>Back up with <b>3-2-1 strategy</b> (3 copies, 2 media, 1 offsite/offline).</li>
-        <li>Security awareness: spot <b>phishing</b>, verify downloads, avoid unknown USBs.</li>
+    <!-- TOC -->
+    <section class="card long-read" aria-labelledby="toc">
+      <h2 id="toc" class="section-title">Table of Content</h2>
+      <ol class="list">
+        <li>What are DoS and DDoS attacks?</li>
+        <li>DDoS vs DoS — comparison</li>
+        <li>Signs & motivations for DDoS</li>
+        <li>Common DDoS techniques and vectors</li>
+        <li>Mitigations and operational defenses</li>
+        <li>What is a session?</li>
+        <li>Session hijacking — techniques & impact</li>
+        <li>Prevention of session hijacking</li>
+        <li>IDS, Honeypots and defensive monitoring</li>
+        <li>Incident response & reporting</li>
+      </ol>
+    </section>
+
+    <!-- DoS/DDoS -->
+    <section class="card long-read" aria-labelledby="dos">
+      <h2 id="dos" class="section-title">What are DoS and DDoS attacks?</h2>
+      <p>A Denial-of-Service (DoS) attack aims to make a resource (server, network, or service) unavailable to its intended users by overwhelming it with traffic or exhausting resources. A Distributed Denial-of-Service (DDoS) attack uses many distributed sources — often compromised devices (a botnet) — to amplify the attack and make mitigation harder.</p>
+
+      <div class="explain"><strong>Key idea:</strong> DoS/DDoS target availability — one of the three core security properties (CIA).</div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="card long-read" aria-labelledby="compare">
+      <h2 id="compare" class="section-title">DDoS vs DoS — quick comparison</h2>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr><th style="text-align:left;padding:8px">Feature</th><th style="text-align:left;padding:8px">DoS</th><th style="text-align:left;padding:8px">DDoS</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:8px">Source</td><td style="padding:8px">Single attacker/machine</td><td style="padding:8px">Many distributed machines (botnet)</td></tr>
+          <tr><td style="padding:8px">Scale</td><td style="padding:8px">Limited by single connection</td><td style="padding:8px">Large scale; higher traffic and bandwidth</td></tr>
+          <tr><td style="padding:8px">Detection / Blocking</td><td style="padding:8px">Easier to block IP source</td><td style="padding:8px">Harder — many sources and spoofing</td></tr>
+          <tr><td style="padding:8px">Typical tools</td><td style="padding:8px">Single-host flooders</td><td style="padding:8px">Botnets, amplification networks</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Signs -->
+    <section class="card long-read" aria-labelledby="signs">
+      <h2 id="signs" class="section-title">Signs of a DoS / DDoS attack</h2>
+      <ul class="list">
+        <li>Unusually slow performance for one or more services (high latency).</li>
+        <li>Partial or complete unavailability of a website or service.</li>
+        <li>Sudden spikes in traffic from unexpected geographies or IP ranges.</li>
+        <li>High rates of malformed packets, connection attempts, or protocol anomalies.</li>
+        <li>Increased server CPU, memory or socket exhaustion and elevated error response codes (HTTP 500/503).</li>
+        <li>Out-of-balance traffic across load balancers or sudden rise in SYN requests.</li>
       </ul>
     </section>
 
-    <!-- Sniffing -->
-    <section class="card-cyber floaty">
-      <h2>🛰️ Sniffing — Capturing Traffic on the Wire</h2>
-      <p>
-        A <b>sniffing attack</b> uses a packet sniffer to capture <b>unencrypted</b> network traffic: logins,
-        cookies, API keys, and personal data. It’s powerful on shared segments (Wi-Fi/LAN) or compromised switches.
-      </p>
+    <!-- Motivations -->
+    <section class="card long-read" aria-labelledby="why">
+      <h2 id="why" class="section-title">Why do DDoS attacks happen?</h2>
+      <p>Motivations range from political protest and activism to extortion (ransom), competitive disruption, revenge, distraction for other attacks, or simply testing weaponized botnets. Some attacks are used as smokescreens while attackers exfiltrate data elsewhere.</p>
+    </section>
 
-      <div class="grid-2">
-        <div class="card-cyber">
-          <h3>Types of Sniffing</h3>
-          <ul>
-            <li><b>Passive</b> — listen on hubs or monitor ports; collect broadcast/cleartext traffic.</li>
-            <li><b>Active</b> — <b>manipulate</b> LAN behavior to see traffic not meant for you:
-              <ul>
-                <li><b>ARP Poisoning</b> — trick hosts to route via attacker (MITM).</li>
-                <li><b>MAC Flooding</b> — overflow switch CAM table, forcing broadcast fallback.</li>
-                <li><b>DHCP Spoofing</b> — hand out rogue IP/gateway/DNS to intercept flows.</li>
-                <li><b>SSL Stripping</b> — downgrade HTTPS to HTTP on poorly configured sites.</li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-        <div class="card-cyber">
-          <h3>Sniffing Toolkit</h3>
-          <ul>
-            <li><b>Wireshark</b> — visualize packets & protocols.</li>
-            <li><b>tcpdump</b> — CLI capture & filters (BPF).</li>
-            <li><b>ettercap / bettercap</b> — ARP poisoning & MITM automations.</li>
-            <li><b>Responder</b> — LLMNR/NBNS spoofing to capture hashes.</li>
-          </ul>
-          <p class="note-callout mb-0"><b>Ethics:</b> Sniff only in lab or with written authorization.</p>
-        </div>
+    <!-- Vectors -->
+    <section class="card long-read" aria-labelledby="vectors">
+      <h2 id="vectors" class="section-title">Common DDoS techniques and vectors</h2>
+      <ul class="list">
+        <li><strong>Volumetric floods:</strong> saturate bandwidth (UDP floods, DNS amplification).</li>
+        <li><strong>Protocol attacks:</strong> consume server resources by abusing protocols (SYN flood, ACK flood).</li>
+        <li><strong>Application-layer attacks:</strong> target the application (HTTP GET/POST floods, expensive queries) to exhaust CPU/database.</li>
+        <li><strong>Amplification/Reflection:</strong> spoof source IPs to use third-party services (NTP, DNS) to reflect and amplify traffic to the victim.</li>
+      </ul>
+    </section>
+
+    <!-- Mitigations -->
+    <section class="card long-read" aria-labelledby="mitigations">
+      <h2 id="mitigations" class="section-title">Mitigations & Operational Defenses</h2>
+      <p>Defending availability requires preparation, layered defenses and partnerships with network providers. Key measures:</p>
+
+      <h3>Preventive & architectural</h3>
+      <ul class="list">
+        <li><strong>Capacity planning & autoscaling:</strong> allow services to absorb spikes; use cloud autoscaling and rate limits.</li>
+        <li><strong>Network redundancy & geographic distribution:</strong> spread services across regions and data centers.</li>
+        <li><strong>Use CDN / DDoS scrubbing services:</strong> outsource filtering and absorb volumetric traffic upstream (Cloudflare, Akamai, etc.).</li>
+        <li><strong>Rate limiting & connection limits:</strong> throttle per-IP or per-session to slow floods.</li>
+        <li><strong>Network ACLs and blackholing:</strong> quickly block large offending prefixes or null-route malicious traffic (use carefully).</li>
+      </ul>
+
+      <h3>Detection & active response</h3>
+      <ul class="list">
+        <li><strong>Network telemetry & anomalous traffic detection:</strong> baseline normal traffic and alert on deviations.</li>
+        <li><strong>Upstream filtering:</strong> coordinate with ISP to filter attack traffic near source.</li>
+        <li><strong>Application-layer defenses:</strong> WAF rules and challenge-response (CAPTCHA) to block bot-driven forms.</li>
+        <li><strong>Connection throttling:</strong> SYN cookies, TCP backlog tuning, and limiting concurrent connections.</li>
+      </ul>
+
+      <h3>Post-attack & resilience</h3>
+      <ul class="list">
+        <li><strong>Traffic analysis & forensics:</strong> capture flow logs and packet samples for attribution and improvement.</li>
+        <li><strong>Legal & ISP engagement:</strong> report large attacks to upstream providers and relevant authorities.</li>
+        <li><strong>Playbooks & runbooks:</strong> predefine steps for triage and recovery to reduce mean time to mitigate.</li>
+      </ul>
+
+      <div class="callout"><strong>Operational note:</strong> automated blackholing can prevent damage but may also drop legitimate traffic — use with caution and prefer scrubbing where possible.</div>
+    </section>
+
+    <!-- Sessions -->
+    <section class="card long-read" aria-labelledby="session">
+      <h2 id="session" class="section-title">What is a session?</h2>
+      <p>A session is a temporary stateful interaction between a client and a server (for example, a logged-in web user). Web applications use session identifiers (cookies, tokens) to associate requests to a user context. Protecting session confidentiality and integrity is critical because session tokens often stand in for credentials.</p>
+    </section>
+
+    <!-- Session hijacking -->
+    <section class="card long-read" aria-labelledby="hijack">
+      <h2 id="hijack" class="section-title">Session Hijacking — Techniques & Types</h2>
+      <p>Session hijacking is when an attacker takes over a valid session to impersonate a user. Common techniques include:</p>
+      <ul class="list">
+        <li><strong>Session side-jacking (sniffing):</strong> capture unencrypted session tokens on the network.</li>
+        <li><strong>Session fixation:</strong> attacker forces a victim to use a known session ID and later reuses it.</li>
+        <li><strong>Cross-site scripting (XSS):</strong> inject scripts that read cookies or tokens and exfiltrate them.</li>
+        <li><strong>Man-in-the-Middle (MitM):</strong> intercept and alter traffic between client and server.</li>
+        <li><strong>Token theft from storage:</strong> steal tokens saved insecurely on disk or in browser storage.</li>
+      </ul>
+      <p>Impacts vary from account takeover to financial fraud and data exfiltration.</p>
+    </section>
+
+    <!-- XSS -->
+    <section class="card long-read" aria-labelledby="xss">
+      <h2 id="xss" class="section-title">Session Hijacking Using XSS (example concept)</h2>
+      <p>XSS allows an attacker to run JavaScript in a victim's browser. If session tokens are accessible to JavaScript (not HttpOnly), an injected script can read and send them to an attacker-controlled server. Defenders mitigate XSS through input validation, output encoding, and Content Security Policy (CSP).</p>
+    </section>
+
+    <!-- Prevention -->
+    <section class="card long-read" aria-labelledby="prevention">
+      <h2 id="prevention" class="section-title">How to Prevent Session Hijacking</h2>
+      <ul class="list">
+        <li><strong>Use TLS everywhere:</strong> encrypt all transport to stop token sniffing.</li>
+        <li><strong>Use secure cookie flags:</strong> `HttpOnly` to prevent JS access, `Secure` to send only over TLS, and `SameSite` to reduce CSRF risks.</li>
+        <li><strong>Short session lifetimes & rotation:</strong> expire tokens and rotate them after sensitive actions.</li>
+        <li><strong>Validate sessions server-side:</strong> bind sessions to client properties (IP range, user agent) with caution to avoid locking legitimate users.</li>
+        <li><strong>Use strong, random session IDs:</strong> unpredictable tokens prevent brute-force guessing.</li>
+        <li><strong>Enforce MFA:</strong> a stolen session token is less useful when MFA is required for sensitive operations.</li>
+        <li><strong>Sanitize inputs & implement CSP:</strong> prevent XSS and script injection.</li>
+      </ul>
+    </section>
+
+    <!-- IDS & Honeypot -->
+    <section class="card long-read" aria-labelledby="ids">
+      <h2 id="ids" class="section-title">Intrusion Detection Systems (IDS) & Honeypots</h2>
+      <h3>IDS</h3>
+      <p>IDS monitor network traffic or host activity to detect suspicious behavior. Two broad types:</p>
+      <ul class="list">
+        <li><strong>Network-based (NIDS):</strong> analyze network flows and packets to detect patterns (port scans, floods, protocol anomalies).</li>
+        <li><strong>Host-based (HIDS):</strong> monitor system logs, file integrity and process activity for signs of compromise.</li>
+      </ul>
+
+      <h3>Honeypots</h3>
+      <p>Honeypots are intentionally vulnerable or attractive decoys that collect attacker activity to learn tactics and provide early warnings. They can be low-interaction (simulate services) or high-interaction (real systems) but must be isolated and properly monitored to avoid becoming a pivot for attackers.</p>
+    </section>
+
+    <!-- Incident response -->
+    <section class="card long-read" aria-labelledby="ir">
+      <h2 id="ir" class="section-title">Incident Response & Reporting</h2>
+      <p>Handling an availability attack or session compromise requires a calm, repeatable process:</p>
+      <ol class="list">
+        <li><strong>Detection & triage:</strong> confirm attack, gather telemetry (logs, flow data, packet captures).</li>
+        <li><strong>Containment:</strong> apply mitigations (rate limit, block offending ranges, enable scrubbing, isolate compromised hosts).</li>
+        <li><strong>Eradication:</strong> remove attacker access, patch exploited flaws, revoke credentials.</li>
+        <li><strong>Recovery:</strong> restore services from known-good sources and monitor for re-infection.</li>
+        <li><strong>Lessons learned:</strong> update playbooks, strengthen controls and report to stakeholders/authorities if required.</li>
+      </ol>
+      <div class="callout"><strong>Tip:</strong> keep a playbook for DDoS scenarios and ensure you have contacts at your ISP/hosting provider to request upstream assistance quickly.</div>
+    </section>
+
+    <!-- Download notes -->
+    <section class="card" aria-labelledby="notes">
+      <h2 id="notes" class="section-title">Download Notes</h2>
+      <p class="muted">Click to download a short text summary of this lesson for offline review.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated read time: ~20 mins</span></div>
       </div>
     </section>
 
-    <!-- Anti-Sniffing -->
-    <section class="card-cyber">
-      <h2>🧱 Defenses Against Sniffing</h2>
-      <ul>
-        <li><b>Encrypt everything:</b> HTTPS/TLS, SSH, VPN; disable plaintext protocols (FTP/Telnet/POP3).</li>
-        <li><b>Network hardening:</b> enable <b>Dynamic ARP Inspection</b>, DHCP Snooping, Port Security, Private VLANs.</li>
-        <li><b>Segmentation</b> for sensitive systems; use WPA3-Enterprise on Wi-Fi.</li>
-        <li><b>Certificate pinning</b> & HSTS to resist SSL stripping.</li>
-        <li><b>Monitoring:</b> IDS/IPS, SPAN taps, anomaly alerts for ARP/DHCP/HTTPS downgrade.</li>
-      </ul>
-    </section>
+    <!-- QUIZ GATE -->
+    <section class="card" aria-labelledby="quiz">
+      <h2 id="quiz" class="section-title">Lesson 9 Quiz — DoS/DDoS & Session Hijacking</h2>
+      <p class="muted">Click <strong>Attempt Quiz</strong> when ready. The quiz has 10 questions; missed items include explanations.</p>
 
-    <!-- Quiz Gate -->
-    <section class="card-cyber quiz-wrap">
-      <h2>🧠 Lesson 8 Quiz</h2>
-      <p class="mb-3">Click <b>Attempt Quiz</b> when you’re ready. You’ll see your score and which questions you missed.</p>
-      <button id="attemptBtn" class="btn-cyber">🚀 Attempt Quiz</button>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
+        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
+      </div>
 
-      <form id="quizForm" class="mt-3" style="display:none;">
+      <form id="quizForm" style="display:none;margin-top:14px;">
         <!-- Q1 -->
-        <fieldset class="question">
-          <legend>1) What best describes malware?</legend>
-          <label><input type="radio" name="q1" value="b"/> Code designed to disrupt or gain unauthorized access</label>
-          <label><input type="radio" name="q1" value="a"/> A safe debugging tool</label>
-          <label><input type="radio" name="q1" value="c"/> A network cable</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>1) What does a DDoS attack primarily target?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q1" value="a"/> Availability of a service</label>
+            <label><input type="radio" name="q1" value="b"/> Confidentiality of a password file</label>
+            <label><input type="radio" name="q1" value="c"/> Physical theft of a laptop</label>
+          </div>
+        </div>
 
         <!-- Q2 -->
-        <fieldset class="question">
-          <legend>2) Which spreads without user interaction across networks?</legend>
-          <label><input type="radio" name="q2" value="a"/> Virus</label>
-          <label><input type="radio" name="q2" value="b"/> Worm</label>
-          <label><input type="radio" name="q2" value="c"/> Trojan</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>2) Which of the following is an example of an application-layer DDoS?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q2" value="a"/> Repeated expensive HTTP GET requests that exhaust CPU/database</label>
+            <label><input type="radio" name="q2" value="b"/> UDP flood that saturates the ISP link</label>
+            <label><input type="radio" name="q2" value="c"/> Phishing email campaign</label>
+          </div>
+        </div>
 
         <!-- Q3 -->
-        <fieldset class="question">
-          <legend>3) A Trojan is best described as…</legend>
-          <label><input type="radio" name="q3" value="b"/> Malicious code disguised as legitimate software</label>
-          <label><input type="radio" name="q3" value="a"/> A hardware bug</label>
-          <label><input type="radio" name="q3" value="c"/> An email gateway</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>3) What is an effective upstream mitigation for volumetric DDoS?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q3" value="a"/> Use a scrubbing/CDN provider and ISP filtering</label>
+            <label><input type="radio" name="q3" value="b"/> Reboot the victim server repeatedly</label>
+            <label><input type="radio" name="q3" value="c"/> Share credentials publicly</label>
+          </div>
+        </div>
 
         <!-- Q4 -->
-        <fieldset class="question">
-          <legend>4) Which is a realistic ransomware mitigation?</legend>
-          <label><input type="radio" name="q4" value="b"/> Offline/immutable backups and patching</label>
-          <label><input type="radio" name="q4" value="a"/> Using the same password everywhere</label>
-          <label><input type="radio" name="q4" value="c"/> Rely only on antivirus</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>4) Which technique is commonly used in active sniffing?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q4" value="a"/> ARP spoofing (poisoning)</label>
+            <label><input type="radio" name="q4" value="b"/> Listening on a properly mirrored port</label>
+            <label><input type="radio" name="q4" value="c"/> Using a local text editor</label>
+          </div>
+        </div>
 
         <!-- Q5 -->
-        <fieldset class="question">
-          <legend>5) Passive sniffing typically occurs on…</legend>
-          <label><input type="radio" name="q5" value="c"/> Shared hubs or broadcast segments</label>
-          <label><input type="radio" name="q5" value="a"/> Encrypted VPN tunnels only</label>
-          <label><input type="radio" name="q5" value="b"/> Air-gapped systems</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>5) Session hijacking via XSS is possible when:</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q5" value="a"/> The application is vulnerable to XSS and session tokens are accessible to JavaScript (not HttpOnly)</label>
+            <label><input type="radio" name="q5" value="b"/> The server has a fast CPU</label>
+            <label><input type="radio" name="q5" value="c"/> The user uses a password manager</label>
+          </div>
+        </div>
 
         <!-- Q6 -->
-        <fieldset class="question">
-          <legend>6) ARP poisoning is used primarily to…</legend>
-          <label><input type="radio" name="q6" value="b"/> Intercept traffic via man-in-the-middle</label>
-          <label><input type="radio" name="q6" value="a"/> Block DNS queries</label>
-          <label><input type="radio" name="q6" value="c"/> Encrypt traffic</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>6) Which cookie flags help protect session tokens from JavaScript access and transport over insecure channels?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q6" value="a"/> HttpOnly and Secure</label>
+            <label><input type="radio" name="q6" value="b"/> Visible and Public</label>
+            <label><input type="radio" name="q6" value="c"/> ReadOnly and Global</label>
+          </div>
+        </div>
 
         <!-- Q7 -->
-        <fieldset class="question">
-          <legend>7) Which combo helps defeat DHCP spoofing and ARP attacks on switches?</legend>
-          <label><input type="radio" name="q7" value="b"/> DHCP Snooping + Dynamic ARP Inspection</label>
-          <label><input type="radio" name="q7" value="a"/> Port mirroring + CDP</label>
-          <label><input type="radio" name="q7" value="c"/> Telnet + TFTP</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>7) Which network control can help detect ARP spoofing?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q7" value="a"/> Dynamic ARP inspection / monitoring for duplicate MAC/IP mappings</label>
+            <label><input type="radio" name="q7" value="b"/> Disabling all logging</label>
+            <label><input type="radio" name="q7" value="c"/> Turning off TLS</label>
+          </div>
+        </div>
 
         <!-- Q8 -->
-        <fieldset class="question">
-          <legend>8) SSL Stripping aims to…</legend>
-          <label><input type="radio" name="q8" value="b"/> Downgrade HTTPS to HTTP to read traffic</label>
-          <label><input type="radio" name="q8" value="a"/> Force stronger ciphers</label>
-          <label><input type="radio" name="q8" value="c"/> Block all TCP ports</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>8) For application-layer DDoS, which defense is most useful?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q8" value="a"/> WAF rules, rate-limiting, and CAPTCHAs to block abusive bots</label>
+            <label><input type="radio" name="q8" value="b"/> Exposing internal debug endpoints to the public</label>
+            <label><input type="radio" name="q8" value="c"/> Remove TLS everywhere</label>
+          </div>
+        </div>
 
         <!-- Q9 -->
-        <fieldset class="question">
-          <legend>9) Which is the best everyday defense against sniffing of credentials?</legend>
-          <label><input type="radio" name="q9" value="c"/> End-to-end encryption (HTTPS/TLS, SSH, VPN)</label>
-          <label><input type="radio" name="q9" value="a"/> Using public Wi-Fi without a VPN</label>
-          <label><input type="radio" name="q9" value="b"/> Disabling browser updates</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>9) What is the first thing to do when you suspect a host is part of a DDoS botnet?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q9" value="a"/> Isolate the host from the network and investigate</label>
+            <label><input type="radio" name="q9" value="b"/> Keep it online and continue normal operations</label>
+            <label><input type="radio" name="q9" value="c"/> Publish the host credentials</label>
+          </div>
+        </div>
 
         <!-- Q10 -->
-        <fieldset class="question">
-          <legend>10) Which tool is a packet sniffer?</legend>
-          <label><input type="radio" name="q10" value="b"/> Wireshark</label>
-          <label><input type="radio" name="q10" value="a"/> Paint</label>
-          <label><input type="radio" name="q10" value="c"/> Slack</label>
-        </fieldset>
+        <div class="q-card">
+          <h4>10) What is a honeypot primarily used for?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="q10" value="a"/> Attract, observe and learn attacker techniques while distracting them from production systems</label>
+            <label><input type="radio" name="q10" value="b"/> Store production customer data</label>
+            <label><input type="radio" name="q10" value="c"/> Replace an IDS entirely</label>
+          </div>
+        </div>
 
-        <button type="button" id="submitBtn" class="btn-cyber">Submit Quiz</button>
-        <div id="resultBox" class="mt-3" style="display:none;"></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+          <button type="button" class="btn" id="resetQuiz">Reset</button>
+          <span id="quizResult" class="result" aria-live="polite"></span>
+        </div>
       </form>
     </section>
 
-    <div class="text-center">
-      <a href="cyber-index.html" class="back-btn">⬅ Back to Cybersecurity Lessons</a>
-    </div>
+    <footer class="container">
+      <p>© Learning Playground – DoS/DDoS & Session Hijacking • Lesson 9</p>
+    </footer>
   </main>
 
   <script>
-    // ---------- Matrix Rain ----------
-    (function matrix(){
-      const c = document.getElementById('matrix');
-      const ctx = c.getContext('2d');
-      function size(){ c.width = innerWidth; c.height = innerHeight }
-      size(); addEventListener('resize', size);
-
-      const chars = 'アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const fontSize = 16;
-      let columns = Math.floor(c.width / fontSize);
-      let drops = Array(columns).fill(1);
-
-      function draw(){
-        ctx.fillStyle = 'rgba(0,0,0,0.08)';
-        ctx.fillRect(0,0,c.width,c.height);
-        ctx.fillStyle = '#00ffe7';
-        ctx.font = fontSize+'px monospace';
-        for(let i=0;i<drops.length;i++){
-          const text = chars[Math.floor(Math.random()*chars.length)];
-          ctx.fillText(text, i*fontSize, drops[i]*fontSize);
-          if(drops[i]*fontSize > c.height && Math.random()>0.975){ drops[i]=0; }
-          drops[i]++;
-        }
-        requestAnimationFrame(draw);
+    /* Theme toggle (persist) */
+    const themeBtn = document.getElementById('toggleTheme');
+    const keyTheme = 'lesson9-theme';
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const applyTheme = (mode) => {
+      if (mode === 'light') {
+        document.documentElement.style.setProperty('--bg','#f7f9ff');
+        document.documentElement.style.setProperty('--card','#ffffff');
+        document.documentElement.style.setProperty('--text','#0b1220');
+        document.documentElement.style.setProperty('--muted','#4a5875');
+        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+      } else {
+        document.documentElement.style.setProperty('--bg','#0b1220');
+        document.documentElement.style.setProperty('--card','#111a2e');
+        document.documentElement.style.setProperty('--text','#e7eefc');
+        document.documentElement.style.setProperty('--muted','#8aa0c3');
+        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
       }
-      draw();
-    })();
+    };
+    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(keyTheme, next);
+      applyTheme(next);
+    });
 
-    // ---------- Animations ----------
-    gsap.from('h1', {y:-40, opacity:0, duration:1, ease:'bounce.out'});
-    gsap.from('.card-cyber', {opacity:0, y:24, duration:0.8, stagger:0.12, ease:'power2.out'});
+    /* Download notes */
+    function downloadNotes() {
+      const title = 'Lesson9_DDoS_SessionHijack_Notes.txt';
+      const content = [
+        'Lesson 9 – DoS/DDoS & Session Hijacking',
+        '',
+        'Contents:',
+        '- What are DoS and DDoS attacks',
+        '- DDoS vs DoS comparison',
+        '- Signs and motivations for DDoS',
+        '- Common vectors (volumetric, protocol, app-layer)',
+        '- Mitigations: CDN/scrubbing, rate-limiting, WAF, upstream filtering, autoscaling',
+        '- What is a session and how hijacking works (XSS, sniffing, fixation)',
+        '- Prevention: TLS, HttpOnly/Secure cookies, short lifetimes, MFA',
+        '- IDS, Honeypots, incident response playbooks',
+        '',
+        'Key takeaways:',
+        '- Prepare playbooks and contacts at ISPs/CDNs for DDoS',
+        '- Encrypt traffic to prevent session sniffing',
+        '- Use layered defenses and test recovery procedures',
+      ].join('\\n');
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    }
+    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
+    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
 
-    // ---------- Quiz gate ----------
+    /* Quiz logic */
+    const answers = { q1:'a', q2:'a', q3:'a', q4:'a', q5:'a', q6:'a', q7:'a', q8:'a', q9:'a', q10:'a' };
+    const explanations = {
+      q1: 'DDoS attacks are designed to make a service unavailable — they target availability.',
+      q2: 'Application-layer DDoS uses expensive or frequent HTTP requests to exhaust server resources.',
+      q3: 'Scrubbing/CDN providers and ISP filtering remove or absorb volumetric traffic upstream.',
+      q4: 'ARP spoofing is an active sniffing technique that alters local network routing to intercept traffic.',
+      q5: 'If an app is vulnerable to XSS and session tokens are readable by JavaScript (not HttpOnly), tokens can be stolen.',
+      q6: 'HttpOnly prevents JS access to cookies and Secure ensures cookies are sent only over TLS.',
+      q7: 'Dynamic ARP inspection and monitoring for duplicate MAC/IP mappings help detect ARP spoofing.',
+      q8: 'WAFs, rate-limits and CAPTCHAs help block abusive automated traffic at the application layer.',
+      q9: 'If a host is suspected of participating in a botnet, isolating it prevents further malicious traffic and allows investigation.',
+      q10: 'Honeypots attract and observe attackers, providing intelligence while diverting attention from production systems.'
+    };
+    const form = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitQuiz');
+    const resetBtn = document.getElementById('resetQuiz');
+    const resultSpan = document.getElementById('quizResult');
+    const scoreKey = 'lesson9-ddos-score';
     const attemptBtn = document.getElementById('attemptBtn');
-    const quizForm = document.getElementById('quizForm');
-    attemptBtn.addEventListener('click', ()=>{
+
+    attemptBtn.addEventListener('click', () => {
       attemptBtn.style.display = 'none';
       quizForm.style.display = 'block';
-      gsap.from('.question', {opacity:0, y:20, duration:0.6, stagger:0.1});
+      localStorage.setItem('lesson9-attempted', '1');
+      const saved = localStorage.getItem(scoreKey);
+      if (saved) {
+        resultSpan.textContent = `Previous Score: ${saved}%`;
+        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
     });
 
-    // ---------- Quiz logic ----------
-    const key = { q1:'b', q2:'b', q3:'b', q4:'b', q5:'c', q6:'b', q7:'b', q8:'b', q9:'c', q10:'b' };
-    const explanations = {
-      q1:'Malware is any code built to disrupt, damage or gain unauthorized access.',
-      q2:'Worms self-replicate over networks without user actions.',
-      q3:'Trojans masquerade as legitimate software to run malicious actions.',
-      q4:'Backups + patching + least privilege are practical ransomware mitigations.',
-      q5:'Passive sniffing works on shared/broadcast segments like hubs.',
-      q6:'ARP poisoning enables man-in-the-middle interception.',
-      q7:'DHCP Snooping + DAI protect address assignment and ARP integrity.',
-      q8:'SSL stripping downgrades HTTPS to HTTP to read traffic.',
-      q9:'Encrypt communications (TLS/SSH/VPN) to neutralize sniffing value.',
-      q10:'Wireshark is a packet capture/analysis tool.'
-    };
-
-    document.getElementById('submitBtn').addEventListener('click', ()=>{
-      const resultBox = document.getElementById('resultBox');
-      let score = 0;
-      let misses = [];
-
-      // reset coloring
-      document.querySelectorAll('.question label').forEach(l=>{ l.style.color=''; });
-
-      for(const q in key){
-        const picked = document.querySelector(`input[name="${q}"]:checked`);
-        if(!picked){
-          misses.push({q, msg:'Not answered'});
-          continue;
-        }
-        if(picked.value === key[q]){
+    function grade() {
+      let score = 0; let total = Object.keys(answers).length;
+      const missed = [];
+      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
+      for (const q of Object.keys(answers)) {
+        const el = form.querySelector(`input[name="${q}"]:checked`);
+        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+        if (!el) { missed.push(q); continue; }
+        if (el.value === answers[q]) {
           score++;
-          picked.parentElement.style.color = '#10ff86';
-        }else{
-          picked.parentElement.style.color = '#ff6b6b';
-          misses.push({q, msg:'Incorrect'});
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
         }
       }
+      const pct = Math.round((score/total)*100);
+      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(scoreKey, pct);
 
-      let html = `<h4>Score: ${score}/10</h4>`;
-      if(misses.length){
-        html += `<p><b>Review your mistakes:</b></p><ul>`;
-        for(const m of misses){
-          html += `<li><span class="wrong">${m.q.toUpperCase()}</span> — ${m.msg}.
-                   <br><span class="correct">Correct:</span> ${explanations[m.q]}</li>`;
-        }
-        html += `</ul>`;
-      }else{
-        html += `<p class="correct mb-0">Perfect! ✅</p>`;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      if (missed.length) {
+        const review = document.createElement('div');
+        review.id = 'reviewBox';
+        review.style.marginTop = '12px';
+        review.style.padding = '12px';
+        review.style.border = '1px solid rgba(255,255,255,0.06)';
+        review.style.borderRadius = '10px';
+        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
+        let inner = '<strong>Review (missed questions)</strong><ul>';
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
+          const radio = form.querySelector(`input[name="${m}"]`);
+          if (radio) {
+            const qCard = radio.closest('.q-card');
+            if (qCard) {
+              const ex = document.createElement('div');
+              ex.className = 'explain';
+              ex.textContent = explanations[m];
+              qCard.appendChild(ex);
+            }
+          }
+        });
+        inner += '</ul>';
+        review.innerHTML = inner;
+        form.appendChild(review);
+        setTimeout(()=>{ alert('You missed some questions. Explanations were added under the missed questions.'); }, 80);
+      } else {
+        const perfect = document.createElement('div');
+        perfect.id = 'reviewBox';
+        perfect.style.marginTop = '12px';
+        perfect.style.padding = '12px';
+        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
+        perfect.style.borderRadius = '10px';
+        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
+        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
+        form.appendChild(perfect);
       }
-      resultBox.innerHTML = html;
-      resultBox.style.display='block';
-      gsap.from(resultBox, {opacity:0, y:10, duration:0.4});
-      window.scrollTo({top: resultBox.getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
-    });
+      submitBtn.disabled = true;
+    }
+
+    function resetQuiz() {
+      form.reset();
+      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      resultSpan.textContent = '';
+      submitBtn.disabled = false;
+      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
+      localStorage.removeItem(scoreKey);
+    }
+
+    submitBtn.addEventListener('click', grade);
+    resetBtn.addEventListener('click', resetQuiz);
+
+    // Restore previous attempt if user already attempted
+    const prev = localStorage.getItem(scoreKey);
+    if (localStorage.getItem('lesson9-attempted')) {
+      attemptBtn.style.display = 'none';
+      quizForm.style.display = 'block';
+      if (prev) {
+        resultSpan.textContent = `Previous Score: ${prev}%`;
+        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        submitBtn.disabled = true;
+      }
+    }
   </script>
 </body>
 </html>
