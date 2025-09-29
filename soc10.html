@@ -1,563 +1,630 @@
-```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Lesson 10 – Social Engineering</title>
-
-  <style>
-    :root {
-      --bg: #0b1220;
-      --card: #111a2e;
-      --muted: #8aa0c3;
-      --text: #e7eefc;
-      --accent: #6ea8ff;
-      --accent-2: #7ef0c1;
-      --warning: #ffdf6e;
-      --danger: #ff7e93;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
-    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
-    .container{max-width:1100px;margin:0 auto;padding:18px}
-    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
-    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-    .hero{padding:28px 20px 8px}
-    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
-    .subtitle{color:var(--muted);font-size:15px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
-    .list{margin:0;padding-left:18px}
-    .list li{margin:8px 0}
-    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
-    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
-    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
-    .q-options{display:grid;gap:8px;margin-top:8px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
-    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn.ghost{background:transparent}
-    .result{font-size:18px;font-weight:700}
-    .good{color:var(--accent-2)}
-    .mid{color:var(--warning)}
-    .bad{color:var(--danger)}
-    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
-    .section-title{margin:0 0 8px}
-    .muted{color:var(--muted)}
-    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
-    .meta{display:flex;gap:8px;flex-wrap:wrap}
-    .attempt-btn{margin-top:12px}
-    .long-read{line-height:1.65;font-size:15px}
-    .small{font-size:13px;color:var(--muted)}
-    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    .code-block{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;font-size:13px;color:var(--muted);background:rgba(255,255,255,0.03);padding:10px;border-radius:8px}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lesson 10 — Social Engineering (Expanded + TTS + 10-question Quiz)</title>
+<style>
+  :root{
+    --bg:#071428; --card:#0f2136; --muted:#9db7d9; --text:#e9f6ff;
+    --accent:#57a7ff; --accent2:#7ef0c8; --danger:#ff7a7a; --ok:#9ef0b2;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+  body{background:linear-gradient(135deg,var(--bg) 0%, #031427 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+  .container{max-width:1100px;margin:0 auto;padding:18px}
+  header{position:sticky;top:0;background:rgba(3,10,30,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03);padding:10px 0;z-index:30}
+  .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .badge{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#021024;padding:8px 12px;border-radius:999px;font-weight:800}
+  h1{font-size:clamp(22px,3.6vw,34px);margin:6px 0}
+  .subtitle{color:var(--muted);font-size:14px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:18px;border-radius:12px;margin-top:16px;box-shadow:0 10px 30px rgba(0,0,0,0.45)}
+  .list{padding-left:18px}
+  .list li{margin:8px 0}
+  .muted{color:var(--muted)}
+  .callout{background:linear-gradient(180deg,rgba(126,240,193,0.04),rgba(126,240,193,0.02));border:1px solid rgba(126,240,193,0.08);padding:10px;border-radius:8px}
+  .warn{background:linear-gradient(180deg,rgba(255,123,123,0.04),rgba(255,123,123,0.02));border:1px solid rgba(255,123,123,0.06);padding:10px;border-radius:8px}
+  .controls{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .btn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;color:var(--text);cursor:pointer;font-weight:700}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#021024;border:none}
+  pre{background:rgba(0,0,0,0.15);padding:12px;border-radius:8px;overflow:auto}
+  footer{opacity:.9;padding:30px 0 60px;font-size:13px;color:var(--muted)}
+  .section-sub{color:var(--muted);margin-top:6px;font-size:13px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .quiz .q{margin:12px 0;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02)}
+  .result{margin-top:12px;padding:12px;border-radius:8px}
+  .small{font-size:13px;color:var(--muted)}
+  code{background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:6px}
+  .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(1,6,12,0.85);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:320px}
+  .tts-bar button{background:linear-gradient(45deg,#ff0080,#7928ca);border:none;color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer;min-width:44px}
+  .tts-bar .small{padding:6px 8px;min-width:36px}
+  .tts-bar select,.tts-bar input[type="range"]{background:rgba(255,255,255,0.06);color:#00ffcc;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:8px;font-family:inherit}
+  .tts-highlight{background:rgba(0,255,200,0.15);transition:background 0.2s;padding:0 2px;border-radius:3px}
+  @media (max-width:600px){.tts-bar{left:50%;transform:translateX(-50%);right:auto;bottom:12px;min-width:88%}}
+  .policy{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;border-left:4px solid rgba(90,170,255,0.6)}
+  .metrics{display:flex;gap:8px;flex-wrap:wrap}
+  .metric{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;min-width:140px;text-align:center}
+</style>
 </head>
 <body>
   <header>
-    <div class="container header-row">
-      <div style="display:flex;align-items:center;gap:12px">
+    <div class="container hdr">
+      <div style="display:flex;gap:12px;align-items:center">
         <span class="badge">Lesson 10</span>
         <div>
-          <strong>Social Engineering — Lesson 10</strong>
-          <div class="small muted">Psychology, attack types, real examples, and practical defenses</div>
+          <strong>Social Engineering — Expanded</strong>
+          <div class="subtitle">Human hacking, attack types, psychology, detection, playbooks, labs, metrics, TTS, + quiz</div>
         </div>
       </div>
-      <div>
-        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" id="downloadNotes">📥 Download Notes</button>
+        <button class="btn primary" id="copyMd">📋 Copy as Markdown</button>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <section class="hero card">
-      <h1 class="title">Social Engineering</h1>
-      <p class="subtitle">People are the most targeted resource in security. Learn how social engineering works, why attackers use it, real scenarios, and how to protect yourself and your organization.</p>
+    <article class="card lesson-content">
+      <h1>Social Engineering — Human-Centric Attacks & Defenses (Deep Dive)</h1>
+      <p class="section-sub">This expanded lesson adds psychology, detection signals, technical controls, program roadmaps, a sample incident form, KPIs, policy snippets, exercises, and a reinforced quiz.</p>
 
-      <div class="chips">
-        <span class="chip">Phishing</span>
-        <span class="chip">Spear Phishing</span>
-        <span class="chip">Tailgating</span>
-        <span class="chip">Baiting</span>
-        <span class="chip">Awareness</span>
-      </div>
-    </section>
+      <section class="card">
+        <h2>Table of contents (expanded)</h2>
+        <ul class="list">
+          <li>What is Social Engineering?</li>
+          <li>Psychology of persuasion — why it works</li>
+          <li>Why attackers use social engineering</li>
+          <li>Typical attacker goals</li>
+          <li>Common attack types & detailed examples</li>
+          <li>Indicators & detection signals</li>
+          <li>Technical mitigations & best practices</li>
+          <li>People & training program roadmap</li>
+          <li>Incident response playbook & sample form</li>
+          <li>Safe labs, exercises & measurement (KPIs)</li>
+          <li>Policy snippets & compliance notes</li>
+          <li>10-question quiz</li>
+          <li>Further reading</li>
+        </ul>
+      </section>
 
-    <!-- TOC -->
-    <section class="card long-read" aria-labelledby="toc">
-      <h2 id="toc" class="section-title">Table of Content</h2>
-      <ol class="list">
-        <li>What is Social Engineering?</li>
-        <li>Why attackers use social engineering</li>
-        <li>Typical attacker goals</li>
-        <li>Psychology behind social engineering</li>
-        <li>Types of social engineering attacks (with examples)</li>
-        <li>Technical and human defenses</li>
-        <li>Incident handling & reporting</li>
-        <li>Practical tips & checklists</li>
-        <li>Quiz</li>
-      </ol>
-    </section>
+      <section class="card">
+        <h2>What is Social Engineering?</h2>
+        <p>
+          Social engineering manipulates people to perform actions or reveal information that bypasses technical security. It's an attack surface built around human behavior, context, and trust — often succeeded by combining accurate reconnaissance with plausible requests.
+        </p>
+        <div class="callout">
+          <strong>Contrast:</strong> Technical exploits target software/hardware flaws. Social engineering targets the decision-making process and social norms of people.
+        </div>
+      </section>
 
-    <!-- What is -->
-    <section class="card long-read" id="what" aria-labelledby="what-title">
-      <h2 id="what-title" class="section-title">What is Social Engineering?</h2>
-      <p>Social engineering is the practice of manipulating people into performing actions or divulging confidential information. Rather than breaking software or hardware, attackers exploit human trust, curiosity, fear, or helpfulness.</p>
-      <div class="callout"><strong>Short:</strong> it's hacking people, not computers — but it often leads to both.</div>
-    </section>
+      <section class="card">
+        <h2>Psychology of persuasion — why social engineering works</h2>
+        <p>Successful social engineering campaigns intentionally exploit universal psychological principles:</p>
+        <ul class="list">
+          <li><strong>Authority:</strong> People obey perceived authority, so attackers impersonate executives or IT staff.</li>
+          <li><strong>Reciprocity:</strong> When someone does you a favor, you're more likely to comply — used in quid pro quo attacks.</li>
+          <li><strong>Scarcity / Urgency:</strong> Limited-time requests provoke fast reactions and reduce verification.</li>
+          <li><strong>Social proof:</strong> "Everyone else did it" reduces suspicion (e.g., fake endorsements).</li>
+          <li><strong>Consistency / Commitment:</strong> Attackers build small trust steps (pretexting) then escalate requests.</li>
+          <li><strong>Liking:</strong> People comply with requests from people they like/trust — personalization increases 'liking'.</li>
+        </ul>
+        <p class="small muted">Defenders can counter by creating friction for high-risk actions (out-of-band verification) and training people to recognize manipulation cues.</p>
+      </section>
 
-    <!-- Why use -->
-    <section class="card long-read" id="why" aria-labelledby="why-title">
-      <h2 id="why-title" class="section-title">Why attackers use Social Engineering</h2>
-      <p>Attackers choose social engineering because it often yields high returns with low technical effort. Humans make mistakes, can be rushed or distracted, and often have access that technology controls alone cannot replicate.</p>
-      <ul class="list">
-        <li>Low technical barrier — social techniques require little tooling.</li>
-        <li>High success rate — tailored attacks (spear phishing) are highly effective.</li>
-        <li>Can bypass technical controls — stolen credentials or a single click can defeat hardened systems.</li>
-      </ul>
-    </section>
+      <section class="card">
+        <h2>Why attackers use social engineering (amplified)</h2>
+        <p>Beyond being easy and effective, social engineering is often the "lowest cost to impact" for attackers:</p>
+        <ol class="list">
+          <li><strong>Information gain:</strong> A single successful phish can reveal credentials to access dozens of systems.</li>
+          <li><strong>Pivoting:</strong> Human-provided access lets attackers bypass network perimeters and gain privileged footholds.</li>
+          <li><strong>Blending with normal behavior:</strong> Phishing emails and voice calls can look routine and thus evade detection.</li>
+        </ol>
+      </section>
 
-    <!-- goals -->
-    <section class="card long-read" id="goals" aria-labelledby="goals-title">
-      <h2 id="goals-title" class="section-title">Typical goals of social engineers</h2>
-      <ul class="list">
-        <li><strong>Money:</strong> financial fraud, extortion, or theft.</li>
-        <li><strong>Access / Credentials:</strong> obtain logins for later intrusion.</li>
-        <li><strong>Data theft:</strong> exfiltrate intellectual property or PII.</li>
-        <li><strong>Espionage:</strong> long-term surveillance or insider access.</li>
-        <li><strong>Disruption:</strong> sabotage reputations or operations.</li>
-        <li><strong>Reputation & Ego:</strong> bragging rights or demonstrating control.</li>
-      </ul>
-    </section>
+      <section class="card">
+        <h2>Typical attacker goals — real-world framing</h2>
+        <p>Goals determine tactics and targets. Match likely goals to risks and prioritize defenses:</p>
+        <ul class="list">
+          <li><strong>Credential theft:</strong> leads to account takeover; protect with MFA and monitoring.</li>
+          <li><strong>Monetary fraud:</strong> wire fraud and invoice compromise — process controls reduce impact.</li>
+          <li><strong>Espionage / IP theft:</strong> long-term covert access — hunt and EDR are critical.</li>
+          <li><strong>Destructive acts:</strong> sabotage, data wipes — backups and rapid containment are essential.</li>
+        </ul>
+      </section>
 
-    <!-- psychology -->
-    <section class="card long-read" id="psych" aria-labelledby="psych-title">
-      <h2 id="psych-title" class="section-title">Psychology — why people fall for it</h2>
-      <p>Social engineering exploits common cognitive biases and triggers:</p>
-      <ul class="list">
-        <li><strong>Authority:</strong> people obey perceived authority figures (managers, IT staff).</li>
-        <li><strong>Urgency / Scarcity:</strong> "act now" pressures lead to mistakes.</li>
-        <li><strong>Reciprocity:</strong> people feel compelled to return favors or help.</li>
-        <li><strong>Social proof:</strong> if others appear to have approved something, it's trusted.</li>
-        <li><strong>Curiosity:</strong> enticing links or attachments prompt clicks.</li>
-      </ul>
-      <div class="explain">Understanding these triggers helps design training and controls that reduce human risk.</div>
-    </section>
+      <section class="card">
+        <h2>Common attack types — detailed examples & mitigations</h2>
 
-    <!-- types -->
-    <section class="card long-read" id="types" aria-labelledby="types-title">
-      <h2 id="types-title" class="section-title">Types of Social Engineering Attacks (with examples)</h2>
+        <h3>Phishing & Spear Phishing</h3>
+        <p>Example attack flow:</p>
+        <ol class="list">
+          <li>Reconnaissance: attacker harvests names, titles, and vendors from LinkedIn or public sites.</li>
+          <li>Crafting: a targeted email referencing a recent purchase/order is created with a malicious link.</li>
+          <li>Delivery: victim clicks, enters corporate credentials on a cloned site, attacker collects them.</li>
+        </ol>
+        <p class="small muted">Mitigations: DMARC/SPF/DKIM, email filtering & sandboxing, browser protections, MFA, and targeted training.</p>
 
-      <h3>Phishing</h3>
-      <p>Mass emails pretending to be trusted senders asking recipients to click a link, open an attachment, or submit credentials. Example: fake password reset email linking to credential-harvesting site.</p>
+        <h3>Baiting (USB drop)</h3>
+        <p>Attack scenario: a USB stick labeled "Employee Salaries" is left in a parking lot. Curious employee inserts it and executes a payload.</p>
+        <p class="small muted">Mitigations: blocking auto-run, device control policies, awareness, and physical media handling policies.</p>
 
-      <h3>Spear Phishing</h3>
-      <p>Highly targeted phishing that uses personal details (LinkedIn, company site) to craft believable messages to specific people. Example: an email to finance that appears to come from the CEO requesting an urgent wire transfer.</p>
+        <h3>Vishing (voice) & Smishing (text)</h3>
+        <p>Attackers impersonate support or delivery services. They may ask for temporary access codes or push users to visit malicious links via SMS.</p>
+        <p class="small muted">Mitigations: call-back verification procedures, limiting sensitive actions over phone/SMS, training contact-center staff.</p>
 
-      <h3>Whaling</h3>
-      <p>Targeting executives and high-value personnel with specialized lures. The content is tailored, polished and often bypasses generic filters.</p>
+        <h3>Tailgating / Physical intrusion</h3>
+        <p>Attackers exploit human helpfulness to enter secure areas by following employees through doors. Added risk when physical access leads to console access or unlocked machines.</p>
+        <p class="small muted">Mitigations: turnstiles, badge enforcement, reception checks, CCTV, challenge protocols for unknown visitors.</p>
+      </section>
 
-      <h3>Baiting</h3>
-      <p>Offering something enticing (free download, USB drop) to get the victim to install malware or reveal information. Example: a labelled USB stick left in a parking lot — curiosity leads to plugging it in.</p>
+      <section class="card">
+        <h2>Indicators & detection signals</h2>
+        <p>Defenders can monitor for typical features of social-engineering attempts:</p>
+        <ul class="list">
+          <li><strong>Email signals:</strong> unexpected sender domains, mismatched DKIM/SPF results, display name spoofing, unusual reply-to addresses, new forwarding rules created on mailboxes.</li>
+          <li><strong>Authentication signals:</strong> high volume of password reset requests, login attempts from unusual geolocations, concurrent logins from distant locations.</li>
+          <li><strong>Behavioral signals:</strong> sudden data download spikes from a user, access to unusual file shares, or strange times of activity.</li>
+          <li><strong>Phone & SMS signals:</strong> calls requesting codes, urgent requests to change transfer details, or texts with shortened suspicious links.</li>
+        </ul>
+        <p class="small muted">Combine these signals into correlation rules in your SIEM/EDR to reduce false positives and catch suspicious chains of events.</p>
+      </section>
 
-      <h3>Pretexting</h3>
-      <p>Attacker fabricates a scenario to justify asking for information — e.g., posing as IT asking for credentials to fix "an urgent problem."</p>
-
-      <h3>Tailgating / Piggybacking</h3>
-      <p>Physical technique where an attacker follows an authorized person into a restricted area (holding the door, pretending to have forgotten a badge).</p>
-
-      <h3>Vishing & Smishing</h3>
-      <p>Vishing: voice phishing over phone. Smishing: phishing via SMS. Both use urgency and authority to harvest secrets or push malicious links.</p>
-
-      <h3>Water-holing</h3>
-      <p>Compromising a website frequently visited by a target group so that victims get infected when they visit.</p>
-    </section>
-
-    <!-- red-team -->
-    <section class="card long-read" id="red" aria-labelledby="red-title">
-      <h2 id="red-title" class="section-title">Red-team exercises and ethical social engineering</h2>
-      <p>Organizations use controlled social-engineering tests (phishing simulations, physical entry tests) to measure risk and train staff. These are ethical, planned, and consented exercises with clear rules of engagement and remediation plans.</p>
-    </section>
-
-    <!-- detection & technical -->
-    <section class="card long-read" id="defenses" aria-labelledby="defenses-title">
-      <h2 id="defenses-title" class="section-title">How to protect yourself — technical & human defenses</h2>
-
-      <h3>Human-centered defenses</h3>
-      <ul class="list">
-        <li><strong>Awareness training:</strong> regular, realistic training with examples and role-based scenarios.</li>
-        <li><strong>Phishing simulations:</strong> periodic safe tests that teach users to spot malicious messages.</li>
-        <li><strong>Clear reporting channels:</strong> easy “report phishing” button and follow-up response from security team.</li>
-        <li><strong>Positive culture:</strong> reward reporting and avoid punitive responses when employees report suspected phishing.</li>
-      </ul>
-
-      <h3>Technical controls</h3>
-      <ul class="list">
-        <li><strong>Email filtering & sandboxing:</strong> block known malicious attachments and detonate suspicious files in sandboxes.</li>
-        <li><strong>DMARC / SPF / DKIM:</strong> authenticate sender domains to reduce spoofed emails.</li>
-        <li><strong>Web filtering & URL reputation:</strong> block known malicious sites and warn for risky domains.</li>
-        <li><strong>MFA:</strong> multi-factor authentication limits account takeover even when credentials are stolen.</li>
-        <li><strong>Endpoint restrictions:</strong> limit ability to install software or run macros; use application allowlists.</li>
-        <li><strong>Physical access controls:</strong> badges, turnstiles, visitor logs, and tailgate detection sensors.</li>
-      </ul>
-    </section>
-
-    <!-- indicators -->
-    <section class="card long-read" id="indicators" aria-labelledby="indicators-title">
-      <h2 id="indicators-title" class="section-title">Indicators of social-engineering attempts</h2>
-      <ul class="list">
-        <li>Unexpected requests for credentials or sensitive data.</li>
-        <li>Emails with urgent calls to action, grammatical oddities, or slightly-off sender addresses.</li>
-        <li>Links with mismatched display text and actual URL (hover to check).</li>
-        <li>Unsolicited USB sticks, devices or visitors asking for badge access.</li>
-        <li>Requests to bypass normal processes (e.g., "skip approval — urgent").</li>
-      </ul>
-      <div class="explain">When in doubt: verify by another channel (call the sender on a known number), and report to security.</div>
-    </section>
-
-    <!-- handling -->
-    <section class="card long-read" id="handling" aria-labelledby="handling-title">
-      <h2 id="handling-title" class="section-title">If you suspect you've been targeted — quick steps</h2>
-      <ol class="list">
-        <li>Do not interact further with the message or link.</li>
-        <li>Take screenshots and save original email headers or SMS content.</li>
-        <li>Disconnect affected device from network if you clicked an attachment or plugged a suspicious USB.</li>
-        <li>Change passwords from a known-good device and enable MFA.</li>
-        <li>Report immediately to your IT/security team using the formal channel.</li>
-      </ol>
-    </section>
-
-    <!-- practical tips -->
-    <section class="card long-read" id="tips" aria-labelledby="tips-title">
-      <h2 id="tips-title" class="section-title">Practical tips & checklist</h2>
-      <ul class="list">
-        <li>Hover links before clicking; check full URL.</li>
-        <li>Verify unexpected requests by calling the sender on a trusted number.</li>
-        <li>Do not use personal devices to access sensitive work systems unless approved.</li>
-        <li>Never share OTPs, MFA push approvals, or passwords over email or phone.</li>
-        <li>Use password managers to avoid reuse and to detect fake login pages.</li>
-        <li>Report suspicious contacts even if you think they were harmless — early detection helps.</li>
-      </ul>
-    </section>
-
-    <!-- Download -->
-    <section class="card" id="notes" aria-labelledby="notes-title">
-      <h2 id="notes-title" class="section-title">Download Notes</h2>
-      <p class="muted">Click to download a text summary of this lesson for offline review.</p>
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated read time: ~15–25 mins</span></div>
-      </div>
-    </section>
-
-    <!-- QUIZ -->
-    <section class="card" aria-labelledby="quiz">
-      <h2 id="quiz" class="section-title">Lesson 10 Quiz — Social Engineering</h2>
-      <p class="muted">Click <strong>Attempt Quiz</strong> when ready. The quiz has 10 questions; missed questions will provide explanations.</p>
-
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
-        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
-      </div>
-
-      <form id="quizForm" style="display:none;margin-top:14px;">
-        <!-- Q1 -->
-        <div class="q-card">
-          <h4>1) What is social engineering?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q1" value="a"/> Manipulating people to obtain confidential info or cause actions</label>
-            <label><input type="radio" name="q1" value="b"/> A form of encryption</label>
-            <label><input type="radio" name="q1" value="c"/> A backup method for servers</label>
+      <section class="card">
+        <h2>Technical mitigations & best practices (deep)</h2>
+        <div class="grid">
+          <div>
+            <h3>Email & Web</h3>
+            <ul class="list">
+              <li>Implement SPF, DKIM, DMARC with a reject/quarantine policy after validation testing.</li>
+              <li>Use attachment sandboxing to detonate suspicious files safely.</li>
+              <li>Enable safe-browsing and block known-malicious URLs at proxy/firewall.</li>
+              <li>Enable link rewriting in email gateways to check URLs at click time.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Identity & Endpoint</h3>
+            <ul class="list">
+              <li>Enforce MFA for all privileged and remote-access accounts.</li>
+              <li>Use conditional access (policy-based) — block logins from risky countries, use device compliance checks.</li>
+              <li>Deploy EDR with detection for credential dumping, suspicious PowerShell and living-off-the-land binaries.</li>
+              <li>Implement password hygiene: unique, long passwords + passphrase guidance; use password managers.</li>
+            </ul>
           </div>
         </div>
+        <h3>Process & orchestration</h3>
+        <ul class="list">
+          <li>Automate email reporting (one-click "Report Phish") into the SOC queue and enable sandbox replay.</li>
+          <li>Use SOAR to automate containment steps (block sender, remove mail from mailboxes) after analyst verification.</li>
+        </ul>
+      </section>
 
-        <!-- Q2 -->
-        <div class="q-card">
-          <h4>2) Which psychological trigger do attackers commonly exploit?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q2" value="a"/> Urgency</label>
-            <label><input type="radio" name="q2" value="b"/> Color preferences</label>
-            <label><input type="radio" name="q2" value="c"/> CPU speed</label>
-          </div>
+      <section class="card">
+        <h2>People & training program roadmap (12–18 months)</h2>
+        <p>A structured training program balances awareness with measurable exercises.</p>
+        <h3>Phase 1 — Baseline (0–3 months)</h3>
+        <ul class="list">
+          <li>Publish clear policies on MFA, handling of invoices, and physical access.</li>
+          <li>Deliver company-wide phishing awareness sessions.</li>
+          <li>Baseline phishing susceptibility with an initial simulated campaign to measure click rates.</li>
+        </ul>
+        <h3>Phase 2 — Targeted reinforcement (3–9 months)</h3>
+        <ul class="list">
+          <li>Run role-based training for finance, HR, and executives (whaling simulations).</li>
+          <li>Integrate phishing results into onboarding and annual refreshers.</li>
+          <li>Deploy microlearning modules for quick refreshers (1–3 minutes each).</li>
+        </ul>
+        <h3>Phase 3 — Sustain & adapt (9–18 months)</h3>
+        <ul class="list">
+          <li>Continuous simulation cadence with metrics by department and mitigation follow-ups.</li>
+          <li>Tabletop exercises combining IT, legal, PR, and executive leadership for response rehearsals.</li>
+          <li>Reward low click rates and positive reporting behavior to foster a no-blame culture.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Incident response playbook — social engineering (detailed)</h2>
+        <p>This playbook is a condensed, practical checklist to respond to a reported social-engineering incident (phish, invoice fraud, vishing, tailgating).</p>
+        <ol class="list">
+          <li><strong>Initial report received:</strong> create incident ticket, capture reporter info and time.</li>
+          <li><strong>Rapid triage (Tier 1):</strong> retrieve message headers, attachments, URLs; check sender DKIM/SPF/DMARC; query EDR and mailbox logs for similar messages.</li>
+          <li><strong>Contain (if confirmed):</strong> remove the message from mailboxes, disable malicious URLs via secure web gateway, block sender addresses & IPs, and isolate affected accounts.</li>
+          <li><strong>Forensic collection:</strong> export email headers, full message source, mailbox access logs, any host artifacts from EDR, and call logs if vishing.</li>
+          <li><strong>Scope & eradicate:</strong> enumerate compromised accounts, rotate credentials, enforce MFA re-enrollment, and remove unauthorized forwarding rules.</li>
+          <li><strong>Recovery:</strong> confirm normal access restored and monitor for suspicious behavior for at least 30 days.</li>
+          <li><strong>Communication:</strong> notify impacted business units, legal (if data loss), and optionally affected customers; draft internal post-mortem.</li>
+          <li><strong>Lessons & prevention:</strong> update filter rules, add detection logic to SIEM, schedule targeted training for affected groups.</li>
+        </ol>
+
+        <h3>Sample incident capture form (fields you should collect)</h3>
+        <pre>
+- Reporter name, email, phone
+- Date/time of report
+- Type (phish / vish / smish / tailgate / invoice fraud)
+- Full message (copy/paste) + headers
+- Attachment names / URLs
+- Affected accounts / hosts
+- Business impact estimate
+- Immediate containment actions taken
+- Assigned incident owner
+        </pre>
+      </section>
+
+      <section class="card">
+        <h2>Sample phishing email — analysis</h2>
+        <p>Below is a sanitized example and analysis points you can use in training.</p>
+        <pre>
+From: accounting@acmepayments.com (display name: "ACME Finance")
+To: finance@yourcompany.com
+Subject: URGENT: Wire transfer confirmation required for invoice #5872
+
+Hi John,
+
+We need immediate confirmation for invoice 5872. Please follow the secure link below to confirm the wire details before 5pm today:
+http://acme-payments.example.validate-now.com/confirm
+
+This is time-sensitive and was approved by procurement.
+
+Thanks,
+ACME Accounting
+        </pre>
+        <p class="small muted">Analysis checklist:</p>
+        <ul class="list">
+          <li>Hover link — domain mismatch and suspicious subdomain.</li>
+          <li>Look at full 'From' header and return-path to confirm origin IP and DKIM/SPF results.</li>
+          <li>High urgency + approval claim = social pressure red flag.</li>
+          <li>Verification: call known procurement contact using directory phone number — do NOT use reply-to info.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>KPIs, dashboards, and measuring program success</h2>
+        <p>Suggested metrics to track and display on a Security Dashboard for social engineering program:</p>
+        <div class="metrics">
+          <div class="metric"><div class="small muted">Phish Click Rate</div><div style="font-size:20px">3.2%</div></div>
+          <div class="metric"><div class="small muted">Report Rate (users reporting suspicious mail)</div><div style="font-size:20px">42%</div></div>
+          <div class="metric"><div class="small muted">MTTD (Mean Time to Detect)</div><div style="font-size:20px">1h 12m</div></div>
+          <div class="metric"><div class="small muted">MTTR (Mean Time to Remediate)</div><div style="font-size:20px">4h 35m</div></div>
+          <div class="metric"><div class="small muted">High-risk emails blocked</div><div style="font-size:20px">98</div></div>
+        </div>
+        <p class="small muted">Targets: reduce click rate over time, increase reporting rate, lower MTTD/MTTR. Use these KPIs to justify investments in tools and training.</p>
+      </section>
+
+      <section class="card">
+        <h2>Policy snippets & compliance considerations</h2>
+        <p class="policy">
+          <strong>Acceptable Use (excerpt):</strong> Employees must not disclose credentials, MFA codes, or transfer funds based solely on email requests. All vendor payment changes must be verified through an independent contact and approved by two finance approvers.
+        </p>
+        <p class="policy" style="margin-top:8px">
+          <strong>Incident Reporting (excerpt):</strong> All suspected social engineering incidents must be reported immediately to Security via the "Report Phish" button or to security@company. Incidents affecting customer data must be escalated to Legal and Privacy within 2 hours.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Safe labs, exercises & curriculum ideas</h2>
+        <p>Practical exercises help build muscle memory and reduce error-prone behavior:</p>
+        <ul class="list">
+          <li>Monthly phishing simulations with progressively more convincing templates; follow-up coaching for clicked users.</li>
+          <li>Quarterly tabletop for executives — simulate a whaling attempt and rehearse escalation and communication.</li>
+          <li>Physical access test: red team tries to enter a building with tailgating techniques; results drive physical control improvements.</li>
+          <li>Contact center vishing drills — role-play scripts to verify caller identity and escalate suspicious requests.</li>
+        </ul>
+      </section>
+
+      <section class="card quiz" aria-labelledby="quiz">
+        <h2 id="quiz">10-question Quiz (self-check)</h2>
+
+        <div class="q">
+          <strong>1.</strong> Which control most reduces the effectiveness of credential-phishing emails?<br>
+          <label><input type="radio" name="q1" value="a"> Requiring multi-factor authentication (MFA)</label><br>
+          <label><input type="radio" name="q1" value="b"> Longer password expiry</label><br>
+          <label><input type="radio" name="q1" value="c"> Disabling email headers</label>
         </div>
 
-        <!-- Q3 -->
-        <div class="q-card">
-          <h4>3) What is spear phishing?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q3" value="a"/> Targeted phishing tailored to a specific person or role</label>
-            <label><input type="radio" name="q3" value="b"/> A mass spam campaign</label>
-            <label><input type="radio" name="q3" value="c"/> Physical break-in</label>
-          </div>
+        <div class="q">
+          <strong>2.</strong> What is the best immediate step if you receive an unexpected invoice requesting a wire transfer?<br>
+          <label><input type="radio" name="q2" value="a"> Pay it to avoid delays</label><br>
+          <label><input type="radio" name="q2" value="b"> Call the vendor using a known phone number (not the one in the email) to verify</label><br>
+          <label><input type="radio" name="q2" value="c"> Reply to the email asking for more info</label>
         </div>
 
-        <!-- Q4 -->
-        <div class="q-card">
-          <h4>4) What technical control helps prevent email spoofing?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q4" value="a"/> DMARC / SPF / DKIM</label>
-            <label><input type="radio" name="q4" value="b"/> Disabling HTTPS</label>
-            <label><input type="radio" name="q4" value="c"/> Turning off antivirus</label>
-          </div>
+        <div class="q">
+          <strong>3.</strong> Tailgating is which type of attack?<br>
+          <label><input type="radio" name="q3" value="a"> Social/physical engineering</label><br>
+          <label><input type="radio" name="q3" value="b"> Technical exploit of a server</label><br>
+          <label><input type="radio" name="q3" value="c"> Malware propagation method</label>
         </div>
 
-        <!-- Q5 -->
-        <div class="q-card">
-          <h4>5) Which of these is a safe verification step when receiving an urgent request from a colleague?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q5" value="a"/> Call the colleague on their known phone number to confirm</label>
-            <label><input type="radio" name="q5" value="b"/> Immediately transfer funds</label>
-            <label><input type="radio" name="q5" value="c"/> Reply with your password</label>
-          </div>
+        <div class="q">
+          <strong>4.</strong> What distinguishes spear phishing from regular phishing?<br>
+          <label><input type="radio" name="q4" value="a"> It's random and sent to many addresses</label><br>
+          <label><input type="radio" name="q4" value="b"> It is targeted and personalized to a specific victim</label><br>
+          <label><input type="radio" name="q4" value="c"> It always contains a malware attachment</label>
         </div>
 
-        <!-- Q6 -->
-        <div class="q-card">
-          <h4>6) What is tailgating?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q6" value="a"/> Physically following someone into a restricted area without authorization</label>
-            <label><input type="radio" name="q6" value="b"/> Sending a phishing email</label>
-            <label><input type="radio" name="q6" value="c"/> A type of firewall</label>
-          </div>
+        <div class="q">
+          <strong>5.</strong> Quid pro quo attacks typically rely on what social mechanism?<br>
+          <label><input type="radio" name="q5" value="a"> Promise of service in exchange for information</label><br>
+          <label><input type="radio" name="q5" value="b"> Silent eavesdropping</label><br>
+          <label><input type="radio" name="q5" value="c"> DNS spoofing</label>
         </div>
 
-        <!-- Q7 -->
-        <div class="q-card">
-          <h4>7) Which practice reduces the impact of credential theft?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q7" value="a"/> Using multi-factor authentication (MFA)</label>
-            <label><input type="radio" name="q7" value="b"/> Reusing the same password everywhere</label>
-            <label><input type="radio" name="q7" value="c"/> Sharing passwords over chat</label>
-          </div>
+        <div class="q">
+          <strong>6.</strong> Which email authentication framework helps detect spoofed sender addresses?<br>
+          <label><input type="radio" name="q6" value="a"> SPF / DKIM / DMARC</label><br>
+          <label><input type="radio" name="q6" value="b"> FTP</label><br>
+          <label><input type="radio" name="q6" value="c"> SSH</label>
         </div>
 
-        <!-- Q8 -->
-        <div class="q-card">
-          <h4>8) Which action should you take after clicking a suspicious attachment?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q8" value="a"/> Disconnect the device from the network and report to IT/security</label>
-            <label><input type="radio" name="q8" value="b"/> Forward it to everyone so they can see</label>
-            <label><input type="radio" name="q8" value="c"/> Continue using the device without mentioning it</label>
-          </div>
+        <div class="q">
+          <strong>7.</strong> A good anti-phishing program should include which of the following?<br>
+          <label><input type="radio" name="q7" value="a"> Realistic phishing simulations and follow-up training</label><br>
+          <label><input type="radio" name="q7" value="b"> Publicly shaming careless employees</label><br>
+          <label><input type="radio" name="q7" value="c"> Only technical controls, no training</label>
         </div>
 
-        <!-- Q9 -->
-        <div class="q-card">
-          <h4>9) A USB stick labeled "Payroll 2025" is found in the office car park. Best action?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q9" value="a"/> Do not plug it in — hand it to security for inspection</label>
-            <label><input type="radio" name="q9" value="b"/> Plug it into your laptop to see what's inside</label>
-            <label><input type="radio" name="q9" value="c"/> Take it home and plug into personal PC</label>
-          </div>
+        <div class="q">
+          <strong>8.</strong> Which of these is the riskiest practice for preventing tailgating?<br>
+          <label><input type="radio" name="q8" value="a"> Enforcing badge checks at every entry</label><br>
+          <label><input type="radio" name="q8" value="b"> Allowing employees to hold doors open for anyone who asks</label><br>
+          <label><input type="radio" name="q8" value="c"> Installing turnstiles with badge readers</label>
         </div>
 
-        <!-- Q10 -->
-        <div class="q-card">
-          <h4>10) Which is an indicator of a phishing email?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q10" value="a"/> Slightly misspelled sender domain or mismatched link on hover</label>
-            <label><input type="radio" name="q10" value="b"/> A perfectly formatted internal memo from your manager</label>
-            <label><input type="radio" name="q10" value="c"/> An email from your verified company address with expected content</label>
-          </div>
+        <div class="q">
+          <strong>9.</strong> Whaling attacks primarily target which group?<br>
+          <label><input type="radio" name="q9" value="a"> End users with no privileges</label><br>
+          <label><input type="radio" name="q9" value="b"> High-level executives and decision-makers</label><br>
+          <label><input type="radio" name="q9" value="c"> Public web servers</label>
         </div>
 
-        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
-          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
-          <button type="button" class="btn" id="resetQuiz">Reset</button>
-          <span id="quizResult" class="result" aria-live="polite"></span>
+        <div class="q">
+          <strong>10.</strong> Which practice helps prevent success of vishing (voice phishing)?<br>
+          <label><input type="radio" name="q10" value="a"> Verifying caller identity using a company directory or callback number</label><br>
+          <label><input type="radio" name="q10" value="b"> Posting employee phone numbers publicly</label><br>
+          <label><input type="radio" name="q10" value="c"> Sharing passwords over the phone</label>
         </div>
-      </form>
-    </section>
+
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <button class="btn primary" id="grade">Grade Quiz</button>
+          <button class="btn" id="showAnswers">Show Answers & Explanations</button>
+        </div>
+
+        <div id="result" class="result"></div>
+      </section>
+
+      <section class="card">
+        <h2>Further reading & references</h2>
+        <ul class="list">
+          <li>Kevin Mitnick, "The Art of Deception" (classic primer on social engineering techniques)</li>
+          <li>SANS whitepapers on phishing and security awareness program design</li>
+          <li>Standards: NIST SP 800-61r2 (Incident Response) and privacy/regulatory guidance relevant to your region</li>
+        </ul>
+      </section>
+
+    </article>
 
     <footer class="container">
-      <p>© Learning Playground – Social Engineering • Lesson 10</p>
+      <p>© Defensive Training — Social Engineering (Expanded). Use for internal training and awareness. Adapt templates and policies to your organization's legal and regulatory obligations.</p>
     </footer>
   </main>
 
-  <script>
-    /* Theme toggle (persist) */
-    const themeBtn = document.getElementById('toggleTheme');
-    const keyTheme = 'lesson10-theme';
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const applyTheme = (mode) => {
-      if (mode === 'light') {
-        document.documentElement.style.setProperty('--bg','#f7f9ff');
-        document.documentElement.style.setProperty('--card','#ffffff');
-        document.documentElement.style.setProperty('--text','#0b1220');
-        document.documentElement.style.setProperty('--muted','#4a5875');
-        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
-      } else {
-        document.documentElement.style.setProperty('--bg','#0b1220');
-        document.documentElement.style.setProperty('--card','#111a2e');
-        document.documentElement.style.setProperty('--text','#e7eefc');
-        document.documentElement.style.setProperty('--muted','#8aa0c3');
-        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+  <!-- TTS bar -->
+  <div id="ttsBar" class="tts-bar" role="region" aria-label="Text to Speech Controls">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" title="Pause">⏸</button>
+    <button id="ttsStop" title="Stop">⏹</button>
+    <span class="small">Voice</span>
+    <select id="ttsVoices" aria-label="Select voice"></select>
+    <span class="small">Rate</span>
+    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+    <span class="small">Pitch</span>
+    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+    <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+  </div>
+
+<script>
+  // Download/Copy handlers (same as previous version, adapted for expanded content)
+  document.getElementById('downloadNotes').addEventListener('click', () => {
+    const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
+    const lines = [];
+    nodes.forEach(n => {
+      const text = n.innerText.trim();
+      if (text) lines.push(text);
+    });
+    const blob = new Blob([lines.join('\n\n')], {type:'text/plain'});
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = 'Lesson10_SocialEngineering_Notes.txt'; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+  });
+
+  document.getElementById('copyMd').addEventListener('click', async () => {
+    const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
+    let md = '';
+    nodes.forEach(n => {
+      const tag = n.tagName.toLowerCase();
+      const txt = n.innerText.trim();
+      if (!txt) return;
+      if (tag === 'h1') md += `# ${txt}\n\n`;
+      else if (tag === 'h2') md += `## ${txt}\n\n`;
+      else if (tag === 'h3') md += `### ${txt}\n\n`;
+      else if (tag === 'pre') md += '```\n' + txt + '\n```\n\n';
+      else if (tag === 'li') md += `- ${txt}\n`;
+      else md += `${txt}\n\n`;
+    });
+    try { await navigator.clipboard.writeText(md); alert('Copied notes as Markdown.'); }
+    catch(e){ alert('Could not copy to clipboard.'); }
+  });
+
+  // Quiz answers + explanations (keeps same correct answers & explanations as before)
+  const answers = {
+    q1: {a:true,  b:false, c:false, explain:"MFA prevents account access even if credentials are stolen by requiring a second factor."},
+    q2: {a:false, b:true,  c:false, explain:"Out-of-band verification (call a known vendor number) is the safest immediate step for wire/invoice verification."},
+    q3: {a:true,  b:false, c:false, explain:"Tailgating is physical/social engineering (following someone into a secure area)." },
+    q4: {a:false, b:true,  c:false, explain:"Spear phishing is targeted and personalized, making it more convincing."},
+    q5: {a:true,  b:false, c:false, explain:"Quid pro quo promises a service in exchange for information."},
+    q6: {a:true,  b:false, c:false, explain:"SPF, DKIM and DMARC help email systems detect and block spoofed senders."},
+    q7: {a:true,  b:false, c:false, explain:"Simulations plus training are effective; shaming undermines culture."},
+    q8: {a:false, b:true,  c:false, explain:"Allowing employees to hold doors open for anyone is risky; enforce badge checks."},
+    q9: {a:false, b:true,  c:false, explain:"Whaling targets executives and other high-value decision-makers."},
+    q10:{a:true,  b:false, c:false, explain:"Verify caller identity via known contact info or directory rather than accepting phone claims at face value."}
+  };
+
+  document.getElementById('grade').addEventListener('click', () => {
+    let score = 0; const explanations = [];
+    for (let i=1;i<=10;i++){
+      const name = 'q'+i;
+      const sel = document.querySelector(`input[name="${name}"]:checked`);
+      const user = sel ? sel.value : '(no answer)';
+      const isCorrect = sel && answers[name][sel.value]===true;
+      if (isCorrect) score++;
+      explanations.push(`<strong>Q${i}:</strong> Your answer: ${user}. ${isCorrect?'<span style="color:var(--ok)">Correct</span>':'<span style="color:var(--danger)">Incorrect</span>' }<br><em>Explanation:</em> ${answers[name].explain}`);
+    }
+    const out = document.getElementById('result');
+    out.innerHTML = `<strong>Score:</strong> ${score} / 10<br><div style="margin-top:8px">${explanations.join('<hr>')}</div>`;
+    out.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  document.getElementById('showAnswers').addEventListener('click', () => {
+    const out = document.getElementById('result');
+    const lines = [];
+    for (let i=1;i<=10;i++){
+      const key = 'q'+i;
+      const correct = Object.keys(answers[key]).find(k=>k!=='explain' && answers[key][k]===true);
+      lines.push(`<strong>Q${i} correct answer:</strong> ${correct.toUpperCase()}. <em>${answers[key].explain}</em>`);
+    }
+    out.innerHTML = lines.join('<hr>');
+    out.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  // TTS module (improved highlighting & persistence)
+  (function(){
+    if (!('speechSynthesis' in window)) {
+      const bar = document.getElementById('ttsBar'); if (bar) bar.style.display='none';
+      return;
+    }
+    const playBtn = document.getElementById('ttsPlay');
+    const pauseBtn = document.getElementById('ttsPause');
+    const stopBtn = document.getElementById('ttsStop');
+    const voicesSelect = document.getElementById('ttsVoices');
+    const rateInput = document.getElementById('ttsRate');
+    const pitchInput = document.getElementById('ttsPitch');
+    const autoBtn = document.getElementById('ttsToggleAuto');
+
+    let voices = [];
+    function populateVoices(){
+      voices = speechSynthesis.getVoices();
+      voicesSelect.innerHTML='';
+      voices.forEach(v=> {
+        const opt = document.createElement('option'); opt.value = v.voiceURI;
+        opt.textContent = `${v.name} (${v.lang})${v.default?' — default':''}`;
+        voicesSelect.appendChild(opt);
+      });
+      const saved = localStorage.getItem('lesson10.voice');
+      if (saved) voicesSelect.value = saved;
+    }
+    populateVoices();
+    if (speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged = populateVoices;
+
+    function getTTSNodesText() {
+      // Build a readable sequence: headings then paragraphs; shorter segments work better for TTS
+      const seq = [];
+      const selectedNodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content p, .lesson-content li');
+      selectedNodes.forEach(n => {
+        const text = n.innerText.trim();
+        if (text) seq.push(text);
+      });
+      return seq;
+    }
+
+    function speakSequence(seq) {
+      if (!seq || !seq.length) return;
+      cancel(); // ensure prior speech canceled
+      let idx = 0;
+      function speakNext() {
+        if (idx >= seq.length) return;
+        const s = seq[idx++];
+        const u = new SpeechSynthesisUtterance(s);
+        const selURI = voicesSelect.value;
+        const sel = voices.find(v => v.voiceURI === selURI) || voices.find(v => v.default) || voices[0];
+        if (sel) u.voice = sel;
+        u.rate = parseFloat(rateInput.value);
+        u.pitch = parseFloat(pitchInput.value);
+        u.onstart = () => highlightText(s);
+        u.onend = () => { removeHighlights(); setTimeout(speakNext, 80); };
+        speechSynthesis.speak(u);
       }
-    };
-    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
-    applyTheme(storedTheme);
-    themeBtn.addEventListener('click', () => {
-      const cur = localStorage.getItem(keyTheme) || storedTheme;
-      const next = cur === 'dark' ? 'light' : 'dark';
-      localStorage.setItem(keyTheme, next);
-      applyTheme(next);
+      speakNext();
+    }
+
+    function highlightText(text) {
+      removeHighlights();
+      const container = document.querySelector('.lesson-content');
+      if (!container) return;
+      // naive highlight: replace first occurrence of the text with a span
+      const safe = text.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      try {
+        const regex = new RegExp(safe);
+        container.innerHTML = container.innerHTML.replace(regex, `<span class="tts-highlight">${text}</span>`);
+      } catch(e) {
+        // fallback: no highlight if regex fails
+      }
+    }
+    function removeHighlights(){
+      const container = document.querySelector('.lesson-content');
+      if (!container) return;
+      const els = container.querySelectorAll('.tts-highlight');
+      els.forEach(el => { el.outerHTML = el.textContent; });
+    }
+
+    function cancel(){ if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
+    function pause(){ if (speechSynthesis.speaking) speechSynthesis.pause(); }
+    function resume(){ if (speechSynthesis.paused) speechSynthesis.resume(); }
+
+    playBtn.addEventListener('click', () => {
+      if (speechSynthesis.paused) return resume();
+      const seq = getTTSNodesText();
+      speakSequence(seq);
+      localStorage.setItem('lesson10.voice', voicesSelect.value || '');
+      localStorage.setItem('lesson10.rate', rateInput.value);
+      localStorage.setItem('lesson10.pitch', pitchInput.value);
+    });
+    pauseBtn.addEventListener('click', ()=> {
+      if (speechSynthesis.speaking) pause();
+      else if (speechSynthesis.paused) resume();
+    });
+    stopBtn.addEventListener('click', ()=> { cancel(); removeHighlights(); });
+
+    voicesSelect.addEventListener('change', ()=> localStorage.setItem('lesson10.voice', voicesSelect.value));
+    rateInput.addEventListener('change', ()=> localStorage.setItem('lesson10.rate', rateInput.value));
+    pitchInput.addEventListener('change', ()=> localStorage.setItem('lesson10.pitch', pitchInput.value));
+
+    const savedAuto = localStorage.getItem('lesson10.auto') === 'true';
+    autoBtn.style.opacity = savedAuto ? '1' : '0.6';
+    autoBtn.addEventListener('click', ()=> {
+      const cur = localStorage.getItem('lesson10.auto') === 'true';
+      localStorage.setItem('lesson10.auto', (!cur).toString());
+      autoBtn.style.opacity = (!cur) ? '1' : '0.6';
     });
 
-    /* Download notes */
-    function downloadNotes() {
-      const title = 'Lesson10_SocialEngineering_Notes.txt';
-      const content = [
-        'Lesson 10 – Social Engineering',
-        '',
-        'Contents:',
-        '- What is Social Engineering',
-        '- Why attackers use social engineering',
-        '- Typical goals',
-        '- Psychology and triggers',
-        '- Types: Phishing, Spear Phishing, Whaling, Baiting, Pretexting, Tailgating, Vishing, Smishing',
-        '- Defenses: training, DMARC/SPF/DKIM, MFA, email filtering, physical controls',
-        '- Incident handling steps and practical checklist',
-        '',
-        'Quick checklist:',
-        '- Hover links before clicking',
-        '- Verify urgent requests by calling a known number',
-        '- Never share OTPs or passwords over email/phone',
-        '- Report suspicious emails via the security reporting channel',
-        '- Do not plug unknown USB devices into work machines'
-      ].join('\\n');
-      const blob = new Blob([content], {type:'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = title; document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-    }
-    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
-    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
-
-    /* Quiz logic */
-    const answers = { q1:'a', q2:'a', q3:'a', q4:'a', q5:'a', q6:'a', q7:'a', q8:'a', q9:'a', q10:'a' };
-    const explanations = {
-      q1: 'Social engineering is about manipulating people to reveal information or take actions that compromise security.',
-      q2: 'Attackers often create a sense of urgency (e.g., "act now") to make victims click or bypass checks.',
-      q3: 'Spear phishing is a targeted attack tailored to a specific individual or role with personal details.',
-      q4: 'DMARC/SPF/DKIM are email authentication standards that help prevent spoofed emails.',
-      q5: 'Verifying urgent requests by calling on a trusted phone number prevents reply-to or forged-email scams.',
-      q6: 'Tailgating is physically following someone into a secured area without authorization.',
-      q7: 'Multi-factor authentication reduces the usefulness of stolen credentials because a second factor is required.',
-      q8: 'If you clicked a suspicious attachment, disconnect the device and report immediately to prevent further harm.',
-      q9: 'Unknown USB sticks may contain malware; hand them to security so they can be analyzed safely.',
-      q10: 'Phishing emails often use slightly misspelled domains or mismatched URLs — hover to inspect the real link.'
-    };
-
-    const form = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitQuiz');
-    const resetBtn = document.getElementById('resetQuiz');
-    const resultSpan = document.getElementById('quizResult');
-    const scoreKey = 'lesson10-social-score';
-    const attemptBtn = document.getElementById('attemptBtn');
-
-    attemptBtn.addEventListener('click', () => {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      localStorage.setItem('lesson10-attempted', '1');
-      const saved = localStorage.getItem(scoreKey);
-      if (saved) {
-        resultSpan.textContent = `Previous Score: ${saved}%`;
-        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
-      }
-      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
-    });
-
-    function grade() {
-      let score = 0; let total = Object.keys(answers).length;
-      const missed = [];
-      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
-      for (const q of Object.keys(answers)) {
-        const el = form.querySelector(`input[name="${q}"]:checked`);
-        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-        if (!el) { missed.push(q); continue; }
-        if (el.value === answers[q]) {
-          score++;
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
-        } else {
-          missed.push(q);
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
-        }
-      }
-      const pct = Math.round((score/total)*100);
-      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
-      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
-      localStorage.setItem(scoreKey, pct);
-
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-      if (missed.length) {
-        const review = document.createElement('div');
-        review.id = 'reviewBox';
-        review.style.marginTop = '12px';
-        review.style.padding = '12px';
-        review.style.border = '1px solid rgba(255,255,255,0.06)';
-        review.style.borderRadius = '10px';
-        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
-        let inner = '<strong>Review (missed questions)</strong><ul>';
-        missed.forEach(m => {
-          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
-          const radio = form.querySelector(`input[name="${m}"]`);
-          if (radio) {
-            const qCard = radio.closest('.q-card');
-            if (qCard) {
-              const ex = document.createElement('div');
-              ex.className = 'explain';
-              ex.textContent = explanations[m];
-              qCard.appendChild(ex);
-            }
-          }
-        });
-        inner += '</ul>';
-        review.innerHTML = inner;
-        form.appendChild(review);
-        setTimeout(()=>{ alert('You missed some questions. Explanations were added under the missed questions.'); }, 80);
-      } else {
-        const perfect = document.createElement('div');
-        perfect.id = 'reviewBox';
-        perfect.style.marginTop = '12px';
-        perfect.style.padding = '12px';
-        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
-        perfect.style.borderRadius = '10px';
-        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
-        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
-        form.appendChild(perfect);
-      }
-      submitBtn.disabled = true;
-    }
-
-    function resetQuiz() {
-      form.reset();
-      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-      resultSpan.textContent = '';
-      submitBtn.disabled = false;
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-      localStorage.removeItem(scoreKey);
-    }
-
-    submitBtn.addEventListener('click', grade);
-    resetBtn.addEventListener('click', resetQuiz);
-
-    // Restore previous attempt if user already attempted
-    const prev = localStorage.getItem(scoreKey);
-    if (localStorage.getItem('lesson10-attempted')) {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      if (prev) {
-        resultSpan.textContent = `Previous Score: ${prev}%`;
-        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
+    function applySaved() {
+      const sv = localStorage.getItem('lesson10.voice');
+      if (sv && voices.find(v=>v.voiceURI===sv)) voicesSelect.value = sv;
+      const sr = localStorage.getItem('lesson10.rate') || rateInput.value;
+      const sp = localStorage.getItem('lesson10.pitch') || pitchInput.value;
+      rateInput.value = sr; pitchInput.value = sp;
+      if (localStorage.getItem('lesson10.auto') === 'true') {
+        try { const seq = getTTSNodesText(); speakSequence(seq); } catch(e) {}
       }
     }
-  </script>
+
+    // Wait for voices to populate then apply saved preferences
+    let tries = 0;
+    const iv = setInterval(()=> {
+      if (speechSynthesis.getVoices().length) {
+        populateVoices(); applySaved(); clearInterval(iv);
+      } else if (++tries > 30) { applySaved(); clearInterval(iv); }
+    }, 200);
+  })();
+</script>
 </body>
 </html>
-```

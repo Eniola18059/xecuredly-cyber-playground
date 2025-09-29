@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Lesson 1 – Introduction to Cybersecurity</title>
+  <title>Lesson 1 – Introduction to Cybersecurity (Expanded)</title>
 
   <style>
     :root {
@@ -56,6 +56,75 @@
     .long-read{line-height:1.65;font-size:15px}
     .small{font-size:13px;color:var(--muted)}
     .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    /* TTS control bar */
+    .tts-bar {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.65);
+      color: #00ffcc;
+      padding: 10px 12px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      font-family: 'Share Tech Mono', monospace;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      backdrop-filter: blur(6px);
+      min-width: 260px;
+    }
+
+    /* Buttons */
+    .tts-bar button {
+      background: linear-gradient(45deg,#ff0080,#7928ca);
+      border: none;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      min-width: 44px;
+    }
+    .tts-bar button.small {
+      padding: 6px 8px;
+      min-width: 36px;
+      font-size: 0.95rem;
+    }
+
+    /* Select and sliders */
+    .tts-bar select, .tts-bar input[type="range"] {
+      background: rgba(255,255,255,0.06);
+      color: #00ffcc;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 6px;
+      border-radius: 8px;
+      font-family: inherit;
+    }
+
+    /* Small labels */
+    .tts-bar .label {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+
+    /* hidden accessibility only text highlight */
+    .tts-highlight {
+      background: rgba(0,255,200,0.15);
+      transition: background 0.2s;
+    }
+    @media (max-width:600px) {
+      .tts-bar {
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
+        bottom: 12px;
+        min-width: 88%;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -64,8 +133,8 @@
       <div style="display:flex;align-items:center;gap:12px">
         <span class="badge">Lesson 1</span>
         <div>
-          <strong>Introduction to Cybersecurity — Full Module</strong>
-          <div class="small muted">Basics • Governance • Auditing • Ethical Hacking • Kill Chain • Malicious Code</div>
+          <strong>Introduction to Cybersecurity — Full Module (Expanded)</strong>
+          <div class="small muted">Basics • Governance • Auditing • Ethical Hacking • Kill Chain • Malware</div>
         </div>
       </div>
       <div>
@@ -75,376 +144,569 @@
   </header>
 
   <main class="container">
-    <section class="hero card">
-      <h1 class="title">Introduction to Cybersecurity</h1>
-      <p class="subtitle">This lesson combines foundational concepts, governance and auditing, ethical hacking phases, the cyber kill chain, and a survey of malicious code — written as a single, comprehensive learning resource.</p>
+    <!-- WRAP ALL LESSON SECTIONS INSIDE THIS ARTICLE FOR TTS -->
+    <article class="lesson-content">
+      <section class="hero card">
+        <h1 class="title">Introduction to Cybersecurity</h1>
+        <p class="subtitle">This lesson combines foundational concepts, governance and auditing, ethical hacking phases, the cyber kill chain, and a survey of malicious code — now fully expanded with historical notes, practical controls, examples and labs.</p>
 
-      <div class="chips">
-        <span class="chip">Confidentiality</span>
-        <span class="chip">Integrity</span>
-        <span class="chip">Availability</span>
-        <span class="chip">Governance</span>
-        <span class="chip">Ethical Hacking</span>
-        <span class="chip">Cyber Kill Chain</span>
-        <span class="chip">Malware</span>
-      </div>
-    </section>
+        <div class="chips">
+          <span class="chip">Confidentiality</span>
+          <span class="chip">Integrity</span>
+          <span class="chip">Availability</span>
+          <span class="chip">Governance</span>
+          <span class="chip">Ethical Hacking</span>
+          <span class="chip">Cyber Kill Chain</span>
+          <span class="chip">Malware</span>
+        </div>
+      </section>
 
-    <!-- INTRO -->
-    <section class="card long-read" aria-labelledby="intro">
-      <h2 id="intro" class="section-title">1. What is Cybersecurity?</h2>
-      <p>
-        Cybersecurity is the discipline and practice of protecting systems, networks, programs, and data from digital attacks.
-        As people, businesses and services move online, sensitive information (personal data, financial records, intellectual property)
-        becomes valuable to attackers. Cybersecurity combines technologies, policies, and processes to reduce risk and ensure systems remain available,
-        correct, and private.
-      </p>
-      <p class="small muted">Historical note: the earliest known experimental self-replicating program was the Creeper in the 1970s — a reminder that threats have
-        evolved as computing systems did.</p>
-    </section>
+      <!-- INTRO -->
+      <section class="card long-read" aria-labelledby="intro">
+        <h2 id="intro" class="section-title">1. What is Cybersecurity?</h2>
+        <p>
+          Cybersecurity is the discipline and practice of protecting systems, networks, programs, and data from digital attacks.
+          As people, businesses and services move online, sensitive information (personal data, financial records, intellectual property)
+          becomes valuable to attackers. Cybersecurity combines technologies, policies, and processes to reduce risk and ensure systems remain available,
+          correct, and private.
+        </p>
+        <p class="small muted">Historical note: the earliest known experimental self-replicating program was the Creeper in the 1970s — a reminder that threats have
+          evolved as computing systems did.</p>
 
-    <!-- NEED -->
-    <section class="card long-read" aria-labelledby="need">
-      <h2 id="need" class="section-title">2. Why Cybersecurity is Needed</h2>
-      <p>
-        Cybersecurity protects data against theft, misuse, and unauthorized disclosure. Without it, attackers can steal personal information,
-        drain bank accounts, disrupt critical services, or hold data hostage (ransomware). Security also prevents operational disruption caused
-        by malware or targeted attacks that can harm an organization's reputation and finances.
-      </p>
-      <div class="callout">
-        <strong>Real-world stakes:</strong> loss of customer trust, regulatory fines, business downtime and intellectual property theft all come with
-        real financial and human costs.
-      </div>
-    </section>
+        <div class="explain">
+          <strong>Core tasks in practice:</strong>
+          <ul class="list">
+            <li>Identify and classify assets and data.</li>
+            <li>Harden systems and applications (patching, secure configuration).</li>
+            <li>Monitor systems for anomalies using logs, EDR and SIEM.</li>
+            <li>Respond to incidents and recover with tested plans and backups.</li>
+            <li>Train people and set clear policies for secure behaviour.</li>
+          </ul>
+        </div>
+      </section>
 
-    <!-- CYBER CRIME -->
-    <section class="card long-read" aria-labelledby="crime">
-      <h2 id="crime" class="section-title">3. Cyber Crime — Common Examples</h2>
-      <p>
-        Cyber crimes are offenses that use computers or networks as tools or targets. Typical examples include illegal interception of data (eavesdropping),
-        identity theft, online fraud, distribution of illegal materials, and intellectual property theft. Attackers may sell stolen data or use it to launch
-        further attacks.
-      </p>
-      <ul class="list">
-        <li>Illegal interception & network eavesdropping</li>
-        <li>Copyright infringement and software piracy</li>
-        <li>Sale of illegal items and carding marketplaces</li>
-        <li>Phishing, business email compromise, and social engineering scams</li>
-      </ul>
-    </section>
+      <!-- FIRST VIRUS -->
+      <section class="card long-read" aria-labelledby="creeper">
+        <h2 id="creeper" class="section-title">2. First Computer Virus — Creeper (historical)</h2>
+        <p>
+          The Creeper program (early 1970s) was an experimental self-replicating program that moved between DEC PDP systems and displayed the message:
+          <em>"I'M THE CREEPER: CATCH ME IF YOU CAN."</em> It demonstrated that code could propagate between machines — a concept central to modern malware.
+        </p>
+        <p class="small muted">While Creeper caused no deliberate harm, later malware adopted the replication idea and added destructive or covert payloads.</p>
+      </section>
 
-    <!-- PRINCIPLES -->
-    <section class="card long-read" aria-labelledby="principles">
-      <h2 id="principles" class="section-title">4. Cybersecurity Principles (The Core Goals)</h2>
-      <p>
-        A strong security program is built on several core principles. The most well-known triad is <strong>Confidentiality, Integrity, and Availability (CIA)</strong>.
-        Additional essentials include Accountability and Auditability, which ensure actions are traceable and systems can be evaluated.
-      </p>
+      <!-- NEED -->
+      <section class="card long-read" aria-labelledby="need">
+        <h2 id="need" class="section-title">3. Why Cybersecurity is Needed</h2>
+        <p>
+          Cybersecurity protects data against theft, misuse, and unauthorized disclosure. Without it, attackers can steal personal information,
+          drain bank accounts, disrupt critical services, or hold data hostage (ransomware). Security also prevents operational disruption caused
+          by malware or targeted attacks that can harm an organization's reputation and finances.
+        </p>
+        <div class="callout">
+          <strong>Real-world stakes:</strong> loss of customer trust, regulatory fines, business downtime and intellectual property theft all come with
+          real financial and human costs.
+        </div>
 
-      <h3>Confidentiality</h3>
-      <p class="long-read">Confidentiality means protecting sensitive information so only authorized parties can access it. Examples include encryption of data at rest and in transit, and strict access control policies.</p>
+        <div class="explain">
+          <strong>Typical defensive measures:</strong>
+          <ul class="list">
+            <li>Strong authentication (MFA) and identity management.</li>
+            <li>Encryption of data at rest and in transit.</li>
+            <li>Patching and vulnerability management.</li>
+            <li>Backups and offline recovery copies.</li>
+            <li>User education and phishing simulations.</li>
+          </ul>
+        </div>
+      </section>
 
-      <h3>Integrity</h3>
-      <p>Integrity ensures data is accurate and has not been tampered with. Mechanisms like hashes, signatures, and checksums help detect unauthorized changes.</p>
+      <!-- CYBER CRIME -->
+      <section class="card long-read" aria-labelledby="crime">
+        <h2 id="crime" class="section-title">4. Cyber Crime — Common Examples</h2>
+        <p>
+          Cyber crimes are offenses that use computers or networks as tools or targets. Typical examples include illegal interception of data (eavesdropping),
+          identity theft, online fraud, distribution of illegal materials, and intellectual property theft. Attackers may sell stolen data or use it to launch
+          further attacks.
+        </p>
+        <ul class="list">
+          <li>Illegal interception & network eavesdropping (MitM attacks).</li>
+          <li>Copyright infringement and software piracy.</li>
+          <li>Sale of illegal items on darknet marketplaces.</li>
+          <li>Phishing, business email compromise, and social engineering scams.</li>
+        </ul>
+        <div class="explain">
+          <strong>Actors:</strong> lone hackers, criminal gangs, insider threats, hacktivists, and state-sponsored groups. Defenses include legal enforcement,
+          proactive monitoring, and strong encryption.
+        </div>
+      </section>
 
-      <h3>Availability</h3>
-      <p>Availability ensures systems and data are accessible when authorized users need them. Defensive measures include redundancy, backups, and DDoS protection.</p>
+      <!-- PRINCIPLES -->
+      <section class="card long-read" aria-labelledby="principles">
+        <h2 id="principles" class="section-title">5. Cybersecurity Principles (The Core Goals)</h2>
+        <p>
+          A strong security program is built on several core principles. The most well-known triad is <strong>Confidentiality, Integrity, and Availability (CIA)</strong>.
+          Additional essentials include Accountability and Auditability, which ensure actions are traceable and systems can be evaluated.
+        </p>
 
-      <h3>Accountability & Auditability</h3>
-      <p>Accountability ties actions to users (or systems) so responsibilities are clear. Auditability means maintaining logs and controls that let auditors verify compliance and investigate incidents.</p>
-    </section>
+        <h3>Confidentiality</h3>
+        <p class="long-read">Confidentiality means protecting sensitive information so only authorized parties can access it. Examples include encryption of data at rest and in transit, and strict access control policies.</p>
 
-    <!-- ARCHITECTURE -->
-    <section class="card long-read" aria-labelledby="architecture">
-      <h2 id="architecture" class="section-title">5. Cybersecurity Architecture & Key Areas</h2>
-      <p>
-        Security architecture is the structured approach that defines and organizes the technologies, processes, and controls used to secure an organization.
-        A modern architecture often follows zero-trust principles: verify every device and user, grant least privilege, and require strong telemetry and automation.
-      </p>
-      <h3>Key areas to design and operate</h3>
-      <ul class="list">
-        <li>Security protocols and encryption</li>
-        <li>Account creation, identity lifecycle, and access management</li>
-        <li>Defined security roles and responsibilities</li>
-        <li>Continuous auditing and monitoring</li>
-      </ul>
-      <div class="explain">
-        <strong>Zero-Trust idea:</strong> don't trust by default — always verify. That means device posture checks, MFA, segmentation, and strict logging.
-      </div>
-    </section>
+        <h3>Integrity</h3>
+        <p>Integrity ensures data is accurate and has not been tampered with. Mechanisms like hashes, signatures, and checksums help detect unauthorized changes.</p>
 
-    <!-- GOVERNANCE -->
-    <section class="card long-read" aria-labelledby="governance">
-      <h2 id="governance" class="section-title">6. Cybersecurity Governance</h2>
-      <p>
-        Governance gives strategic direction and accountability for security across the organization. It defines policies, decision-making, and how security supports business goals.
-        A governance program includes assessments, standards, and a roadmap for continuous improvement.
-      </p>
-      <h3>6 practical steps for governance</h3>
-      <ol class="list">
-        <li><strong>Establish current state:</strong> document assets, controls and people.</li>
-        <li><strong>Conduct assessments:</strong> risk and maturity assessments to find gaps.</li>
-        <li><strong>Identify vulnerabilities:</strong> prioritize critical weaknesses with business impact.</li>
-        <li><strong>Develop standards:</strong> write policies and operating procedures.</li>
-        <li><strong>Implement policies:</strong> assign roles, enforce controls, and integrate into day-to-day operations.</li>
-        <li><strong>Enterprise approach:</strong> align security with business priorities and treat it as an organizational capability.</li>
-      </ol>
-    </section>
+        <h3>Availability</h3>
+        <p>Availability ensures systems and data are accessible when authorized users need them. Defensive measures include redundancy, backups, and DDoS protection.</p>
 
-    <!-- AUDITING -->
-    <section class="card long-read" aria-labelledby="auditing">
-      <h2 id="auditing" class="section-title">7. Security Auditing</h2>
-      <p>
-        Security auditing is a formal, methodical assessment of an organization’s security posture — measuring how well people, processes and technology meet agreed standards.
-        Audits help demonstrate compliance, find gaps, and provide prioritized recommendations for improvement.
-      </p>
-      <h3>Typical audit steps</h3>
-      <ol class="list">
-        <li>Define scope and objectives</li>
-        <li>Assess compliance against policies and standards</li>
-        <li>Test technical and procedural controls</li>
-        <li>Identify vulnerabilities and evidence</li>
-        <li>Analyze incident response readiness</li>
-        <li>Deliver actionable recommendations and remediation plans</li>
-      </ol>
-    </section>
+        <h3>Accountability & Auditability</h3>
+        <p>Accountability ties actions to users (or systems) so responsibilities are clear. Auditability means maintaining logs and controls that let auditors verify compliance and investigate incidents.</p>
+      </section>
 
-    <!-- COMPLIANCE -->
-    <section class="card long-read" aria-labelledby="compliance">
-      <h2 id="compliance" class="section-title">8. Compliance & Regulatory Frameworks</h2>
-      <p>
-        Organizations follow frameworks and regulations to demonstrate they protect data and meet legal obligations. Examples commonly referenced in enterprise environments include:
-      </p>
-      <ul class="list">
-        <li><strong>Sarbanes-Oxley (SOX):</strong> financial reporting controls for public companies.</li>
-        <li><strong>NIST:</strong> a set of industry-accepted security and privacy guidelines (useful for risk-based programs).</li>
-        <li><strong>PCI-DSS:</strong> rules for organizations that process payment cards, focused on cardholder data protection.</li>
-      </ul>
-      <div class="callout">
-        Compliance is not the same as security — it’s a baseline. Real security couples compliance with continuous monitoring, testing and good engineering practices.
-      </div>
-    </section>
+      <!-- ARCHITECTURE -->
+      <section class="card long-read" aria-labelledby="architecture">
+        <h2 id="architecture" class="section-title">6. Cybersecurity Architecture & Key Areas</h2>
+        <p>
+          Security architecture is the structured approach that defines and organizes the technologies, processes, and controls used to secure an organization.
+          A modern architecture often follows zero-trust principles: verify every device and user, grant least privilege, and require strong telemetry and automation.
+        </p>
+        <h3>Key areas to design and operate</h3>
+        <ul class="list">
+          <li>Security protocols and encryption</li>
+          <li>Account creation, identity lifecycle, and access management</li>
+          <li>Defined security roles and responsibilities</li>
+          <li>Continuous auditing and monitoring</li>
+        </ul>
+        <div class="explain">
+          <strong>Zero-Trust idea:</strong> don't trust by default — always verify. That means device posture checks, MFA, segmentation, and strict logging.
+        </div>
 
-    <!-- ETHICAL HACKING -->
-    <section class="card long-read" aria-labelledby="ethical">
-      <h2 id="ethical" class="section-title">9. Introduction to Ethical Hacking</h2>
-      <p>
-        Ethical hacking (also called penetration testing) uses the same techniques as malicious hackers, but with permission and a goal of improving security.
-        Ethical hackers identify vulnerabilities, exploit them in a controlled way, and deliver clear remediation steps to make systems safer.
-      </p>
-      <h3>Who is an ethical hacker?</h3>
-      <p>They are technical professionals who understand systems in depth and use programming, networking and security skills to think like attackers — ethically and legally.</p>
+        <div class="callout">
+          <strong>REACP (expanded suggestion):</strong>
+          <p class="small muted">The original deck used the label <em>REACP</em> without defining it. Below is a practical expansion you can include if useful:</p>
+          <ol class="list">
+            <li><strong>R — Risk</strong>: identify and prioritise risks to critical assets; use risk assessments to drive controls.</li>
+            <li><strong>E — Endpoints</strong>: secure devices with EDR, hardening, and patching.</li>
+            <li><strong>A — Access</strong>: identity, MFA, least privilege and access reviews.</li>
+            <li><strong>C — Controls/Confidentiality</strong>: encryption, DLP, network controls and microsegmentation.</li>
+            <li><strong>P — Policies & People</strong>: governance, training, and incident response plans.</li>
+          </ol>
+          <p class="small muted">If you prefer a different expansion for REACP, tell me which words you want and I will update everywhere.</p>
+        </div>
+      </section>
 
-      <h3>Types of hackers (by intent)</h3>
-      <ul class="list">
-        <li><strong>White hat:</strong> legal, authorized testing to improve security.</li>
-        <li><strong>Gray hat:</strong> may test without permission but without overtly malicious intent.</li>
-        <li><strong>Black hat:</strong> malicious attackers exploiting vulnerabilities for gain or damage.</li>
-      </ul>
-    </section>
+      <!-- GOVERNANCE -->
+      <section class="card long-read" aria-labelledby="governance">
+        <h2 id="governance" class="section-title">7. Cybersecurity Governance</h2>
+        <p>
+          Governance gives strategic direction and accountability for security across the organization. It defines policies, decision-making, and how security supports business goals.
+          A governance program includes assessments, standards, and a roadmap for continuous improvement.
+        </p>
+        <h3>Governance vs Management</h3>
+        <p class="long-read">Governance is board-level oversight (risk appetite, policy, budget), while management implements the day-to-day controls and operations (SOC, patching, incident response).</p>
+        <h3>Practical outputs</h3>
+        <ul class="list">
+          <li>Policies and standards (acceptable use, encryption, incident response).</li>
+          <li>Risk acceptance decisions and budgeting.</li>
+          <li>Defined roles (CISO, Data Protection Officer) and reporting lines.</li>
+        </ul>
+      </section>
 
-    <!-- PHASES -->
-    <section class="card long-read" aria-labelledby="phases">
-      <h2 id="phases" class="section-title">10. Phases of Ethical Hacking (Footprinting → Clearing Tracks)</h2>
-      <p>
-        Ethical hacking follows a repeatable sequence of phases. This structure helps testers be thorough while minimizing unexpected impacts.
-      </p>
-      <ol class="list">
-        <li><strong>Reconnaissance / Footprinting:</strong> gather public and passive data about the target (DNS records, public profiles, technology stacks).</li>
-        <li><strong>Scanning:</strong> actively probe hosts and services to find open ports, running services and possible vulnerabilities.</li>
-        <li><strong>Gaining Access:</strong> exploit a vulnerability (password attacks, misconfiguration, vulnerable app) to gain entry.</li>
-        <li><strong>Maintaining Access:</strong> establish persistence (backdoor, scheduled job) to simulate how an attacker would remain inside.</li>
-        <li><strong>Clearing Tracks:</strong> cover traces in logs to avoid detection (ethical tests document all evidence instead of hiding it).</li>
-      </ol>
+      <!-- GOVERNANCE STEPS -->
+      <section class="card long-read" aria-labelledby="govsteps">
+        <h2 id="govsteps" class="section-title">8. 6 Steps for Effective Cybersecurity Governance</h2>
+        <ol class="list">
+          <li><strong>Establish Current State:</strong> asset inventory, data flow mapping, baseline controls and known incidents.</li>
+          <li><strong>Conduct Assessments:</strong> risk, maturity and vulnerability assessments to surface gaps.</li>
+          <li><strong>Identify Vulnerabilities:</strong> triage and prioritise fixes by business impact (use CVSS + business context).</li>
+          <li><strong>Develop Standards:</strong> policies, technical standards and runbooks for common operations.
+          </li>
+          <li><strong>Implement Policies:</strong> assign owners, automate enforcement where possible, and train staff.\li>
+          <li><strong>Enterprise-wide Approach:</strong> align security with procurement, legal and business units; include third-party risk management.</li>
+        </ol>
+      </section>
 
-      <div class="explain">
-        <strong>Passive vs Active Footprinting:</strong> Passive gathering (OSINT) collects information without touching the target, while active techniques interact directly and can be detected by defensive systems.
-      </div>
-    </section>
+      <!-- AUDITING -->
+      <section class="card long-read" aria-labelledby="auditing">
+        <h2 id="auditing" class="section-title">9. Security Auditing</h2>
+        <p>
+          Security auditing is a formal, methodical assessment of an organization’s security posture — measuring how well people, processes and technology meet agreed standards.
+          Audits help demonstrate compliance, find gaps, and provide prioritized recommendations for improvement.
+        </p>
+        <h3>Types of audits</h3>
+        <ul class="list">
+          <li>Internal audits (performed by internal teams).</li>
+          <li>External/third-party audits and compliance assessments.</li>
+          <li>Technical penetration tests and code reviews.</li>
+        </ul>
+      </section>
 
-    <!-- KILL CHAIN -->
-    <section class="card long-read" aria-labelledby="killchain">
-      <h2 id="killchain" class="section-title">11. The Cyber Kill Chain</h2>
-      <p>
-        The Cyber Kill Chain describes the stages of an attack, from initial reconnaissance to final data exfiltration. Viewing attacker activity through this lens helps defenders place controls at multiple stages to detect and disrupt attacks early.
-      </p>
+      <!-- AUDIT STEPS -->
+      <section class="card long-read" aria-labelledby="auditsteps">
+        <h2 id="auditsteps" class="section-title">10. Security Auditing — Typical Steps</h2>
+        <ol class="list">
+          <li><strong>Define scope:</strong> systems, networks and data included, plus rules of engagement.</li>
+          <li><strong>Assess compliance:</strong> compare controls to frameworks (NIST, ISO, PCI).</li>
+          <li><strong>Test controls:</strong> sample evidence collection and technical checks.</li>
+          <li><strong>Identify vulnerabilities:</strong> scanning, manual testing and code review.</li>
+          <li><strong>Analyze incident readiness:</strong> tabletop exercises and playbook reviews.</li>
+          <li><strong>Provide recommendations:</strong> prioritized remediation with owners and deadlines.</li>
+        </ol>
+      </section>
 
-      <h3>8 typical phases</h3>
-      <ol class="list">
-        <li>Reconnaissance</li>
-        <li>Intrusion (initial access)</li>
-        <li>Exploitation</li>
-        <li>Privilege Escalation</li>
-        <li>Lateral Movement</li>
-        <li>Obfuscation / Anti-forensics</li>
-        <li>Denial of Service (if used)</li>
-        <li>Exfiltration</li>
-      </ol>
+      <!-- COMPLIANCE -->
+      <section class="card long-read" aria-labelledby="compliance">
+        <h2 id="compliance" class="section-title">11. Compliance & Regulatory Frameworks</h2>
+        <p>
+          Organizations follow frameworks and regulations to demonstrate they protect data and meet legal obligations. Examples commonly referenced in enterprise environments include SOX, NIST and PCI-DSS.
+        </p>
+        <h3>SOX</h3>
+        <p class="long-read">The Sarbanes-Oxley Act focuses on financial controls and accurate reporting for publicly traded companies. Section 404 is notable for internal control attestation.</p>
+        <h3>NIST</h3>
+        <p class="long-read">NIST provides frameworks (SP 800 series, CSF) for risk management: Identify, Protect, Detect, Respond and Recover — widely adopted as best practice.</p>
+        <h3>PCI-DSS</h3>
+        <p class="long-read">PCI-DSS governs cardholder data protection — 12 requirements covering network security, encryption, access controls, monitoring and testing.</p>
+      </section>
 
-      <p class="small muted">By instrumenting detection across these stages you increase your chance of catching attackers earlier — e.g., monitor for suspicious reconnaissance, abnormal privilege escalations, and unusual internal data flows.</p>
-    </section>
+      <!-- ETHICAL HACKING -->
+      <section class="card long-read" aria-labelledby="ethical">
+        <h2 id="ethical" class="section-title">12. Introduction to Ethical Hacking</h2>
+        <p>
+          Ethical hacking (penetration testing) uses attacker techniques under legal permission to find weaknesses before criminals do. Typical deliverables include a report with findings, evidence and remediation guidance.
+        </p>
+        <h3>Engagement types</h3>
+        <ul class="list">
+          <li>Vulnerability assessments</li>
+          <li>Penetration tests</li>
+          <li>Red team (adversary emulation)</li>
+          <li>Purple team (collaborative improvement between red & blue)</li>
+        </ul>
+      </section>
 
-    <!-- MALICIOUS CODE -->
-    <section class="card long-read" aria-labelledby="malcode">
-      <h2 id="malcode" class="section-title">12. Types of Malicious Code (Malware)</h2>
-      <p>
-        Malware is a category of software created to harm systems, steal data, or disrupt operations. Understanding common types is essential for detection and response.
-      </p>
-      <h3>Virus & Worm</h3>
-      <p class="long-read">A virus attaches to files and spreads when those files execute. Worms are standalone malware that replicate across networks, often spreading much faster because they don't require user action.</p>
+      <!-- HACKER TYPES -->
+      <section class="card long-read" aria-labelledby="hackertypes">
+        <h2 id="hackertypes" class="section-title">13. Types of Hackers</h2>
+        <p>Hackers are often classified by skill and intent:</p>
+        <ul class="list">
+          <li><strong>White hat:</strong> authorized security testers.</li>
+          <li><strong>Black hat:</strong> malicious attackers.</li>
+          <li><strong>Grey hat:</strong> in-between — sometimes ethically ambiguous.</li>
+          <li><strong>Script kiddies:</strong> low-skill attackers using tools.</li>
+          <li><strong>Hacktivists:</strong> ideologically motivated attackers.</li>
+          <li><strong>State-sponsored:</strong> highly resourced actors.</li>
+          <li><strong>Insider threats:</strong> negligent or malicious employees.</li>
+        </ul>
+      </section>
 
-      <h3>Trojan & Bot</h3>
-      <p class="long-read">A Trojan disguises itself as legitimate software to trick users; a bot is software controlled by an attacker, commonly used as part of botnets to launch DDoS attacks or to send spam.</p>
+      <!-- PHASES -->
+      <section class="card long-read" aria-labelledby="phases">
+        <h2 id="phases" class="section-title">14. Phases of Ethical Hacking</h2>
+        <p>
+          Ethical hacking follows repeatable phases: reconnaissance/footprinting, scanning, gaining access, maintaining access (persistence), and clearing tracks. Each phase has tools, goals and safe rules-of-engagement for testers.
+        </p>
+        <ol class="list">
+          <li><strong>Footprinting:</strong> passive OSINT and public data collection.</li>
+          <li><strong>Scanning:</strong> active discovery of hosts, services and vulnerabilities.</li>
+          <li><strong>Gaining Access:</strong> exploitation or credential attacks.</li>
+          <li><strong>Maintaining Access:</strong> persistence techniques for simulation purposes.
+          </li>
+          <li><strong>Clearing Tracks:</strong> demonstrate attacker techniques without damaging or removing forensic evidence; ethical testers document findings instead of wiping logs.
+          </li>
+        </ol>
+      </section>
 
-      <h3>Keylogger & Rootkit</h3>
-      <p>Keyloggers record keystrokes to capture credentials; rootkits provide attacker tools to maintain privileged access while hiding presence.</p>
+      <!-- FOOTPRINTING -->
+      <section class="card long-read" aria-labelledby="footprinting">
+        <h2 id="footprinting" class="section-title">15. Footprinting (Reconnaissance)</h2>
+        <p>
+          Footprinting is the first step: gather information about a target using passive and active methods. Passive techniques avoid touching the target and are stealthier; active techniques (scans, traceroutes) are more likely to be detected.
+        </p>
+        <div class="explain">
+          <strong>Examples:</strong>
+          <ul class="list">
+            <li>Passive: Google dorking, WHOIS, certificate transparency, public job posts.</li>
+            <li>Active: ping sweeps, port scans, banner grabbing (requires permission).</li>
+          </ul>
+        </div>
+      </section>
 
-      <h3>Spyware, Adware & Ransomware</h3>
-      <p>Spyware gathers user behavior and credentials silently; adware displays unwanted ads to monetize the compromise; ransomware encrypts data and demands payment for recovery.</p>
+      <!-- SCANNING -->
+      <section class="card long-read" aria-labelledby="scanning">
+        <h2 id="scanning" class="section-title">16. Scanning</h2>
+        <p>
+          Scanning identifies live hosts, open ports and running services, performs OS fingerprinting and discovers possible vulnerabilities. It converts passive intelligence into a practical attack surface map.
+        </p>
+        <h3>Tools & outputs</h3>
+        <ul class="list">
+          <li>Nmap (port/service discovery)</li>
+          <li>Nessus/OpenVAS (vulnerability scanning)</li>
+          <li>Network mapping and topology diagrams for attack planning</li>
+        </ul>
+      </section>
 
-      <div class="callout">
-        <strong>Defense summary:</strong> layered defenses (antivirus/EDR, patching, least privilege, backups, user training, network segmentation) are the most practical route to reduce risk from malware.
-      </div>
-    </section>
+      <!-- GAINING ACCESS -->
+      <section class="card long-read" aria-labelledby="gaining">
+        <h2 id="gaining" class="section-title">17. Gaining Access (Exploitation)</h2>
+        <p>
+          Gaining access is when an attacker exploits weaknesses to enter systems. Methods include password attacks, social engineering, software exploits, and malware delivery.
+        </p>
+        <div class="explain">
+          <strong>Common mitigations:</strong>
+          <ul class="list">
+            <li>Multi-factor authentication (MFA)</li>
+            <li>Strong password policies and credential monitoring</li>
+            <li>Patch management and secure configurations</li>
+            <li>User education against phishing</li>
+          </ul>
+        </div>
+      </section>
 
-    <!-- LAB / HANDS-ON -->
-    <section class="card long-read" aria-labelledby="hands">
-      <h2 id="hands" class="section-title">13. Hands-On Ideas & Lab Exercises</h2>
-      <ul class="list">
-        <li>Run a small vulnerability scan in an isolated lab to see open ports and services.</li>
-        <li>Set up a basic host-based IDS (Ossec/Wazuh) and generate a harmless event to see alerting.</li>
-        <li>Build a simple exercise: create a page with a basic form and test input validation to learn about injection risks.</li>
-        <li>Practice creating secure cookies and see how <code>HttpOnly</code> and <code>SameSite</code> behave in browsers.</li>
-      </ul>
-      <p class="small muted">Always use isolated lab environments and written permission for live tests.</p>
-    </section>
+      <!-- MAINTAINING -->
+      <section class="card long-read" aria-labelledby="maintain">
+        <h2 id="maintain" class="section-title">18. Maintaining Access (Persistence)</h2>
+        <p>
+          Persistence techniques (backdoors, cron jobs, created accounts, rootkits) let attackers remain after initial compromise. Ethical tests demonstrate these techniques so defenders can detect and remove them.
+        </p>
+        <h3>Detection</h3>
+        <p class="long-read">EDR, scheduled integrity checks, privilege reviews and centralized logging help detect persistence. Rapid isolation and forensics are critical once discovered.</p>
+      </section>
 
-    <!-- QUIZ GATE -->
-    <section class="card" aria-labelledby="quiz">
-      <h2 id="quiz" class="section-title">Lesson 1 Quiz</h2>
-      <p class="muted">Click <strong>Attempt Quiz</strong> when ready — the quiz is gated so you can finish reading first. The quiz has 10 questions; incorrect answers will be highlighted with explanations.</p>
+      <!-- CLEARING TRACKS -->
+      <section class="card long-read" aria-labelledby="clearing">
+        <h2 id="clearing" class="section-title">19. Clearing Tracks (Anti-forensics)</h2>
+        <p>
+          Attackers will attempt to remove evidence: delete or tamper with logs, alter timestamps, and uninstall tools. Ethical testers should report these possibilities rather than destroy evidence.
+        </p>
+        <div class="explain">
+          <strong>Defensive countermeasures:</strong>
+          <ul class="list">
+            <li>Remote, immutable logging (write-once storage)</li>
+            <li>Frequent forensic snapshots and backups</li>
+            <li>Endpoint protections preventing log tampering</li>
+          </ul>
+        </div>
+      </section>
 
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
-        <button class="btn ghost" id="downloadNotes">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated read time: ~20–30 mins</span></div>
-      </div>
+      <!-- MITRE -->
+      <section class="card long-read" aria-labelledby="mitre">
+        <h2 id="mitre" class="section-title">20. MITRE ATT&CK</h2>
+        <p>
+          MITRE ATT&CK is a knowledge base of adversary tactics and techniques used to model threats and improve detection. Map your telemetry to ATT&CK to find coverage gaps.
+        </p>
+      </section>
 
-      <!-- quiz form hidden until attempt -->
-      <form id="quizForm" style="display:none;margin-top:14px;">
-        <!-- Q1 -->
-        <div class="q-card">
-          <h4>1) What is the primary goal of cybersecurity?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q1" value="a"/> To make systems run faster</label>
-            <label><input type="radio" name="q1" value="b"/> To protect systems, data and services from digital attacks</label>
-            <label><input type="radio" name="q1" value="c"/> To replace human workers with robots</label>
+      <!-- KILL CHAIN -->
+      <section class="card long-read" aria-labelledby="killchain">
+        <h2 id="killchain" class="section-title">21. The Cyber Kill Chain</h2>
+        <p>
+          The Cyber Kill Chain describes stages of an attack from reconnaissance to exfiltration. Understanding these stages helps defenders place controls to detect or disrupt attacks early.
+        </p>
+        <h3>Phases (typical)</h3>
+        <ol class="list">
+          <li>Reconnaissance</li>
+          <li>Intrusion (initial access)</li>
+          <li>Exploitation</li>
+          <li>Privilege Escalation</li>
+          <li>Lateral Movement</li>
+          <li>Obfuscation / Anti-forensics</li>
+          <li>Denial of Service (if used)</li>
+          <li>Exfiltration</li>
+        </ol>
+        <p class="small muted">Controls can be mapped to these stages: e.g., patching and email filtering to stop exploitation; EDR to detect lateral movement; DLP to prevent exfiltration.</p>
+      </section>
+
+      <!-- MALICIOUS CODE -->
+      <section class="card long-read" aria-labelledby="malcode">
+        <h2 id="malcode" class="section-title">22. Types of Malicious Code (Malware)</h2>
+        <p>
+          Malware is software created to harm systems, steal data, or disrupt operations. Below are common families, examples, and mitigations.
+        </p>
+        <h3>Virus</h3>
+        <p class="long-read">Attaches to files or programs and spreads when executed. Examples: ILOVEYOU. Mitigations: antivirus, file integrity monitoring, user training.</p>
+
+        <h3>Worm</h3>
+        <p class="long-read">Self-replicating across networks (e.g., WannaCry). Mitigations: patching, segmentation, IDS/IPS.</p>
+
+        <h3>Trojan</h3>
+        <p class="long-read">Disguised as legitimate software; often drops other malware (e.g., Zeus). Mitigations: app allowlists, EDR, trusted sources.</p>
+
+        <h3>Botnet</h3>
+        <p class="long-read">Network of compromised devices used for DDoS, spam or mining (e.g., Mirai). Mitigations: device hardening, network monitoring, ISP cooperation.</p>
+
+        <h3>Keylogger</h3>
+        <p class="long-read">Records keystrokes to steal credentials. Mitigations: MFA, EDR, keystroke protection.</p>
+
+        <h3>Rootkit</h3>
+        <p class="long-read">Stealthy toolkit that hides attacker presence. Mitigations: secure boot, integrity checks, reimaging infected hosts.</p>
+
+        <h3>Spyware & Adware</h3>
+        <p class="long-read">Spyware steals data quietly; adware displays unwanted ads and tracks users. Mitigations: antispyware, browser hygiene, pop-up blockers.</p>
+
+        <h3>Ransomware</h3>
+        <p class="long-read">Encrypts files and demands payment. Mitigations: immutable backups, segmentation, rapid detection and isolation.</p>
+
+        <div class="callout">
+          <strong>Defense summary:</strong> Layered defenses (EDR, patching, least privilege, backups, user training and monitoring) reduce risk and detection time.
+        </div>
+      </section>
+
+      <!-- LAB / HANDS-ON -->
+      <section class="card long-read" aria-labelledby="hands">
+        <h2 id="hands" class="section-title">23. Hands-On Ideas & Lab Exercises</h2>
+        <ul class="list">
+          <li>Run a small vulnerability scan in an isolated lab to see open ports and services (Nmap + OpenVAS).</li>
+          <li>Set up a host-based IDS (Wazuh/OSSEC) and generate a harmless event to see alerting.</li>
+          <li>Create a simple web form and test input validation to learn about injection risks (in a sandboxed lab only).</li>
+          <li>Practice creating secure cookies and explore <code>HttpOnly</code> and <code>SameSite</code> behaviour.</li>
+        </ul>
+        <p class="small muted">Always use isolated lab environments and written permission for live tests.</p>
+      </section>
+
+      <!-- QUIZ GATE -->
+      <section class="card" aria-labelledby="quiz">
+        <h2 id="quiz" class="section-title">Lesson 1 Quiz</h2>
+        <p class="muted">Click <strong>Attempt Quiz</strong> when ready — the quiz is gated so you can finish reading first. The quiz has 10 questions; incorrect answers will be highlighted with explanations.</p>
+
+        <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+          <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
+          <button class="btn ghost" id="downloadNotes">📥 Download Notes (Text)</button>
+          <div class="meta small"><span>Estimated read time: ~30–45 mins (expanded)</span></div>
+        </div>
+
+        <!-- quiz form hidden until attempt -->
+        <form id="quizForm" style="display:none;margin-top:14px;">
+          <!-- (questions here - unchanged) -->
+          <!-- Q1 -->
+          <div class="q-card">
+            <h4>1) What is the primary goal of cybersecurity?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q1" value="a"/> To make systems run faster</label>
+              <label><input type="radio" name="q1" value="b"/> To protect systems, data and services from digital attacks</label>
+              <label><input type="radio" name="q1" value="c"/> To replace human workers with robots</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q2 -->
-        <div class="q-card">
-          <h4>2) Which three elements form the CIA triad?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q2" value="a"/> Confidentiality, Integrity, Availability</label>
-            <label><input type="radio" name="q2" value="b"/> Control, Identity, Access</label>
-            <label><input type="radio" name="q2" value="c"/> Cookies, IPs, Authentication</label>
+          <!-- Q2 -->
+          <div class="q-card">
+            <h4>2) Which three elements form the CIA triad?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q2" value="a"/> Confidentiality, Integrity, Availability</label>
+              <label><input type="radio" name="q2" value="b"/> Control, Identity, Access</label>
+              <label><input type="radio" name="q2" value="c"/> Cookies, IPs, Authentication</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q3 -->
-        <div class="q-card">
-          <h4>3) Which statement best describes 'accountability' in security?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q3" value="a"/> Ensuring systems never fail</label>
-            <label><input type="radio" name="q3" value="b"/> Linking actions to users so they can be evaluated</label>
-            <label><input type="radio" name="q3" value="c"/> Making all data public for transparency</label>
+          <!-- ... rest of questions (kept identical) ... -->
+          <!-- Q3 -->
+          <div class="q-card">
+            <h4>3) Which statement best describes 'accountability' in security?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q3" value="a"/> Ensuring systems never fail</label>
+              <label><input type="radio" name="q3" value="b"/> Linking actions to users so they can be evaluated</label>
+              <label><input type="radio" name="q3" value="c"/> Making all data public for transparency</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q4 -->
-        <div class="q-card">
-          <h4>4) Which of these is NOT a common area in security architecture?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q4" value="a"/> Account creation and management</label>
-            <label><input type="radio" name="q4" value="b"/> Security protocols and roles</label>
-            <label><input type="radio" name="q4" value="c"/> Garden landscaping</label>
+          <!-- Q4 -->
+          <div class="q-card">
+            <h4>4) Which of these is NOT a common area in security architecture?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q4" value="a"/> Account creation and management</label>
+              <label><input type="radio" name="q4" value="b"/> Security protocols and roles</label>
+              <label><input type="radio" name="q4" value="c"/> Garden landscaping</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q5 -->
-        <div class="q-card">
-          <h4>5) Which regulation is focused on payment card security?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q5" value="a"/> HIPAA</label>
-            <label><input type="radio" name="q5" value="b"/> PCI-DSS</label>
-            <label><input type="radio" name="q5" value="c"/> GDPR</label>
+          <!-- Q5 -->
+          <div class="q-card">
+            <h4>5) Which regulation is focused on payment card security?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q5" value="a"/> HIPAA</label>
+              <label><input type="radio" name="q5" value="b"/> PCI-DSS</label>
+              <label><input type="radio" name="q5" value="c"/> GDPR</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q6 -->
-        <div class="q-card">
-          <h4>6) Which phase of ethical hacking is used to gather public information without directly contacting the target?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q6" value="a"/> Active footprinting</label>
-            <label><input type="radio" name="q6" value="b"/> Passive footprinting</label>
-            <label><input type="radio" name="q6" value="c"/> Clearing tracks</label>
+          <!-- Q6 -->
+          <div class="q-card">
+            <h4>6) Which phase of ethical hacking is used to gather public information without directly contacting the target?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q6" value="a"/> Active footprinting</label>
+              <label><input type="radio" name="q6" value="b"/> Passive footprinting</label>
+              <label><input type="radio" name="q6" value="c"/> Clearing tracks</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q7 -->
-        <div class="q-card">
-          <h4>7) Which phase involves exploiting vulnerabilities to gain entry?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q7" value="a"/> Reconnaissance</label>
-            <label><input type="radio" name="q7" value="b"/> Gaining Access (Exploitation)</label>
-            <label><input type="radio" name="q7" value="c"/> Auditing</label>
+          <!-- Q7 -->
+          <div class="q-card">
+            <h4>7) Which phase involves exploiting vulnerabilities to gain entry?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q7" value="a"/> Reconnaissance</label>
+              <label><input type="radio" name="q7" value="b"/> Gaining Access (Exploitation)</label>
+              <label><input type="radio" name="q7" value="c"/> Auditing</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q8 -->
-        <div class="q-card">
-          <h4>8) In the Cyber Kill Chain, which stage comes after privilege escalation?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q8" value="a"/> Reconnaissance</label>
-            <label><input type="radio" name="q8" value="b"/> Lateral Movement</label>
-            <label><input type="radio" name="q8" value="c"/> Denial of Service</label>
+          <!-- Q8 -->
+          <div class="q-card">
+            <h4>8) In the Cyber Kill Chain, which stage comes after privilege escalation?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q8" value="a"/> Reconnaissance</label>
+              <label><input type="radio" name="q8" value="b"/> Lateral Movement</label>
+              <label><input type="radio" name="q8" value="c"/> Denial of Service</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q9 -->
-        <div class="q-card">
-          <h4>9) Which malware type typically encrypts files and demands payment?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q9" value="a"/> Spyware</label>
-            <label><input type="radio" name="q9" value="b"/> Ransomware</label>
-            <label><input type="radio" name="q9" value="c"/> Adware</label>
+          <!-- Q9 -->
+          <div class="q-card">
+            <h4>9) Which malware type typically encrypts files and demands payment?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q9" value="a"/> Spyware</label>
+              <label><input type="radio" name="q9" value="b"/> Ransomware</label>
+              <label><input type="radio" name="q9" value="c"/> Adware</label>
+            </div>
           </div>
-        </div>
 
-        <!-- Q10 -->
-        <div class="q-card">
-          <h4>10) Which of these is a recommended defense approach against malware?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q10" value="a"/> Layered defenses: patching, backups, least privilege, and EDR</label>
-            <label><input type="radio" name="q10" value="b"/> Rely on a single antivirus product only</label>
-            <label><input type="radio" name="q10" value="c"/> Turning off logging to improve performance</label>
+          <!-- Q10 -->
+          <div class="q-card">
+            <h4>10) Which of these is a recommended defense approach against malware?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="q10" value="a"/> Layered defenses: patching, backups, least privilege, and EDR</label>
+              <label><input type="radio" name="q10" value="b"/> Rely on a single antivirus product only</label>
+              <label><input type="radio" name="q10" value="c"/> Turning off logging to improve performance</label>
+            </div>
           </div>
-        </div>
 
-        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
-          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
-          <button type="button" class="btn" id="resetQuiz">Reset</button>
-          <span id="quizResult" class="result" aria-live="polite"></span>
-        </div>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+            <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
+            <button type="button" class="btn" id="resetQuiz">Reset</button>
+            <span id="quizResult" class="result" aria-live="polite"></span>
+          </div>
 
-      </form>
-    </section>
+        </form>
+      </section>
+    </article>
 
     <footer class="container">
-      <p>© Learning Playground – Cybersecurity • Lesson 1</p>
+      <p>© Learning Playground – Cybersecurity • Lesson 1 (Expanded)</p>
     </footer>
   </main>
+
+  <!-- TTS Control Bar (paste once) -->
+  <div id="ttsBar" class="tts-bar" aria-hidden="false">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" class="small" title="Pause">⏸</button>
+    <button id="ttsStop" class="small" title="Stop">⏹</button>
+
+    <span class="label">Voice</span>
+    <select id="ttsVoices" aria-label="Select voice"></select>
+
+    <span class="label">Rate</span>
+    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <span class="label">Pitch</span>
+    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+  </div>
 
   <script>
     /* Theme toggle (persist) */
@@ -493,36 +755,41 @@
 
     /* Download notes as text */
     document.getElementById('downloadNotes').addEventListener('click', () => {
-      const title = 'Lesson1_Cybersecurity_Notes.txt';
+      const title = 'Lesson1_Cybersecurity_Notes_Expanded.txt';
       const content = [
-        'Lesson 1 – Introduction to Cybersecurity',
+        'Lesson 1 – Introduction to Cybersecurity (Expanded)',
         '',
         '1. What is Cybersecurity?',
         'Cybersecurity is the discipline and practice of protecting systems, networks, programs, and data from digital attacks.',
         '',
-        '2. Why cybersecurity is needed',
-        'Protects data against theft, misuse, and unauthorized disclosure.',
+        '2. Creeper (historical note)',
+        'The Creeper program was an early self-replicating program that demonstrated code propagation.',
         '',
-        '3. Cyber Crime examples',
-        'Illegal interception, identity theft, phishing, etc.',
+        '3. Why cybersecurity is needed',
+        'Protects data against theft, misuse, and unauthorized disclosure. Examples: identity theft, financial loss, reputational damage.',
         '',
-        '4. CIA and other principles',
+        '4. Cyber crime examples',
+        'Illegal interception, piracy, darknet marketplaces, phishing.',
+        '',
+        '5. Principles (CIA + Accountability + Auditability)',
         'Confidentiality, Integrity, Availability, Accountability, Auditability.',
         '',
-        '5. Governance & architecture',
-        'Zero trust, access management, auditing, policies.',
+        '6. Architecture & REACP (suggested expansion)',
+        'R: Risk; E: Endpoints; A: Access; C: Controls/Confidentiality; P: Policies & People',
         '',
-        '6. Ethical Hacking phases',
-        'Reconnaissance, Scanning, Gaining access, Maintaining, Clearing tracks.',
+        '7. Governance steps',
+        'Establish state, assessments, identify vulnerabilities, develop standards, implement policies, enterprise approach.',
         '',
-        '7. Cyber Kill Chain',
-        'Reconnaissance -> Intrusion -> Exploitation -> Priv Esc -> Lateral Movement -> Obfuscation -> DoS -> Exfiltration',
+        '8. Auditing steps',
+        'Define scope, assess compliance, test controls, identify vulnerabilities, analyze response readiness, recommendations.',
         '',
-        '8. Malware types and defenses',
-        'Viruses, worms, trojans, ransomware; defenses: patching, EDR, backups, training.',
+        '9. Frameworks',
+        'SOX, NIST, PCI-DSS, ISO 27001, GDPR (where applicable).',
         '',
-        '--- End of notes ---'
-      ].join('\\n');
+        '10. Ethical hacking, MITRE ATT&CK, Kill Chain, Malware types (see lesson for full expanded details).',
+        '',
+        '--- End of expanded notes ---'
+      ].join('\n');
       const blob = new Blob([content], {type:'text/plain'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -575,13 +842,11 @@
       localStorage.setItem(scoreKey, pct);
       // show explanations for missed questions
       if (missed.length) {
-        let msg = '\\n\\nReview:';
+        let msg = '\n\nReview:';
         missed.forEach(m => {
-          msg += `\\n${m.toUpperCase()}: ${explanations[m]}`;
+          msg += `\n${m.toUpperCase()}: ${explanations[m]}`;
         });
-        // show a friendly popup with short summary (non-blocking)
-        setTimeout(()=>{ alert('You missed some questions.\\n\\nOpen the debug console or press OK to see key review notes.\\n\\nReview in the page footer.'); }, 100);
-        // append review to bottom of page in a visible way
+        setTimeout(()=>{ alert('You missed some questions.\n\nOpen the debug console or press OK to see key review notes.\n\nReview in the page footer.'); }, 100);
         const existing = document.getElementById('reviewBox');
         if (existing) existing.remove();
         const review = document.createElement('div');
@@ -599,7 +864,6 @@
         review.innerHTML = inner;
         form.appendChild(review);
       } else {
-        // perfect: show congrats
         const existing = document.getElementById('reviewBox');
         if (existing) existing.remove();
         const perfect = document.createElement('div');
@@ -612,13 +876,11 @@
         perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
         form.appendChild(perfect);
       }
-      // disable button to prevent re-submits unless reset
       submitBtn.disabled = true;
     }
 
     function resetQuiz() {
       form.reset();
-      // clear highlights
       form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
       resultSpan.textContent = '';
       submitBtn.disabled = false;
@@ -640,6 +902,215 @@
         submitBtn.disabled = true;
       }
     }
+  </script>
+
+  <!-- TTS script: placed after DOM, before closing body -->
+  <script>
+  // TTS module (Web Speech API) - unchanged functionality preserved
+  (function () {
+    if (!('speechSynthesis' in window)) {
+      console.warn('TTS not supported in this browser.');
+      const bar = document.getElementById('ttsBar');
+      if (bar) bar.style.display = 'none';
+      return;
+    }
+
+    // DOM
+    const playBtn = document.getElementById('ttsPlay');
+    const pauseBtn = document.getElementById('ttsPause');
+    const stopBtn = document.getElementById('ttsStop');
+    const voicesSelect = document.getElementById('ttsVoices');
+    const rateInput = document.getElementById('ttsRate');
+    const pitchInput = document.getElementById('ttsPitch');
+    const autoBtn = document.getElementById('ttsToggleAuto');
+
+    const lesson = document.querySelector('.lesson-content') || document.querySelector('main') || document.body;
+    let utterance = null;
+    let sentences = [];
+    let currentIndex = 0;
+    let readyVoices = [];
+
+    // load preferences
+    const prefs = {
+      voiceURI: localStorage.getItem('tts.voice') || '',
+      rate: parseFloat(localStorage.getItem('tts.rate')) || 1,
+      pitch: parseFloat(localStorage.getItem('tts.pitch')) || 1,
+      auto: localStorage.getItem('tts.auto') === 'true' || false
+    };
+    rateInput.value = prefs.rate;
+    pitchInput.value = prefs.pitch;
+    autoBtn.style.opacity = prefs.auto ? '1' : '0.6';
+
+    function populateVoices() {
+      const voices = speechSynthesis.getVoices();
+      readyVoices = voices;
+      voicesSelect.innerHTML = '';
+      voices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.voiceURI;
+        opt.textContent = `${v.name} (${v.lang})${v.default ? ' — default' : ''}`;
+        voicesSelect.appendChild(opt);
+      });
+
+      if (prefs.voiceURI) {
+        const found = [...voices].find(v => v.voiceURI === prefs.voiceURI);
+        if (found) voicesSelect.value = prefs.voiceURI;
+      }
+    }
+
+    populateVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = populateVoices;
+    }
+
+    function getText() {
+      if (!lesson) return document.body.innerText;
+      const nodes = lesson.querySelectorAll('p, li, h1, h2, h3, .tts-read');
+      if (nodes.length) {
+        return Array.from(nodes).map(n => n.innerText.trim()).filter(Boolean).join('.\n');
+      }
+      return lesson.innerText || document.body.innerText;
+    }
+
+    function buildSentences(text) {
+      return text.split(/(?<=[.?!])\s+/);
+    }
+
+    function speakFrom(index = 0) {
+      const text = getText();
+      sentences = buildSentences(text);
+      currentIndex = index;
+      if (currentIndex >= sentences.length) return;
+      speakSentence(sentences[currentIndex]);
+    }
+
+    function speakSentence(sentence) {
+      if (!sentence || sentence.trim() === '') {
+        currentIndex++;
+        if (currentIndex < sentences.length) speakSentence(sentences[currentIndex]);
+        return;
+      }
+      cancel();
+
+      utterance = new SpeechSynthesisUtterance(sentence);
+      const voiceURI = voicesSelect.value || prefs.voiceURI;
+      const selected = readyVoices.find(v => v.voiceURI === voiceURI) || readyVoices.find(v => v.default) || readyVoices[0];
+      if (selected) utterance.voice = selected;
+      utterance.rate = parseFloat(rateInput.value);
+      utterance.pitch = parseFloat(pitchInput.value);
+
+      utterance.onstart = () => highlightSentence(sentence);
+      utterance.onend = () => {
+        currentIndex++;
+        if (currentIndex < sentences.length) {
+          setTimeout(() => speakSentence(sentences[currentIndex]), 120);
+        } else {
+          clearHighlights();
+        }
+      };
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function cancel() {
+      if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+    }
+
+    function pause() {
+      if (speechSynthesis.speaking) speechSynthesis.pause();
+    }
+
+    function resume() {
+      if (speechSynthesis.paused) speechSynthesis.resume();
+    }
+
+    function highlightSentence(sentence) {
+      clearHighlights();
+      if (!lesson) return;
+      const text = lesson.innerHTML;
+      const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').trim();
+      if (!safe) return;
+      const regex = new RegExp(safe);
+      const newHtml = text.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
+      if (newHtml !== text) lesson.innerHTML = newHtml;
+    }
+
+    function clearHighlights() {
+      if (!lesson) return;
+      const highlights = lesson.querySelectorAll('.tts-highlight');
+      highlights.forEach(el => {
+        const txt = el.textContent;
+        el.outerHTML = txt;
+      });
+    }
+
+    playBtn.addEventListener('click', () => {
+      if (speechSynthesis.paused) return resume();
+      if (speechSynthesis.speaking) return;
+      speakFrom(0);
+      savePrefs();
+    });
+    pauseBtn.addEventListener('click', () => {
+      if (speechSynthesis.speaking) pause();
+      else if (speechSynthesis.paused) resume();
+    });
+    stopBtn.addEventListener('click', () => {
+      cancel();
+      clearHighlights();
+    });
+    voicesSelect.addEventListener('change', () => {
+      savePrefs();
+    });
+    rateInput.addEventListener('change', () => savePrefs());
+    pitchInput.addEventListener('change', () => savePrefs());
+    autoBtn.addEventListener('click', () => {
+      prefs.auto = !prefs.auto;
+      localStorage.setItem('tts.auto', prefs.auto);
+      autoBtn.style.opacity = prefs.auto ? '1' : '0.6';
+    });
+
+    function savePrefs() {
+      localStorage.setItem('tts.voice', voicesSelect.value || '');
+      localStorage.setItem('tts.rate', rateInput.value);
+      localStorage.setItem('tts.pitch', pitchInput.value);
+    }
+
+    function applySavedSettings() {
+      rateInput.value = prefs.rate;
+      pitchInput.value = prefs.pitch;
+      if (prefs.voiceURI && voicesSelect.options.length) {
+        voicesSelect.value = prefs.voiceURI;
+      }
+    }
+
+    let attempts = 0;
+    const voiceApplyInterval = setInterval(() => {
+      if (speechSynthesis.getVoices().length) {
+        populateVoices();
+        applySavedSettings();
+        clearInterval(voiceApplyInterval);
+      } else if (attempts++ > 20) {
+        applySavedSettings();
+        clearInterval(voiceApplyInterval);
+      }
+    }, 300);
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (prefs.auto) {
+          try {
+            speakFrom(0);
+          } catch (e) {
+            console.warn('Auto TTS blocked by browser, user must press Play to start.');
+          }
+        }
+      }, 700);
+    });
+
+    // expose for quick debugging
+    window.__XecuredlyTTS = { speakFrom, cancel, pause, resume, getText };
+
+  })();
   </script>
 </body>
 </html>

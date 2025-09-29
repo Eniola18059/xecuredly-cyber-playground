@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Introduction to SOC — Deep Dive (Expanded)</title>
+  <meta name="description" content="Comprehensive, expanded walkthrough of Security Operations Center: people, processes, tech, runbooks, KPIs, case studies, playbooks, TTS, and a 10-question interactive quiz." />
+  <style>
+    :root{
+      --bg:#071126; --card:#0e2234; --muted:#9fb7d9; --text:#eaf6ff;
+      --accent:#4db1ff; --accent-2:#6ef0c6; --warn:#ffb36b; --ok:#9be48b;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{background:linear-gradient(180deg,var(--bg) 0%, #021521 100%); color:var(--text); -webkit-font-smoothing:antialiased}
+    .wrap{max-width:1150px;margin:18px auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#032033;padding:8px 12px;border-radius:999px;font-weight:800}
+    h1{margin:0;font-size:clamp(22px,3.6vw,36px)}
+    .lead{color:var(--muted);margin-top:6px}
+    nav{display:flex;gap:8px;flex-wrap:wrap}
+    .nav-chip{background:var(--glass);padding:8px 10px;border-radius:999px;font-size:13px;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
+    main{display:grid;grid-template-columns:1fr 380px;gap:18px}
+    @media (max-width:980px){ main{grid-template-columns:1fr} }
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+    h2{margin-top:0}
+    .muted{color:var(--muted)}
+    .list{padding-left:18px}
+    .list li{margin:8px 0}
+    pre{background:rgba(0,0,0,0.18);padding:12px;border-radius:8px;overflow:auto;margin:10px 0}
+    code{background:rgba(0,0,0,0.12);padding:2px 6px;border-radius:6px}
+    .callout{padding:12px;border-radius:8px;background:linear-gradient(180deg,rgba(110,240,198,0.03),rgba(110,240,198,0.01));border:1px solid rgba(110,240,198,0.06);color:#bfffe7}
+    .small{font-size:13px;color:var(--muted)}
+    .tts-bar{position:fixed;right:18px;bottom:18px;z-index:999;background:rgba(0,0,0,0.6);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:320px}
+    .tts-bar button{background:linear-gradient(45deg,#ff0080,#7928ca);border:none;color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer;min-width:44px}
+    .tts-bar select,.tts-bar input[type="range"]{background:rgba(255,255,255,0.06);color:#00ffcc;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:8px;font-family:inherit}
+    .section-title{margin-bottom:6px}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:700px){ .two-col{grid-template-columns:1fr} }
+    .quiz-item{margin-bottom:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.03);cursor:pointer;font-weight:700}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#032033;border:none}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <span class="badge">Module — SOC Intro (Expanded)</span>
+        <h1>Introduction to Security Operations Center (SOC)</h1>
+        <div class="lead">Detailed explanations, runbooks, KPIs, examples, TTS, and an interactive 10-question quiz.</div>
+      </div>
+      <nav>
+        <span class="nav-chip">People</span>
+        <span class="nav-chip">Processes</span>
+        <span class="nav-chip">Technology</span>
+        <span class="nav-chip">Playbooks</span>
+        <span class="nav-chip">KPIs</span>
+      </nav>
+    </header>
+
+    <main>
+      <section>
+        <!-- Slide 1: Overview -->
+        <article class="card" id="slide1">
+          <h2 class="section-title">Slide 1 — SOC Overview</h2>
+          <p class="muted">A Security Operations Center brings together people, processes, and technology to monitor, detect, and respond to cybersecurity threats 24/7.</p>
+
+          <h3>Expanded explanation — three pillars</h3>
+          <p><strong>People:</strong> A SOC team includes entry-level analysts, senior investigators, threat hunters, incident responders, forensic examiners, and managers. Each role contributes distinct skills: Tier 1 triage, Tier 2 deep-dive, Tier 3 reverse-engineering and detection engineering, hunters proactively seeking anomalies, and the manager who sets strategy and metrics.</p>
+
+          <p><strong>Processes:</strong> Playbooks, runbooks, escalation matrices, communication plans (including legal & PR), and post-incident reviews. Good processes make responses repeatable and auditable. Example: when ransomware is suspected, a playbook lists steps to isolate infected hosts, preserve forensic evidence, notify legal, and restore from backups.</p>
+
+          <p><strong>Technology:</strong> Telemetry collectors (EDR agents, network taps), SIEM for correlation, SOAR for orchestration, threat intelligence platforms, IDS/IPS, and case management. Technology reduces toil and scales human expertise.</p>
+
+          <div class="callout">
+            <strong>Real-world framing:</strong> Attackers operate globally and automatically. SOCs shorten the time attackers operate undetected (MTTD) and reduce recovery time (MTTR). These two metrics are key to limiting damage.
+          </div>
+
+          <h4>Example SOC flow (high level)</h4>
+          <ol class="list">
+            <li>Ingest logs and telemetry from endpoints, networks, and cloud.</li>
+            <li>Normalize and enrich data (asset tags, user info, geolocation).</li>
+            <li>Run detections: rules, analytics, and ML models.</li>
+            <li>Queue alerts; Tier 1 triages and escalates true positives.</li>
+            <li>Tier 2/3 investigate, contain, eradicate, and recover.</li>
+            <li>Post-incident lessons convert to new detections and process updates.</li>
+          </ol>
+
+          <p class="small muted">This lifecycle is iterative: detections improve as the SOC learns from incidents and threat intelligence.</p>
+        </article>
+
+        <!-- Slide 2: What is a SOC? -->
+        <article class="card" id="slide2" style="margin-top:14px">
+          <h2 class="section-title">Slide 2 — What is a SOC?</h2>
+
+          <h3>Operational definition & mission</h3>
+          <p>The SOC is a dedicated capability that must operate continuously (often 24/7) to protect digital assets. Its mission: detect malicious activity early, respond accurately, preserve business continuity, and provide audit evidence for regulatory compliance.</p>
+
+          <h3>Types of SOCs</h3>
+          <ul class="list">
+            <li><strong>In-house SOC:</strong> Full control, tailored to internal needs, but high cost and staffing requirements.</li>
+            <li><strong>Outsourced MDR (Managed Detection & Response):</strong> Third-party monitors and responds on your behalf — faster scale, lower headcount, vendor reliance.</li>
+            <li><strong>Hybrid SOC:</strong> Core team in-house with outsourced off-hours coverage or specialized services.</li>
+          </ul>
+
+          <h3>When to build a SOC versus outsource</h3>
+          <ul class="list">
+            <li>Build in-house if you have critical assets, regulatory obligations, and budget for staffing and tooling.</li>
+            <li>Consider MDR if you lack staffing or want rapid 24/7 coverage and predictable costs.</li>
+          </ul>
+
+          <h4 class="muted">Cost considerations (high-level)</h4>
+          <p>Licensing for SIEM, EDR, and storage, staffing (analysts, managers), training, SOC infrastructure (workstations, redundancy), and exercise/test costs. These should be weighed against business risk exposure.</p>
+        </article>
+
+        <!-- Slide 3: Core Functions -->
+        <article class="card" id="slide3" style="margin-top:14px">
+          <h2 class="section-title">Slide 3 — SOC Core Functions (Deep)</h2>
+
+          <h3>Threat Detection</h3>
+          <p>Detection uses rule-based signatures, anomaly detection, behavior-based analytics, and threat intelligence. Effective detections are context-aware (who, what asset, business impact) and focus on TTPs (tactics, techniques, procedures) rather than ephemeral indicators.</p>
+
+          <h3>Incident Response</h3>
+          <p>IR is structured: triage, containment, eradication, recovery, and post-incident review. Each step has playbook tasks and decision points (e.g., when to isolate a host vs take it offline).</p>
+
+          <h3>Monitoring & Analysis</h3>
+          <p>Continuous dashboarding, top-incident trackers (e.g., authentication anomalies), and weekly trend analysis. Analysts correlate across devices and timelines to separate noise from meaningful activity.</p>
+
+          <h3>Forensics & Investigation</h3>
+          <p>Forensics collects evidence (memory, disk images, logs), reconstructs attacker actions, and produces an incident timeline that supports legal or regulatory processes.</p>
+
+          <h3>Compliance Management</h3>
+          <p>Ensures logging, retention, and reporting meet standards (PCI, HIPAA, GDPR). SOC keeps compliance evidence and configures alerts for policy violations.</p>
+
+          <h4 class="muted">Example: ransomware playbook excerpt</h4>
+          <pre>
+1) Detect suspicious file-encryption activity (EDR alert).
+2) Validate indicator and scope (list infected hosts).
+3) Isolate affected endpoints from network (EDR).
+4) Preserve forensic snapshots (memory + disk).
+5) Notify legal, execs, backups team.
+6) Restore from verified backups, rotate credentials, and patch root cause.
+7) Post-incident: add detection for initial vector.
+          </pre>
+        </article>
+
+        <!-- Slide 4: Roles -->
+        <article class="card" id="slide4" style="margin-top:14px">
+          <h2 class="section-title">Slide 4 — SOC Team Roles (Expanded)</h2>
+
+          <div class="two-col">
+            <div>
+              <h4>SOC Manager</h4>
+              <p class="muted">Responsibilities</p>
+              <ul class="list">
+                <li>Set SOC strategy, KPIs, and budget.</li>
+                <li>Coordinate with IT, legal, and business owners.</li>
+                <li>Ensure training, incident reporting, and compliance.</li>
+              </ul>
+
+              <h4>Tier 1 Analyst (SOC Analyst I)</h4>
+              <p class="muted">Daily tasks</p>
+              <ul class="list">
+                <li>Triage alerts, initial investigation, escalate confirmed incidents.</li>
+                <li>Maintain the alert queue and document findings in ticketing system.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4>Tier 2/3 Analysts & Hunters</h4>
+              <p class="muted">Advanced work</p>
+              <ul class="list">
+                <li>Root-cause analysis, lateral movement hunting, attacker behavior reconstruction.</li>
+                <li>Write detection rules and feed intelligence back into the SIEM.</li>
+              </ul>
+
+              <h4>Incident Responder & Forensic Expert</h4>
+              <p class="muted">Hands-on</p>
+              <ul class="list">
+                <li>Containment actions, forensic captures, secure evidence collection.</li>
+                <li>Coordinate restoration and follow legal chain-of-custody procedures.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h4 class="muted">Shift & staffing model example</h4>
+          <p>To run 24/7 with acceptable analyst burnout, a common model: three 8-hour shifts with 2-3 Tier 1 analysts per shift, one Tier 2 on-call during peak hours, and rotating Tier 3/hunter coverage. Use MDR or automation to reduce night staffing.</p>
+        </article>
+
+        <!-- Slide 5: Tools -->
+        <article class="card" id="slide5" style="margin-top:14px">
+          <h2 class="section-title">Slide 5 — SOC Tools & Technologies (Examples & How they fit)</h2>
+
+          <h3>SIEM (Splunk, Elastic, QRadar)</h3>
+          <p class="muted">Role</p>
+          <p>Ingests logs, normalizes them into a common schema (e.g., timestamp, user, asset, event), correlates events to produce alerts, and enables analysts to pivot during investigations.</p>
+
+          <h3>EDR (CrowdStrike, Microsoft Defender)</h3>
+          <p class="muted">Role</p>
+          <p>Provides process creation, file writes, network connection telemetry and supports remote remediation (kill process, isolate host). EDR is essential for rapid containment.</p>
+
+          <h3>SOAR (Swimlane, Cortex XSOAR)</h3>
+          <p class="muted">Role</p>
+          <p>Automates repetitive steps (enrichment, blocking an IP) and orchestrates multi-tool responses while creating a documented playbook execution trace.</p>
+
+          <h3>Threat Intelligence Platforms</h3>
+          <p>Ingest open & commercial feeds, map indicators to known adversaries, and provide context to prioritize alerts.</p>
+
+          <h4 class="muted">Sample SIEM query (pattern search)</h4>
+          <pre>
+-- Find suspicious PowerShell execution that downloads remote content
+index=endpoint sourcetype=powershell "DownloadFile" OR "Invoke-WebRequest" NOT (benign-whitelist)
+| stats count by src_ip, user, file_name, cmdline
+| where count > 3
+          </pre>
+        </article>
+
+        <!-- Slide 6: Architecture -->
+        <article class="card" id="slide6" style="margin-top:14px">
+          <h2 class="section-title">Slide 6 — SOC Architecture (Detailed)</h2>
+
+          <h3>Telemetry pipeline</h3>
+          <ol class="list">
+            <li><strong>Source layer:</strong> endpoints, servers, cloud (CloudTrail/CloudWatch), network (flow, IDS), identity (Active Directory, SSO), applications.</li>
+            <li><strong>Collection layer:</strong> agents, syslog forwarders, cloud log exporters, network taps.</li>
+            <li><strong>Normalization/enrichment:</strong> map asset owners, business criticality, geolocation, vulnerability scores.</li>
+            <li><strong>Analytics/Storage:</strong> SIEM, EDR, and long-term storage for forensic timelines.</li>
+            <li><strong>Actioning:</strong> SOAR playbooks, ticketing system, direct remediation via EDR or firewalls.</li>
+          </ol>
+
+          <h3>Data governance considerations</h3>
+          <p class="muted">Balance retention requirements with privacy and cost. Redact PII where necessary and ensure encrypted transport & storage for sensitive telemetry.</p>
+
+          <h4>Resilience & high availability</h4>
+          <p>Use redundant collectors and replicated SIEM clusters for high availability. Ensure offline access and a secure backup process for critical incident evidence.</p>
+        </article>
+
+        <!-- Slide 7: Maturity -->
+        <article class="card" id="slide7" style="margin-top:14px">
+          <h2 class="section-title">Slide 7 — SOC Maturity Levels (Roadmap)</h2>
+
+          <h3>Level 1 — Reactive (0–6 months)</h3>
+          <ul class="list">
+            <li>Basic logging, manual investigations, limited detection coverage.</li>
+            <li>Focus: instrument critical systems, triage rules to reduce false positives.</li>
+          </ul>
+
+          <h3>Level 2 — Proactive (6–18 months)</h3>
+          <ul class="list">
+            <li>Threat hunting, formal playbooks, basic automation (enrichment), measurable KPIs.</li>
+            <li>Focus: reduce MTTD by automated enrichment and rule tuning.</li>
+          </ul>
+
+          <h3>Level 3 — Adaptive (18+ months)</h3>
+          <ul class="list">
+            <li>Continuous detection engineering, full SOAR integration, mature hunt program, threat intelligence fusion.</li>
+            <li>Focus: adaptive detection that evolves with threats; measured reduction in dwell time.</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Tip:</strong> Start small — instrument a high-value asset set first (e.g., domain controllers, critical databases) and expand coverage iteratively with measurable objectives.
+          </div>
+        </article>
+
+        <!-- Slide 8: Use cases -->
+        <article class="card" id="slide8" style="margin-top:14px">
+          <h2 class="section-title">Slide 8 — SOC Use Cases (Practical Examples)</h2>
+
+          <h4>Phishing detection & response</h4>
+          <p>Detect email attachments flagged by sandbox, isolate mailbox, force password reset, and run malware analysis to extract IOCs. Notify users and update email filters.</p>
+
+          <h4>Brute-force & credential stuffing</h4>
+          <p>Detect many failed logins from different IPs for a single account; apply rate-limiting, require MFA, and block offending IP ranges at the edge.</p>
+
+          <h4>Data exfiltration</h4>
+          <p>Monitor large outbound uploads or unusual cloud storage access. If suspected, block destination, snapshot files, and investigate access history.</p>
+
+          <h4>Ransomware</h4>
+          <p>Key indicators: mass file renames, creation of ransom notes, and unusual process behavior. Actions: isolate, preserve backups, recover from verified copies, and update patching.</p>
+        </article>
+
+        <!-- Slide 9: Challenges -->
+        <article class="card" id="slide9" style="margin-top:14px">
+          <h2 class="section-title">Slide 9 — Challenges Faced by SOCs (and mitigations)</h2>
+
+          <h4>Alert fatigue</h4>
+          <p class="muted">Problem & fixes</p>
+          <p>Excess alerts cause important ones to be missed. Mitigations: tune rules, add richer enrichment (user risk, business asset), prioritize alerts by impact, and use SOAR to auto-dismiss known benign cases.</p>
+
+          <h4>Talent shortage</h4>
+          <p>Mitigations: invest in internal training, build career ladders, use automation to remove repetitive tasks, and partner with MDR providers for off-hours coverage.</p>
+
+          <h4>Tool integration</h4>
+          <p>Use standardized log schemas, invest in API-first tools, and implement a central orchestration layer (SOAR) to reduce manual cross-tool actions.</p>
+
+          <h4>Keeping pace with evolving threats</h4>
+          <p>Run regular threat intelligence refreshes, tabletop exercises, and post-incident learning cycles to convert adversary TTPs into detection logic.</p>
+        </article>
+
+        <!-- Slide 10: Conclusion & Checklist -->
+        <article class="card" id="slide10" style="margin-top:14px">
+          <h2 class="section-title">Slide 10 — Conclusion & Practical Checklist</h2>
+          <p class="muted">Final recommendations for building or improving SOC capability.</p>
+
+          <ul class="list">
+            <li>Start with a clear inventory of critical assets and logging capability.</li>
+            <li>Define playbooks for top incident types (phishing, ransomware, data exfiltration).</li>
+            <li>Instrument endpoint + identity + network telemetry at minimum.</li>
+            <li>Define KPIs (MTTD, MTTR, % true positives) and report monthly.</li>
+            <li>Practice regular tabletop exercises and update playbooks after each drill.</li>
+            <li>Invest in automation to free analysts for higher-value tasks.</li>
+          </ul>
+
+          <p class="small muted">SOC effectiveness improves with repetition: detect → respond → learn → automate → repeat.</p>
+        </article>
+
+      </section>
+
+      <!-- Sidebar: TTS, Quiz, Downloads -->
+      <aside>
+        <div class="card" id="ttsCard">
+          <h3 class="section-title">Text-to-Speech (TTS)</h3>
+          <p class="small muted">Listen to the lesson. Choose voice, rate & pitch, then press Play.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="voices"></select>
+            <label class="small">Rate<input id="rate" type="range" min="0.6" max="2" step="0.1" value="1" /></label>
+            <label class="small">Pitch<input id="pitch" type="range" min="0.6" max="2" step="0.1" value="1" /></label>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button class="btn primary" id="playTTS">▶ Play</button>
+            <button class="btn" id="pauseTTS">⏸ Pause</button>
+            <button class="btn" id="stopTTS">⏹ Stop</button>
+          </div>
+          <p class="small muted" style="margin-top:8px">Tip: Click any section heading to copy just that section to the reader for focused playback.</p>
+        </div>
+
+        <div class="card" id="quizCard" style="margin-top:14px">
+          <h3 class="section-title">Quiz — 10 questions (interactive)</h3>
+          <p class="small muted">Test your understanding. Score is shown at the end; explanations provided for each answer.</p>
+
+          <div id="quiz"></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn primary" id="submitQuiz">Submit Answers</button>
+            <button class="btn" id="resetQuiz">Reset</button>
+          </div>
+          <div id="quizResult" style="margin-top:10px"></div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 class="section-title">Downloads</h3>
+          <p class="small muted">Download notes or copy the lesson as Markdown.</p>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="downloadTxt">Download Text</button>
+            <button class="btn" id="copyMd">Copy Markdown</button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <h3 class="section-title">Quick resources</h3>
+          <ul class="list">
+            <li>MITRE ATT&CK — TTP framework</li>
+            <li>NIST SP 800-61 (Incident Response)</li>
+            <li>SANS playbooks & detection engineering guides</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <p class="small muted">© SOC Training — Expanded Module. Use for learning and building lesson plans. Not legal or compliance advice.</p>
+    </footer>
+  </div>
+
+  <!-- TTS bar (floating) for convenience -->
+  <div class="tts-bar" id="ttsBar" aria-hidden="false">
+    <button id="ttsPlay">▶</button>
+    <button id="ttsPause" class="small">⏸</button>
+    <button id="ttsStop" class="small">⏹</button>
+    <span class="small">Voice</span>
+    <select id="ttsVoicesSmall"></select>
+    <span class="small">Rate</span>
+    <input id="ttsRateSmall" type="range" min="0.6" max="2" step="0.1" value="1" />
+  </div>
+
+  <script>
+    // ---------------------------
+    // Populate quiz questions (10) with answers & explanations
+    // ---------------------------
+    const quizQs = [
+      {
+        q: "1. What is the primary mission of a SOC?",
+        choices: [
+          "A. Produce marketing reports",
+          "B. Continuously monitor, detect and respond to security threats",
+          "C. Replace IT operations entirely",
+          "D. Manage payroll and HR"
+        ],
+        a: 1,
+        exp: "A SOC's mission is to monitor, detect, analyze, and respond to cyber threats to protect the organization's assets."
+      },
+      {
+        q: "2. Which metric measures how quickly a SOC detects incidents?",
+        choices: ["A. MTTR", "B. MTTD", "C. TCO", "D. SLA"],
+        a: 1,
+        exp: "MTTD (Mean Time To Detect) measures the average time it takes to detect incidents. MTTR measures time to recover."
+      },
+      {
+        q: "3. Why is enrichment (adding asset/user context) important in detections?",
+        choices: [
+          "A. It makes alerts prettier",
+          "B. It increases false positives",
+          "C. It helps prioritize alerts by impact and owner",
+          "D. It replaces the need for EDR"
+        ],
+        a: 2,
+        exp: "Enrichment (asset criticality, owner, vulnerability) enables prioritization and faster investigation."
+      },
+      {
+        q: "4. Which tool is best described as centralizing logs, normalizing events, and correlating alerts?",
+        choices: ["A. SIEM", "B. Firewall", "C. Load Balancer", "D. DNS Server"],
+        a: 0,
+        exp: "SIEM collects, normalizes, stores, and correlates logs to generate actionable alerts."
+      },
+      {
+        q: "5. What is 'threat hunting'?",
+        choices: [
+          "A. Waiting for alerts and responding",
+          "B. Proactively searching telemetry for undetected attackers",
+          "C. Installing antivirus signatures",
+          "D. Archiving old logs"
+        ],
+        a: 1,
+        exp: "Threat hunting is proactive searching to find stealthy adversaries and reduce dwell time."
+      },
+      {
+        q: "6. Which automation technology helps orchestrate responses and reduce manual toil?",
+        choices: ["A. SOAR", "B. Spreadsheet macros", "C. VPN", "D. Datacenter UPS"],
+        a: 0,
+        exp: "SOAR automates repeatable steps, orchestrates tools, and documents playbook execution."
+      },
+      {
+        q: "7. Why is preserving a forensic snapshot before remediation important?",
+        choices: [
+          "A. To create marketing materials",
+          "B. To delete evidence later",
+          "C. To maintain chain-of-custody and enable root-cause analysis",
+          "D. It's unnecessary once systems are patched"
+        ],
+        a: 2,
+        exp: "Forensic snapshots preserve evidence and allow timeline reconstruction; this is critical for legal/regulatory purposes."
+      },
+      {
+        q: "8. Which of these reduces alert fatigue most effectively?",
+        choices: [
+          "A. Hiring more Tier 1 analysts only",
+          "B. Tuning detections, enrichment, and automation",
+          "C. Turning off all alerts",
+          "D. Rebooting the SIEM daily"
+        ],
+        a: 1,
+        exp: "Tuning rules and automating enrichment/triage targets the root causes of alert fatigue."
+      },
+      {
+        q: "9. What role does a threat intelligence platform (TIP) play?",
+        choices: [
+          "A. Store backups",
+          "B. Aggregate indicators and map adversary TTPs to prioritize detections",
+          "C. Replace the need for SIEM",
+          "D. Manage user passwords"
+        ],
+        a: 1,
+        exp: "TIPs aggregate IoCs and provide context to help SOCs prioritize and understand adversary behavior."
+      },
+      {
+        q: "10. Which maturity feature indicates an Adaptive SOC?",
+        choices: [
+          "A. Manual log reviews only",
+          "B. No documented playbooks",
+          "C. Continuous detection engineering and automated playbooks",
+          "D. Only monthly reporting"
+        ],
+        a: 2,
+        exp: "Adaptive SOCs continuously convert hunt findings into detections and use automation with human gates."
+      }
+    ];
+
+    // Render quiz
+    const quizDiv = document.getElementById('quiz');
+    function renderQuiz() {
+      quizDiv.innerHTML = '';
+      quizQs.forEach((item, idx) => {
+        const qWrap = document.createElement('div');
+        qWrap.className = 'quiz-item';
+        qWrap.innerHTML = `<div style="font-weight:800;margin-bottom:8px">${item.q}</div>`;
+        item.choices.forEach((c, i) => {
+          const id = `q${idx}_c${i}`;
+          const radio = `<label style="display:block;margin:6px 0"><input type="radio" name="q${idx}" id="${id}" value="${i}" /> ${c}</label>`;
+          qWrap.innerHTML += radio;
+        });
+        quizDiv.appendChild(qWrap);
+      });
+    }
+    renderQuiz();
+
+    document.getElementById('submitQuiz').addEventListener('click', () => {
+      let score = 0;
+      const feedback = [];
+      quizQs.forEach((item, idx) => {
+        const els = document.getElementsByName(`q${idx}`);
+        let picked = null;
+        for (const el of els) if (el.checked) { picked = parseInt(el.value); break; }
+        if (picked === item.a) { score++; feedback.push(`<div><strong>Q${idx+1} — Correct</strong> — ${item.exp}</div>`); }
+        else if (picked === null) { feedback.push(`<div><strong>Q${idx+1} — No answer</strong> — Correct answer: ${item.choices[item.a]}. ${item.exp}</div>`); }
+        else { feedback.push(`<div><strong>Q${idx+1} — Incorrect</strong> — Your answer: ${item.choices[picked]}. Correct: ${item.choices[item.a]}. ${item.exp}</div>`); }
+      });
+      const pct = Math.round((score / quizQs.length) * 100);
+      document.getElementById('quizResult').innerHTML = `<div style="font-weight:800">Score: ${score}/${quizQs.length} (${pct}%)</div>` + feedback.join('');
+      // Scroll to result
+      document.getElementById('quizResult').scrollIntoView({behavior:'smooth'});
+    });
+
+    document.getElementById('resetQuiz').addEventListener('click', () => {
+      quizQs.forEach((_, idx) => {
+        const els = document.getElementsByName(`q${idx}`);
+        for (const el of els) el.checked = false;
+      });
+      document.getElementById('quizResult').innerHTML = '';
+    });
+
+    // ---------------------------
+    // Download & Copy (Text/Markdown)
+    // ---------------------------
+    function collectContentNodes() {
+      const nodes = [];
+      document.querySelectorAll('main section article').forEach(a => {
+        const h = a.querySelector('h2')?.innerText || '';
+        if (h) nodes.push(`# ${h}\n`);
+        a.querySelectorAll('h3,h4,p,pre,ul,ol').forEach(n => {
+          if (n.tagName.toLowerCase() === 'pre') nodes.push('```\n' + n.innerText + '\n```\n');
+          else if (n.tagName.toLowerCase() === 'ul') {
+            n.querySelectorAll('li').forEach(li => nodes.push(`- ${li.innerText}\n`));
+          } else if (n.tagName.toLowerCase() === 'ol') {
+            n.querySelectorAll('li').forEach((li,i)=> nodes.push(`${i+1}. ${li.innerText}\n`));
+          } else nodes.push(n.innerText + '\n\n');
+        });
+      });
+      return nodes.join('\n');
+    }
+
+    document.getElementById('downloadTxt').addEventListener('click', () => {
+      const content = collectContentNodes();
+      const blob = new Blob([content], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download = 'SOC_Introduction_Expanded.txt'; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+    });
+
+    document.getElementById('copyMd').addEventListener('click', async () => {
+      const content = collectContentNodes();
+      try {
+        await navigator.clipboard.writeText(content);
+        alert('Lesson content copied as Markdown to clipboard.');
+      } catch(e){ alert('Unable to copy to clipboard.'); }
+    });
+
+    // ---------------------------
+    // TTS Implementation (page)
+    // ---------------------------
+    const voicesSelect = document.getElementById('voices');
+    const rateInput = document.getElementById('rate');
+    const pitchInput = document.getElementById('pitch');
+    const playBtn = document.getElementById('playTTS'), pauseBtn = document.getElementById('pauseTTS'), stopBtn = document.getElementById('stopTTS');
+
+    const ttsSmallSelect = document.getElementById('ttsVoicesSmall');
+    const ttsSmallRate = document.getElementById('ttsRateSmall');
+    const ttsPlaySmall = document.getElementById('ttsPlay'), ttsPauseSmall = document.getElementById('ttsPause'), ttsStopSmall = document.getElementById('ttsStop');
+
+    function populateVoiceLists() {
+      const vs = speechSynthesis.getVoices();
+      [voicesSelect, ttsSmallSelect].forEach(sel => {
+        sel.innerHTML = '';
+        vs.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.name; opt.textContent = `${v.name} (${v.lang})${v.default ? ' — default' : ''}`;
+          sel.appendChild(opt);
+        });
+      });
+    }
+    populateVoiceLists();
+    if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoiceLists;
+
+    function getReadableText() {
+      // Collate main article headings and paragraphs to a single readable block.
+      const parts = [];
+      document.querySelectorAll('main section article').forEach(a => {
+        const heading = a.querySelector('h2')?.innerText;
+        if (heading) parts.push(heading + '.');
+        a.querySelectorAll('h3, h4, p, pre').forEach(n => {
+          const txt = n.innerText.trim();
+          if (txt) parts.push(txt);
+        });
+      });
+      return parts.join(' ');
+    }
+
+    let tUtter = null;
+    function speakStart() {
+      if (!('speechSynthesis' in window)) { alert('TTS not supported in this browser.'); return; }
+      if (speechSynthesis.speaking) { console.warn('Already speaking'); return; }
+      const text = getReadableText();
+      if (!text) return;
+      tUtter = new SpeechSynthesisUtterance(text);
+      const voiceName = voicesSelect.value || ttsSmallSelect.value;
+      const voices = speechSynthesis.getVoices();
+      const sel = voices.find(v => v.name === voiceName) || voices.find(v => v.default) || voices[0];
+      if (sel) tUtter.voice = sel;
+      tUtter.rate = parseFloat(rateInput.value || ttsSmallRate.value || 1);
+      tUtter.pitch = parseFloat(pitchInput.value || 1);
+      speechSynthesis.speak(tUtter);
+    }
+    playBtn.addEventListener('click', speakStart);
+    pauseBtn.addEventListener('click', ()=> { if (speechSynthesis.speaking) speechSynthesis.pause(); });
+    stopBtn.addEventListener('click', ()=> { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); });
+
+    // Small bar controls
+    ttsPlaySmall.addEventListener('click', speakStart);
+    ttsPauseSmall.addEventListener('click', ()=> { if (speechSynthesis.speaking) speechSynthesis.pause(); });
+    ttsStopSmall.addEventListener('click', ()=> { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); });
+
+    // Click heading to read only that section
+    document.querySelectorAll('main section article h2').forEach(h => {
+      h.style.cursor = 'pointer';
+      h.title = 'Click to read this section aloud';
+      h.addEventListener('click', () => {
+        if (!('speechSynthesis' in window)) return alert('TTS not supported');
+        if (speechSynthesis.speaking) speechSynthesis.cancel();
+        const parent = h.parentElement;
+        const parts = [h.innerText + '.'];
+        parent.querySelectorAll('h3,h4,p,pre').forEach(n => { if (n.innerText) parts.push(n.innerText); });
+        const utter = new SpeechSynthesisUtterance(parts.join(' '));
+        const voiceName = voicesSelect.value || ttsSmallSelect.value;
+        const voices = speechSynthesis.getVoices();
+        const sel = voices.find(v => v.name === voiceName) || voices.find(v => v.default) || voices[0];
+        if (sel) utter.voice = sel;
+        utter.rate = parseFloat(rateInput.value || 1);
+        speechSynthesis.speak(utter);
+      });
+    });
+
+    // sync small bar selects
+    voicesSelect.addEventListener('change', ()=> { ttsSmallSelect.value = voicesSelect.value; });
+    ttsSmallSelect.addEventListener('change', ()=> { voicesSelect.value = ttsSmallSelect.value; });
+
+    // ---------------------------
+    // Accessibility / small conveniences
+    // ---------------------------
+    // allow keyboard Enter to submit quiz when focused on button
+    document.getElementById('submitQuiz').addEventListener('keyup', (e)=> { if (e.key === 'Enter') e.target.click(); });
+
+    // end of script
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Lesson 2 – Introduction to Linux</title>
+  <title>Lesson 2 – Introduction to Linux (Comprehensive + Labs + TTS)</title>
 
   <style>
     :root {
@@ -15,47 +15,75 @@
       --accent-2: #7ef0c1;
       --warning: #ffdf6e;
       --danger: #ff7e93;
+      --glass: rgba(255,255,255,0.03);
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
     body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
-    .container{max-width:1100px;margin:0 auto;padding:18px}
-    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
-    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .container{max-width:1200px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:40;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.75);border-bottom:1px solid rgba(255,255,255,0.04)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px}
     .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-    .hero{padding:28px 20px 8px}
-    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .hero{padding:22px 20px 12px}
+    .title{font-size:clamp(26px,4vw,44px);line-height:1.08;margin:4px 0 10px}
     .subtitle{color:var(--muted);font-size:15px}
     .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
-    .grid-2{display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:900px){.grid-2{grid-template-columns:1fr 1fr}}
+    .chip{padding:6px 10px;background:var(--glass);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.35);margin-top:16px}
     .list{margin:0;padding-left:18px}
     .list li{margin:8px 0}
-    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
-    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
-    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.12);padding:12px 14px;border-radius:12px;margin-top:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.12)}
+    .video-wrap{position:relative;overflow:hidden;border-radius:12px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;color:var(--muted)}
     .subtitle small{display:block;color:var(--muted);margin-top:6px}
-    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:12px;padding:12px;margin:10px 0}
     .q-options{display:grid;gap:8px;margin-top:8px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.08);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.03);cursor:pointer;font-weight:700}
     .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn.ghost{background:transparent}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.03)}
     .result{font-size:18px;font-weight:700}
     .good{color:var(--accent-2)}
     .mid{color:var(--warning)}
     .bad{color:var(--danger)}
-    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    footer{opacity:.8;font-size:13px;padding:30px 0 60px}
     .section-title{margin:0 0 8px}
     .muted{color:var(--muted)}
-    pre{white-space:pre-wrap}
+    pre{white-space:pre-wrap;background:rgba(0,0,0,0.15);padding:12px;border-radius:8px;overflow:auto}
     .meta{display:flex;gap:8px;flex-wrap:wrap}
     .attempt-btn{margin-top:12px}
-    /* responsive spacing for long lesson */
-    .long-read{line-height:1.65;font-size:15px}
+    .long-read{line-height:1.75;font-size:15px}
     .small{font-size:13px;color:var(--muted)}
-    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.12);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .kbd{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);font-family:monospace}
+    .two-col{display:grid;grid-template-columns:1fr 420px;gap:18px}
+    @media (max-width:980px){.two-col{grid-template-columns:1fr}}
+    .sidebar .card{position:sticky;top:84px}
+    .faq dt{font-weight:700;margin-top:12px}
+    .glossary dt{font-weight:700;margin-top:8px}
+    /* TTS control bar */
+    .tts-bar {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.65);
+      color: #00ffcc;
+      padding: 10px 12px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      font-family: 'Share Tech Mono', monospace;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      backdrop-filter: blur(6px);
+      min-width: 320px;
+    }
+    .tts-bar button { background: linear-gradient(45deg,#ff0080,#7928ca); border: none; color: #fff; padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-width: 44px; }
+    .tts-bar button.small { padding: 6px 8px; min-width: 36px; font-size: 0.95rem; }
+    .tts-bar select, .tts-bar input[type="range"] { background: rgba(255,255,255,0.06); color: #00ffcc; border: 1px solid rgba(255,255,255,0.06); padding: 6px; border-radius: 8px; font-family: inherit; }
+    .tts-bar .label { font-size: 0.82rem; opacity: 0.95; margin-right: 6px; white-space: nowrap; }
+    .tts-highlight { background: rgba(0,255,200,0.15); transition: background 0.2s; padding: 0 2px; border-radius: 3px; }
+    @media (max-width:600px) { .tts-bar { left: 50%; transform: translateX(-50%); right: auto; bottom: 12px; min-width: 88%; } }
   </style>
 </head>
 <body>
@@ -64,357 +92,472 @@
       <div style="display:flex;align-items:center;gap:12px">
         <span class="badge">Lesson 2</span>
         <div>
-          <strong>Introduction to Linux — Full Module</strong>
-          <div class="small muted">OS Basics • Kernel • Distros • Editors • Commands • Comparisons</div>
+          <strong>Introduction to Linux — Comprehensive Module</strong>
+          <div class="small muted">Kernel, distributions, CLI, editors, networking, security, labs, cheat-sheets, TTS and quizzes.</div>
         </div>
       </div>
-      <div>
+      <div style="display:flex;gap:8px;align-items:center">
         <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+        <button class="btn" id="downloadNotes">📥 Download Notes</button>
+        <button class="btn primary" id="copyMarkdown">📋 Copy Markdown</button>
       </div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="hero card">
-      <h1 class="title">Introduction to Linux</h1>
-      <p class="subtitle">A compact introduction to Linux: what it is, its architecture, distributions, common commands, editors, strengths and limitations.</p>
+  <main class="container two-col">
+    <article>
+      <section class="hero card">
+        <h1 class="title">Introduction to Linux — Deep Dive</h1>
+        <p class="subtitle">A thorough, practical lesson covering fundamentals, internals, administration tasks, networking, security hardening, and multiple hands-on labs for learners at beginner to intermediate levels.</p>
+        <div class="chips">
+          <span class="chip">Kernel internals</span>
+          <span class="chip">Shell & scripting</span>
+          <span class="chip">Editors</span>
+          <span class="chip">Package management</span>
+          <span class="chip">Networking</span>
+        </div>
+      </section>
 
-      <div class="chips">
-        <span class="chip">Linux</span>
-        <span class="chip">Kernel</span>
-        <span class="chip">Distributions</span>
-        <span class="chip">Commands</span>
-        <span class="chip">Editors</span>
-        <span class="chip">Comparisons</span>
+      <!-- Extensive content -->
+      <section class="card long-read" id="overview">
+        <h2 class="section-title">Module overview</h2>
+        <p>This module is intentionally comprehensive. It begins with core concepts (what an OS is, what Linux is), moves into architecture and kernel topics, then covers the command-line and essential tools, finishes with real-world labs and security best-practices, and provides a cheat-sheet plus a glossary for quick reference.</p>
+
+        <h3>Learning goals</h3>
+        <ul class="list">
+          <li>Understand Linux system components and architecture.</li>
+          <li>Use the shell fluently to manage files, processes and services.</li>
+          <li>Configure basic networking and diagnose common issues.</li>
+          <li>Create and run scripts to automate tasks.</li>
+          <li>Harden a basic server and understand detection/response steps for incidents.</li>
+          <li>Build safe lab practices to test tools and scenarios.</li>
+        </ul>
+      </section>
+
+      <section class="card long-read" id="osbasics">
+        <h2 class="section-title">1 — Operating system fundamentals (expanded)</h2>
+        <p>An operating system mediates access to hardware and provides essential abstractions: processes, threads, files, and device I/O. Linux follows classical Unix design principles with small composable tools and a strong textual configuration model.</p>
+
+        <h3>Processes and threads</h3>
+        <p>Processes are isolated execution contexts with private virtual memory; threads are execution paths within a process sharing memory. The kernel scheduler assigns CPU time using priorities and fairness heuristics, and modern kernels support multi-core scheduling (SMP).</p>
+
+        <h3>Memory management details</h3>
+        <p>Linux uses virtual memory with page tables, and employs demand paging. Swap space allows the kernel to offload inactive pages to disk under memory pressure. Techniques like copy-on-write (fork/exec) improve efficiency for duplicated processes.</p>
+
+        <h3>Filesystems and persistence</h3>
+        <p>Linux supports many filesystems: ext4 (stable general-purpose), XFS (large files/throughput), btrfs (copy-on-write snapshots), and ZFS (advanced features). Mount options, fstab, and UUIDs control how volumes attach at boot. Understanding FS mounting, permissions, and journaling properties is essential for admins.</p>
+
+        <div class="explain">
+          <strong>Admin tip:</strong> Always test backups and snapshot restore workflows — backups that haven't been validated can be worthless in a crisis.
+        </div>
+      </section>
+
+      <section class="card long-read" id="kernelinternals">
+        <h2 class="section-title">2 — Kernel internals & modules</h2>
+        <p>The Linux kernel includes subsystems: process scheduler, VFS (virtual filesystem), network stack, memory manager, and driver framework. Kernel modules allow drivers and features to be loaded/unloaded at runtime.</p>
+
+        <h3>Practical module commands</h3>
+        <pre>
+# List loaded kernel modules
+lsmod
+
+# Get module details
+modinfo <module_name>
+
+# Load and unload
+sudo modprobe <module_name>
+sudo modprobe -r <module_name>
+        </pre>
+
+        <h3>Sysctl tuning</h3>
+        <p>Use <code>sysctl</code> to adjust kernel parameters at runtime (e.g., networking buffers, swappiness).</p>
+        <pre>
+# View a parameter
+sysctl net.ipv4.ip_forward
+
+# Temporarily change
+sudo sysctl -w net.ipv4.ip_forward=1
+
+# Persist in /etc/sysctl.conf
+echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+        </pre>
+
+        <div class="explain small muted">Careful: kernel tuning affects system stability; test changes in staging first.</div>
+      </section>
+
+      <section class="card long-read" id="userland">
+        <h2 class="section-title">3 — Userland: shells, utilities, init systems</h2>
+        <h3>Shells</h3>
+        <p>Bash is the ubiquitous shell — learn scripting basics: variables, conditionals, loops, functions and I/O redirection. Zsh offers more features and ergonomics; Fish targets a friendlier UX.</p>
+
+        <h3>Init and service managers</h3>
+        <p>Most modern distributions use systemd which manages services, sockets, and mounts. Important systemd commands:</p>
+        <pre>
+# Check status of a service
+sudo systemctl status nginx
+
+# Start/stop/restart
+sudo systemctl start|stop|restart nginx
+
+# Enable at boot
+sudo systemctl enable nginx
+        </pre>
+
+        <h3>System logs</h3>
+        <p>Journalctl reads systemd logs. Traditional logs in /var/log are still used by some services (e.g., Apache).</p>
+        <pre>
+# Show recent system logs
+sudo journalctl -n 200 --no-pager
+
+# Follow logs in real-time
+sudo journalctl -f -u ssh
+        </pre>
+      </section>
+
+      <section class="card long-read" id="fileperm">
+        <h2 class="section-title">4 — Files, permissions and ACLs</h2>
+        <p>Unix permissions are triads: owner, group, others with read/write/execute bits. Use <code>chmod</code>, <code>chown</code>, and <code>chgrp</code> to manage them. For more granular control, use POSIX ACLs via <code>getfacl</code>/<code>setfacl</code>.</p>
+        <pre>
+# Show permissions
+ls -la /etc/passwd
+
+# Change owner
+sudo chown root:root /opt/myapp
+
+# Set ACL for a user
+sudo setfacl -m u:alice:rwx /srv/shared
+        </pre>
+        <div class="explain">Remember: granting write access to unknown users is a common security mistake. Apply least privilege.</div>
+      </section>
+
+      <section class="card long-read" id="processes">
+        <h2 class="section-title">5 — Processes, jobs and scheduling</h2>
+        <p>Use <code>ps</code>, <code>top</code>, <code>htop</code>, and <code>nice</code>/<code>renice</code> to view and manage processes. Background jobs are controlled with <code>&</code>, <code>fg</code>, and <code>bg</code>.</p>
+        <pre>
+# List all processes
+ps aux | less
+
+# Interactive top-like monitor
+htop
+
+# Set scheduler niceness
+sudo nice -n 10 /usr/bin/longtask
+        </pre>
+        <div class="explain">Troubleshoot high CPU or memory by checking process trees and open files (see <code>lsof</code>).</div>
+      </section>
+
+      <section class="card long-read" id="networking">
+        <h2 class="section-title">6 — Networking fundamentals</h2>
+        <p>Key commands: <code>ip</code> replaces older <code>ifconfig</code>. Manage routes, interfaces and examine open sockets.</p>
+        <pre>
+# Show interfaces
+ip a
+
+# Show routing table
+ip route
+
+# Check listening ports
+ss -tuln
+        </pre>
+
+        <h3>DNS & resolution</h3>
+        <p>Check <code>/etc/resolv.conf</code>, use <code>dig</code> or <code>nslookup</code> for diagnostics.</p>
+
+        <h3>Firewall</h3>
+        <p>Use nftables (modern) or iptables. Example nftables snippet:</p>
+        <pre>
+sudo nft add table inet myfilter
+sudo nft add chain inet myfilter input { type filter hook input priority 0 \; }
+sudo nft add rule inet myfilter input tcp dport 22 accept
+        </pre>
+      </section>
+
+      <section class="card long-read" id="package">
+        <h2 class="section-title">7 — Package management</h2>
+        <p>Package managers install, update and remove software. Example commands for apt (Debian/Ubuntu) and dnf (Fedora):</p>
+        <pre>
+# Debian / Ubuntu
+sudo apt update
+sudo apt install nginx
+sudo apt upgrade
+
+# Fedora / RHEL
+sudo dnf update
+sudo dnf install httpd
+        </pre>
+        <div class="explain small muted">Use package signing and official repositories to reduce supply-chain risks. Consider tools like apt pinning or repo proxies for enterprise control.</div>
+      </section>
+
+      <section class="card long-read" id="scripting">
+        <h2 class="section-title">8 — Shell scripting fundamentals</h2>
+        <p>Basic script structure with safety checks and logging:</p>
+        <pre>
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+log() { echo "$(date --iso-8601=seconds) - $*"; }
+
+main() {
+  log "Starting job"
+  # your commands here
+  log "Done"
+}
+
+main "$@"
+        </pre>
+        <div class="explain">Use <code>set -euo pipefail</code> to reduce silent failures and make your scripts robust. For complex automation, consider Python or Ansible.</div>
+      </section>
+
+      <section class="card long-read" id="security">
+        <h2 class="section-title">9 — Basic Linux security & hardening</h2>
+        <p>Security is layered: network controls, host hardening, identity & access management, monitoring and incident response.</p>
+
+        <h3>Quick hardening checklist</h3>
+        <ul class="list">
+          <li>Keep packages updated and enable unattended security updates where appropriate.</li>
+          <li>Use SSH keys and disable password auth for SSH for admin accounts: <code>/etc/ssh/sshd_config</code>.</li>
+          <li>Disable or firewall off unnecessary services.</li>
+          <li>Install and configure auditd and centralized logging/monitoring (ELK/Graylog/Datadog).</li>
+          <li>Enable SELinux or AppArmor where available and enforce policies.</li>
+          <li>Use disk encryption (LUKS) for sensitive hosts and backups.</li>
+        </ul>
+
+        <h3>Detecting compromise</h3>
+        <p>Watch for: unexpected processes, unusual network connections, new user accounts, modified binaries, unexpected scheduled jobs, and changes to firewall rules. EDR/OSQuery/Velociraptor are useful for endpoint detection.</p>
+      </section>
+
+      <section class="card long-read" id="backups">
+        <h2 class="section-title">10 — Backups and recovery</h2>
+        <p>Backups are a core part of reliability and security. Use multiple retention points, test restores regularly, and keep copies offline or immutable to withstand ransomware.</p>
+        <pre>
+# Simple tar-based backup
+tar -czvf /backup/home-$(date +%F).tar.gz /home
+
+# Use rsync for remote backups
+rsync -avz /srv/data backup@backupserver:/backups/
+        </pre>
+        <div class="explain">Consider dedicated backup software (Borg, Restic, Duplicity) which support deduplication and encryption.</div>
+      </section>
+
+      <section class="card long-read" id="labs">
+        <h2 class="section-title">11 — Hands-on labs (step-by-step)</h2>
+
+        <h3>Lab A — Create a VM and install Ubuntu Server</h3>
+        <ol class="list">
+          <li>Download the Ubuntu Server ISO and create a VM (VirtualBox / VMware / QEMU).</li>
+          <li>Allocate at least 2GB RAM and 20GB disk for practice.</li>
+          <li>Install SSH server during setup to enable remote access.</li>
+          <li>After boot, create a non-root user and enable sudo.</li>
+        </ol>
+
+        <h3>Lab B — Build a simple web server</h3>
+        <ol class="list">
+          <li>Install Nginx: <code>sudo apt install nginx</code>.</li>
+          <li>Place a test file in <code>/var/www/html/index.html</code> and reload service.</li>
+          <li>Check with <code>curl http://localhost</code> from the VM and from the host (adjust firewall).</li>
+        </ol>
+
+        <h3>Lab C — Basic monitoring pipeline</h3>
+        <ol class="list">
+          <li>Install Filebeat or collectd to ship logs to an ELK/Opensearch stack (local or cloud trial).</li>
+          <li>Create a small dashboard showing CPU, memory, and nginx access logs.</li>
+        </ol>
+
+        <div class="explain small-muted">All labs should be run in isolated networks or VMs. Take snapshots before trying risky commands and keep notes of steps performed.</div>
+      </section>
+
+      <section class="card long-read" id="troubleshooting">
+        <h2 class="section-title">12 — Troubleshooting recipes</h2>
+        <p>Common problems and how to triage:</p>
+        <ul class="list">
+          <li><strong>High CPU:</strong> use <code>top</code> or <code>htop</code> to find culprit processes; check process tree <code>pstree -p</code>.</li>
+          <li><strong>Disk full:</strong> <code>df -h</code> then <code>du -sh *</code> to find large directories; check <code>/var/log</code>.</li>
+          <li><strong>Service failing to start:</strong> check <code>sudo journalctl -u servicename -b</code> and <code>systemctl status servicename</code>.</li>
+          <li><strong>Network unreachable:</strong> verify <code>ip a</code>, <code>ip route</code>, and test with <code>ping</code> and <code>traceroute</code>.</li>
+        </ul>
+      </section>
+
+      <section class="card long-read" id="faq">
+        <h2 class="section-title">13 — FAQ & common pitfalls</h2>
+        <dl class="faq">
+          <dt>Q: Should I use sudo or su?</dt>
+          <dd>A: Prefer sudo for single commands to limit root shell exposure. Use <code>sudo -i</code> if you need a persistent root environment.</dd>
+
+          <dt>Q: How to safely edit system files?</dt>
+          <dd>A: Use <code>sudo cp /etc/file /etc/file.bak</code> before editing. Use editors like vim or nano and validate syntax (e.g., <code>sshd -t</code> after updating sshd_config).</dd>
+
+          <dt>Q: Is Linux hard to learn?</dt>
+          <dd>A: It has a learning curve, but learning the core commands and patterns unlocks powerful automation and troubleshooting skills. Start with simple tasks and build up.</dd>
+        </dl>
+      </section>
+
+      <section class="card long-read" id="glossary">
+        <h2 class="section-title">14 — Glossary (quick reference)</h2>
+        <dl class="glossary">
+          <dt>Kernel</dt><dd>Core part of the OS that manages hardware and system resources.</dd>
+          <dt>Daemon</dt><dd>Background service process (e.g., sshd, cron).</dd>
+          <dt>Package manager</dt><dd>Tool to install/remove/update software (apt, dnf, pacman).</dd>
+          <dt>Process</dt><dd>Running instance of a program with its own memory space.</dd>
+          <dt>Mount</dt><dd>Attach filesystem to the directory tree (mount point).</dd>
+        </dl>
+      </section>
+
+      <section class="card long-read" id="cheatsheet">
+        <h2 class="section-title">15 — Cheat sheet (quick commands)</h2>
+        <pre>
+# Files & Navigation
+ls -la
+cd /path/to/dir
+pwd
+
+# File ops
+cp src dst
+mv src dst
+rm -i file
+
+# Permissions & ownership
+chmod 644 file
+chown user:group file
+
+# Processes
+ps aux | grep app
+top
+htop
+
+# Networking
+ip a
+ss -tuln
+ping 8.8.8.8
+traceroute example.com
+
+# Systemd & logs
+sudo systemctl status nginx
+sudo journalctl -u nginx -f
+
+# Disk
+df -h
+du -sh /var/log/*
+
+# Archival & backup
+tar -czvf backup.tgz folder/
+rsync -avz /srv/data backup:/backups/
+
+# Scripting
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Package (Debian)
+sudo apt update && sudo apt install <package>
+        </pre>
+      </section>
+
+      <section class="card long-read" id="advanced">
+        <h2 class="section-title">16 — Advanced topics (paths to continue)</h2>
+        <p>Once comfortable with basics, explore:</p>
+        <ul class="list">
+          <li>Containers & orchestration: Docker, Podman, Kubernetes.</li>
+          <li>Infrastructure as Code: Terraform, Ansible.</li>
+          <li>Kernel tuning & eBPF for observability (bcc, bpftrace).</li>
+          <li>Security engineering: SELinux/AppArmor policies, OS hardening guides, threat hunting.</li>
+          <li>Performance: profiling CPU/memory I/O (perf, iostat, pidstat).</li>
+        </ul>
+        <div class="explain">These areas are deep — pick one and build a project (e.g., deploy a containerized web app with CI/CD pipeline) to learn holistically.</div>
+      </section>
+
+      <section class="card long-read" id="closing">
+        <h2 class="section-title">17 — Final notes & next steps</h2>
+        <p>Practice is the fastest path to mastery. Build small projects: host a static site, automate backups, or create monitoring dashboards. Keep notes of commands and failures — they become your personal reference.</p>
+        <div class="explain">If you want, export the markdown copy (button above) and import into your learning notes or LMS.</div>
+      </section>
+
+    </article>
+
+    <aside class="sidebar">
+      <div class="card">
+        <h3>Quick Links</h3>
+        <ul class="list">
+          <li><a href="#overview">Module overview</a></li>
+          <li><a href="#osbasics">OS fundamentals</a></li>
+          <li><a href="#kernelinternals">Kernel internals</a></li>
+          <li><a href="#userland">Shell & systemd</a></li>
+          <li><a href="#networking">Networking</a></li>
+          <li><a href="#labs">Hands-on labs</a></li>
+          <li><a href="#cheatsheet">Cheat sheet</a></li>
+          <li><a href="#advanced">Advanced topics</a></li>
+        </ul>
       </div>
-    </section>
 
-    <!-- Table of contents -->
-    <section class="card long-read" aria-labelledby="toc">
-      <h2 id="toc" class="section-title">Table of Contents</h2>
-      <ol class="list">
-        <li>Introduction to Linux</li>
-        <li>Introduction to Operating Systems</li>
-        <li>Understanding Linux — Components, Features & Architecture</li>
-        <li>Linux Distributions</li>
-        <li>Linux Editors</li>
-        <li>Linux vs Windows</li>
-        <li>Linux vs macOS</li>
-        <li>Common Linux Commands</li>
-        <li>Why Linux?</li>
-        <li>Merits and Demerits of Linux</li>
-        <li>Conclusion</li>
-      </ol>
-    </section>
+      <div class="card" style="margin-top:12px">
+        <h3>Mini Quiz (self-check — 10 Q)</h3>
+        <div class="q-card">
+          <h4>1) Which command shows currently listening TCP ports?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="mq1" value="a"> ss -tuln</label>
+            <label><input type="radio" name="mq1" value="b"> ls -la</label>
+            <label><input type="radio" name="mq1" value="c"> top</label>
+          </div>
+        </div>
 
-    <!-- Fun fact -->
-    <section class="card long-read" aria-labelledby="funfact">
-      <h2 id="funfact" class="section-title">Fun Fact</h2>
-      <p>90% of Hollywood's special effects are made on Linux.</p>
-    </section>
+        <div class="q-card">
+          <h4>2) Which file controls systemd units autostart at boot?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="mq2" value="a"> /etc/fstab</label>
+            <label><input type="radio" name="mq2" value="b"> /etc/systemd/system</label>
+            <label><input type="radio" name="mq2" value="c"> /var/log</label>
+          </div>
+        </div>
 
-    <!-- Operating Systems intro -->
-    <section class="card long-read" aria-labelledby="osintro">
-      <h2 id="osintro" class="section-title">Introduction to Operating Systems</h2>
-      <p>
-        An operating system is the most important software that runs on a computer. It manages the computer's memory and processes, as well as all of its software and hardware.
-        It also allows you to communicate with the computer without knowing the machine language directly.
-      </p>
-    </section>
+        <div style="display:flex;gap:8px">
+          <button class="btn primary" id="gradeMini">Grade Mini Quiz</button>
+          <button class="btn" id="resetMini">Reset</button>
+        </div>
 
-    <!-- What is Linux -->
-    <section class="card long-read" aria-labelledby="whatlinux">
-      <h2 id="whatlinux" class="section-title">What is Linux?</h2>
-      <p>
-        Linux is a Unix-like operating system originally created by Linus Torvalds with contributions from a global community.
-        Unix is a multitasking, multi-user operating system first developed in the 1970s at Bell Labs.
-        Linux and Unix aim for POSIX compatibility; many servers and devices run Linux variants — for example, Android and some e-readers.
-      </p>
-    </section>
-
-    <!-- Components -->
-    <section class="card long-read" aria-labelledby="components">
-      <h2 id="components" class="section-title">Components of a Linux System</h2>
-      <ul class="list">
-        <li><strong>Kernel</strong> — the core part of Linux responsible for low-level tasks and managing hardware.</li>
-        <li><strong>System Libraries</strong> — functions and libraries applications use to interact with the kernel.</li>
-        <li><strong>System Utilities</strong> — programs that provide user-level functionality and system management tools.</li>
-      </ul>
-    </section>
-
-    <!-- Features -->
-    <section class="card long-read" aria-labelledby="features">
-      <h2 id="features" class="section-title">Basic Features of Linux</h2>
-      <ul class="list">
-        <li><strong>Portable</strong> — runs on many hardware platforms.</li>
-        <li><strong>Open source</strong> — source code is freely available and community-developed.</li>
-        <li><strong>Multiprogramming</strong> — can run many applications simultaneously.</li>
-        <li><strong>Security</strong> — provides user authentication, file permissions and encryption support.</li>
-      </ul>
-    </section>
-
-    <!-- Architecture -->
-    <section class="card long-read" aria-labelledby="architecture">
-      <h2 id="architecture" class="section-title">Architecture of Linux</h2>
-      <p>The Linux architecture contains multiple layers:</p>
-      <ul class="list">
-        <li><strong>Hardware layer</strong> — physical components (CPU, RAM, disk, peripherals).</li>
-        <li><strong>Kernel</strong> — interacts directly with hardware and provides services to upper layers.</li>
-        <li><strong>Shell</strong> — interprets user commands and requests kernel services.</li>
-        <li><strong>Utilities</strong> — user-level programs that provide most of the OS functionality.</li>
-      </ul>
-      <div class="explain"><strong>Did you know?</strong> Linus Torvalds originally considered naming the project "Freax" before choosing "Linux".</div>
-    </section>
-
-    <!-- Kernel -->
-    <section class="card long-read" aria-labelledby="kernel">
-      <h2 id="kernel" class="section-title">The Kernel</h2>
-      <p>
-        The kernel interacts with hardware in machine-level operations. It handles file management, data transfer, memory management, scheduling, and interrupt handling.
-        It is the central controller of the operating system.
-      </p>
-    </section>
-
-    <!-- User Interface -->
-    <section class="card long-read" aria-labelledby="ui">
-      <h2 id="ui" class="section-title">User Interface of Linux</h2>
-      <p>
-        Linux offers both Command-Line Interfaces (CLI) and Graphical User Interfaces (GUI). CLI shells are text-based and powerful for scripting and administration.
-        On desktops, GUIs (often based on the X Window System or Wayland) provide user-friendly graphical environments.
-      </p>
-    </section>
-
-    <!-- Distributions -->
-    <section class="card long-read" aria-labelledby="distros">
-      <h2 id="distros" class="section-title">Linux Distributions</h2>
-      <p>
-        Distributions (distros) are packaged versions of Linux that include the kernel, utilities, package managers and desktop environments.
-        Examples: Ubuntu, Debian, Fedora, CentOS/Rocky, Arch Linux. Choose a distro depending on stability, support, and package philosophies.
-      </p>
-    </section>
-
-    <!-- Editors -->
-    <section class="card long-read" aria-labelledby="editors">
-      <h2 id="editors" class="section-title">Linux Editors</h2>
-      <p>Common editors available on Linux include:</p>
-      <ul class="list">
-        <li>Vi / Vim — powerful terminal editor</li>
-        <li>Gedit — simple GUI editor</li>
-        <li>Nano — easy terminal editor for beginners</li>
-        <li>GNU Emacs — extensible and powerful editor</li>
-        <li>Kate / KWrite — KDE text editors</li>
-        <li>Other modern editors like VS Code and Sublime are also widely used</li>
-      </ul>
-    </section>
-
-    <!-- Comparisons -->
-    <section class="card long-read" aria-labelledby="compare">
-      <h2 id="compare" class="section-title">Linux vs Windows / macOS</h2>
-      <h3>Linux vs Windows</h3>
-      <p>
-        Linux is freely available and open-source; Windows is usually distributed as a commercial product with licensing.
-        Update strategies and software ecosystems differ between them; Linux often provides more granular package updates and strong backward compatibility for many server tools.
-      </p>
-
-      <h3>Linux vs macOS</h3>
-      <ul class="list">
-        <li><strong>Hardware:</strong> macOS runs on Apple hardware only; Linux can run on wide range of hardware.</li>
-        <li><strong>Customizability:</strong> Linux is highly customizable; macOS is curated for consistency.</li>
-        <li><strong>Security:</strong> Both are secure in different ways; administration and update models differ.</li>
-      </ul>
-    </section>
-
-    <!-- Commands -->
-    <section class="card long-read" aria-labelledby="commands">
-      <h2 id="commands" class="section-title">Common Linux Commands</h2>
-      <p>Some essential commands:</p>
-      <ul class="list">
-        <li><code>ls</code> — list files and directories</li>
-        <li><code>mv</code> — move or rename files</li>
-        <li><code>mkdir</code> — create directories</li>
-        <li><code>rmdir</code> or <code>rm -r</code> — remove directories</li>
-        <li><code>pwd</code> — print working directory</li>
-        <li><code>cd</code> — change directory</li>
-        <li><code>cat</code> — view file contents or create small files</li>
-        <li><code>cp</code> — copy files</li>
-        <li><code>rm</code> — remove files (use with care)</li>
-        <li><code>locate</code> — find files quickly (index-based)</li>
-        <li><code>sudo</code> — run commands as administrator</li>
-        <li><code>head</code> / <code>tail</code> — view start/end of files</li>
-      </ul>
-    </section>
-
-    <!-- Why Linux -->
-    <section class="card long-read" aria-labelledby="why">
-      <h2 id="why" class="section-title">Why Linux?</h2>
-      <ul class="list">
-        <li>Free or low-cost</li>
-        <li>Stable and reliable for servers</li>
-        <li>Powerful and flexible for developers and administrators</li>
-        <li>Strong security model and permission system</li>
-      </ul>
-    </section>
-
-    <!-- Merits/Demerits -->
-    <section class="card long-read" aria-labelledby="proscons">
-      <h2 id="proscons" class="section-title">Merits and Demerits of Linux</h2>
-      <ul class="list">
-        <li>Works well on older hardware and in constrained environments</li>
-        <li>Excellent for programming, servers and automation</li>
-        <li>Steeper learning curve for beginners compared with consumer OSes</li>
-        <li>Gaming compatibility has improved but some titles remain better supported on Windows</li>
-      </ul>
-    </section>
-
-    <!-- Conclusion -->
-    <section class="card long-read" aria-labelledby="conclusion">
-      <h2 id="conclusion" class="section-title">Conclusion</h2>
-      <p>
-        When to use Linux and when to prefer another OS depends on the user and the task.
-        Linux is ideal for programmers, servers, and power users; other operating systems may be better for specific consumer workflows or specialized software.
-      </p>
-    </section>
-
-    <!-- Download notes -->
-    <section class="card" aria-labelledby="notes">
-      <h2 id="notes" class="section-title">Download Notes</h2>
-      <p class="muted">Click to download a plain-text version of this lesson.</p>
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary" id="downloadNotes">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated read time: ~10–20 mins</span></div>
-      </div>
-    </section>
-
-    <!-- QUIZ GATE -->
-    <section class="card" aria-labelledby="quiz">
-      <h2 id="quiz" class="section-title">Lesson 1 Quiz — Introduction to Linux</h2>
-      <p class="muted">Click <strong>Attempt Quiz</strong> when ready — the quiz is gated so students can finish reading first. The quiz has 10 questions; incorrect answers will be highlighted and explanations shown.</p>
-
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
-        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
+        <div id="miniResult" style="margin-top:12px" class="small muted"></div>
       </div>
 
-      <form id="quizForm" style="display:none;margin-top:14px;">
-        <!-- Q1 -->
-        <div class="q-card">
-          <h4>1) What is the primary role of an operating system?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q1" value="a"/> To make the computer display nicer graphics</label>
-            <label><input type="radio" name="q1" value="b"/> To manage memory, processes, hardware and provide a platform for applications</label>
-            <label><input type="radio" name="q1" value="c"/> To act as a web browser</label>
-          </div>
-        </div>
+      <div class="card" style="margin-top:12px">
+        <h3>Lab safety reminder</h3>
+        <p class="small muted">Always run experiments on non-production systems with snapshots enabled. Never test malware or intrusive network scans on networks you do not own or have written permission to test.</p>
+      </div>
 
-        <!-- Q2 -->
-        <div class="q-card">
-          <h4>2) Who is credited with creating Linux?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q2" value="a"/> Linus Torvalds</label>
-            <label><input type="radio" name="q2" value="b"/> Bill Gates</label>
-            <label><input type="radio" name="q2" value="c"/> Steve Jobs</label>
-          </div>
-        </div>
-
-        <!-- Q3 -->
-        <div class="q-card">
-          <h4>3) What is the core component of Linux that interacts with hardware?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q3" value="a"/> Shell</label>
-            <label><input type="radio" name="q3" value="b"/> Kernel</label>
-            <label><input type="radio" name="q3" value="c"/> Text editor</label>
-          </div>
-        </div>
-
-        <!-- Q4 -->
-        <div class="q-card">
-          <h4>4) Which command lists files and directories in the current folder?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q4" value="a"/> pwd</label>
-            <label><input type="radio" name="q4" value="b"/> ls</label>
-            <label><input type="radio" name="q4" value="c"/> cd</label>
-          </div>
-        </div>
-
-        <!-- Q5 -->
-        <div class="q-card">
-          <h4>5) Which command would you use to run a command with administrative privileges?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q5" value="a"/> runas</label>
-            <label><input type="radio" name="q5" value="b"/> sudo</label>
-            <label><input type="radio" name="q5" value="c"/> admin</label>
-          </div>
-        </div>
-
-        <!-- Q6 -->
-        <div class="q-card">
-          <h4>6) Which editor is a simple terminal-based editor suited for beginners?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q6" value="a"/> Vim</label>
-            <label><input type="radio" name="q6" value="b"/> Nano</label>
-            <label><input type="radio" name="q6" value="c"/> Emacs</label>
-          </div>
-        </div>
-
-        <!-- Q7 -->
-        <div class="q-card">
-          <h4>7) Which of these is NOT a Linux distribution?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q7" value="a"/> Ubuntu</label>
-            <label><input type="radio" name="q7" value="b"/> Fedora</label>
-            <label><input type="radio" name="q7" value="c"/> Windows</label>
-          </div>
-        </div>
-
-        <!-- Q8 -->
-        <div class="q-card">
-          <h4>8) What does 'open source' mean for Linux?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q8" value="a"/> The source code is available for anyone to view, modify and distribute</label>
-            <label><input type="radio" name="q8" value="b"/> It is free of any bugs</label>
-            <label><input type="radio" name="q8" value="c"/> It can only be used on servers</label>
-          </div>
-        </div>
-
-        <!-- Q9 -->
-        <div class="q-card">
-          <h4>9) Which command shows your current working directory?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q9" value="a"/> ls</label>
-            <label><input type="radio" name="q9" value="b"/> pwd</label>
-            <label><input type="radio" name="q9" value="c"/> whoami</label>
-          </div>
-        </div>
-
-        <!-- Q10 -->
-        <div class="q-card">
-          <h4>10) Which Linux feature is especially useful for servers and developers?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q10" value="a"/> High customizability and strong command-line tooling</label>
-            <label><input type="radio" name="q10" value="b"/> Built-in social media apps</label>
-            <label><input type="radio" name="q10" value="c"/> Mandatory touchscreen support</label>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
-          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
-          <button type="button" class="btn" id="resetQuiz">Reset</button>
-          <span id="quizResult" class="result" aria-live="polite"></span>
-        </div>
-
-      </form>
-    </section>
-
-    <footer class="container">
-      <p>© Learning Playground – Introduction to Linux • Lesson 1</p>
-    </footer>
+      <div class="card" style="margin-top:12px">
+        <h3>Glossary (mini)</h3>
+        <ul class="list">
+          <li><strong>SSH:</strong> Secure Shell, remote command execution protocol.</li>
+          <li><strong>MFA:</strong> Multi-factor authentication — strongly recommended for admin accounts.</li>
+          <li><strong>EDR:</strong> Endpoint detection and response tools for threat detection.</li>
+        </ul>
+      </div>
+    </aside>
   </main>
 
+  <footer class="container">
+    <p class="small muted">© Learning Playground — Linux Module • Use for training and authorized labs only</p>
+  </footer>
+
+  <!-- TTS Control Bar -->
+  <div id="ttsBar" class="tts-bar" role="region" aria-label="Text to Speech Controls">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" class="small" title="Pause">⏸</button>
+    <button id="ttsStop" class="small" title="Stop">⏹</button>
+
+    <span class="label">Voice</span>
+    <select id="ttsVoices" aria-label="Select voice"></select>
+
+    <span class="label">Rate</span>
+    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <span class="label">Pitch</span>
+    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+  </div>
+
   <script>
-    /* Theme toggle (persist) */
+    /* Theme toggle */
     const themeBtn = document.getElementById('toggleTheme');
-    const keyTheme = 'lesson1-theme';
+    const themeKey = 'lesson2-theme';
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const applyTheme = (mode) => {
       if (mode === 'light') {
@@ -422,201 +565,209 @@
         document.documentElement.style.setProperty('--card','#ffffff');
         document.documentElement.style.setProperty('--text','#0b1220');
         document.documentElement.style.setProperty('--muted','#4a5875');
-        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
+        document.documentElement.style.setProperty('--glass','rgba(0,0,0,0.03)');
       } else {
         document.documentElement.style.setProperty('--bg','#0b1220');
         document.documentElement.style.setProperty('--card','#111a2e');
         document.documentElement.style.setProperty('--text','#e7eefc');
         document.documentElement.style.setProperty('--muted','#8aa0c3');
-        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+        document.documentElement.style.setProperty('--glass','rgba(255,255,255,0.03)');
       }
     };
-    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
-    applyTheme(storedTheme);
+    const stored = localStorage.getItem(themeKey) || (prefersDark ? 'dark' : 'dark');
+    applyTheme(stored);
     themeBtn.addEventListener('click', () => {
-      const cur = localStorage.getItem(keyTheme) || storedTheme;
+      const cur = localStorage.getItem(themeKey) || stored;
       const next = cur === 'dark' ? 'light' : 'dark';
-      localStorage.setItem(keyTheme, next);
+      localStorage.setItem(themeKey, next);
       applyTheme(next);
     });
 
-    /* Download notes as text (Linux lesson) */
-    function downloadNotes() {
-      const title = 'Lesson1_Introduction_to_Linux_Notes.txt';
-      const content = [
-        'Lesson 1 – Introduction to Linux',
-        '',
-        'Table of Contents',
-        '1. Introduction to Linux',
-        '2. Introduction to Operating Systems',
-        '3. Understanding Linux — Components, Features & Architecture',
-        '4. Linux Distributions',
-        '5. Linux Editors',
-        '6. Linux vs Windows',
-        '7. Linux vs macOS',
-        '8. Common Linux Commands',
-        '9. Why Linux?',
-        '10. Merits and Demerits of Linux',
-        '11. Conclusion',
-        '',
-        'Fun Fact:',
-        '90% of Hollywood\'s special effects are made on Linux.',
-        '',
-        'What is Linux?',
-        'Linux is a Unix-like OS created by Linus Torvalds with community contributions.',
-        '',
-        'Components:',
-        '- Kernel (core), System Libraries, System Utilities',
-        '',
-        'Features:',
-        '- Portable, Open source, Multiprogramming, Secure',
-        '',
-        'Common Commands:',
-        'ls, mv, mkdir, rmdir, pwd, cd, cat, cp, rm, locate, sudo, head',
-        '',
-        'Editors:',
-        'Vim, Nano, Emacs, Gedit, Kate, VS Code',
-        '',
-        'Why Linux?',
-        'Free, stable, reliable, powerful, secure',
-        '',
-        'Conclusion:',
-        'Use the OS that fits your needs; Linux suits developers, servers and power-users.'
-      ].join('\\n');
-      const blob = new Blob([content], {type:'text/plain'});
+    /* Download notes as text */
+    document.getElementById('downloadNotes').addEventListener('click', () => {
+      const nodes = document.querySelectorAll('article h1, article h2, article h3, article p, article li');
+      const lines = [];
+      nodes.forEach(n => {
+        const tag = n.tagName.toLowerCase();
+        const text = n.innerText.trim();
+        if (!text) return;
+        if (tag === 'h1') lines.push('\n' + text + '\n' + '='.repeat(60));
+        else if (tag === 'h2') lines.push('\n' + text + '\n' + '-'.repeat(60));
+        else lines.push(text);
+      });
+      const blob = new Blob([lines.join('\n')], {type:'text/plain'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = title; document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-    }
-    document.getElementById('downloadNotes').addEventListener('click', downloadNotes);
-    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
-
-    /* Quiz logic */
-    const answers = { q1:'b', q2:'a', q3:'b', q4:'b', q5:'b', q6:'b', q7:'c', q8:'a', q9:'b', q10:'a' };
-    const explanations = {
-      q1: 'An operating system manages hardware, memory, processes and provides a platform for applications.',
-      q2: 'Linus Torvalds started the Linux project and coordinated early development.',
-      q3: 'The kernel is the core component that interacts directly with hardware.',
-      q4: 'The "ls" command lists files and directories; "pwd" prints the current directory.',
-      q5: '"sudo" is used to run commands with administrative (superuser) privileges.',
-      q6: 'Nano is a simple, beginner-friendly terminal editor. Vim and Emacs are more powerful but steeper.',
-      q7: 'Windows is not a Linux distribution — Ubuntu and Fedora are examples of distributions.',
-      q8: 'Open source means the source code is available to view, modify and redistribute under its license.',
-      q9: '"pwd" prints the current working directory path.',
-      q10: 'Linux is highly customizable and has strong command-line tooling, making it ideal for servers and developers.'
-    };
-    const form = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitQuiz');
-    const resetBtn = document.getElementById('resetQuiz');
-    const resultSpan = document.getElementById('quizResult');
-    const scoreKey = 'lesson1-linux-score';
-
-    const attemptBtn = document.getElementById('attemptBtn');
-    attemptBtn.addEventListener('click', () => {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      localStorage.setItem('lesson1-attempted', '1');
-      const saved = localStorage.getItem(scoreKey);
-      if (saved) {
-        const display = document.getElementById('quizResult');
-        display.textContent = `Previous Score: ${saved}%`;
-        display.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
-      }
-      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+      const a = document.createElement('a'); a.href = url; a.download = 'Lesson2_Linux_Expanded_Notes.txt'; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 800);
     });
 
-    function grade() {
-      let score = 0; let total = Object.keys(answers).length;
-      const missed = [];
-      // clear previous per-question explanations
-      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
-      for (const q of Object.keys(answers)) {
-        const el = form.querySelector(`input[name="${q}"]:checked`);
-        // clear previous highlight
-        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-        if (!el) {
-          missed.push(q);
-          continue;
-        }
-        if (el.value === answers[q]) {
-          score++;
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
-        } else {
-          missed.push(q);
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
-        }
+    /* Copy Markdown */
+    document.getElementById('copyMarkdown').addEventListener('click', async () => {
+      const nodes = document.querySelectorAll('article h1, article h2, article h3, article p, article li');
+      let md = '';
+      nodes.forEach(n => {
+        const tag = n.tagName.toLowerCase();
+        const txt = n.innerText.trim();
+        if (!txt) return;
+        if (tag === 'h1') md += `# ${txt}\n\n`;
+        else if (tag === 'h2') md += `## ${txt}\n\n`;
+        else if (tag === 'h3') md += `### ${txt}\n\n`;
+        else if (tag === 'li') md += `- ${txt}\n`;
+        else md += `${txt}\n\n`;
+      });
+      try { await navigator.clipboard.writeText(md); alert('Copied lesson content as Markdown to clipboard.'); }
+      catch(e){ alert('Could not copy to clipboard.'); }
+    });
+
+    /* Mini Quiz grading */
+    const miniAnswers = {mq1:'a', mq2:'b'};
+    document.getElementById('gradeMini').addEventListener('click', () => {
+      let score = 0, total = 2;
+      const resultEl = document.getElementById('miniResult');
+      for (let i=1;i<=2;i++){
+        const name = 'mq' + i;
+        const sel = document.querySelector(`input[name="${name}"]:checked`);
+        if (sel && sel.value === miniAnswers[name]) score++;
       }
-      const pct = Math.round((score/total)*100);
-      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
-      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
-      localStorage.setItem(scoreKey, pct);
-      // show explanations inline for missed questions
-      // remove any existing reviewBox
-      const existingBox = document.getElementById('reviewBox'); if (existingBox) existingBox.remove();
-      if (missed.length) {
-        const review = document.createElement('div');
-        review.id = 'reviewBox';
-        review.style.marginTop = '12px';
-        review.style.padding = '12px';
-        review.style.border = '1px solid rgba(255,255,255,0.06)';
-        review.style.borderRadius = '10px';
-        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
-        let inner = '<strong>Review (missed questions)</strong><ul>';
-        missed.forEach(m => {
-          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
-          // also append short explanation under the question
-          const qCard = form.querySelector(`input[name="${m}"]`).closest('.q-card');
-          if (qCard) {
-            const ex = document.createElement('div');
-            ex.className = 'explain';
-            ex.textContent = explanations[m];
-            qCard.appendChild(ex);
-          }
+      const pct = Math.round((score/total) * 100);
+      resultEl.textContent = `Score: ${score}/${total} (${pct}%)`;
+      resultEl.style.color = pct >= 80 ? '#7ef0c1' : pct >= 60 ? '#ffd66e' : '#ff7e93';
+      document.getElementById('gradeMini').disabled = true;
+    });
+    document.getElementById('resetMini').addEventListener('click', () => {
+      document.querySelectorAll('input[name^="mq"]').forEach(i => i.checked = false);
+      document.getElementById('miniResult').textContent = '';
+      document.getElementById('gradeMini').disabled = false;
+    });
+
+    /* TTS module (Web Speech API) */
+    (function () {
+      if (!('speechSynthesis' in window)) {
+        console.warn('TTS not supported in this browser.');
+        const bar = document.getElementById('ttsBar'); if (bar) bar.style.display = 'none';
+        return;
+      }
+
+      const playBtn = document.getElementById('ttsPlay');
+      const pauseBtn = document.getElementById('ttsPause');
+      const stopBtn = document.getElementById('ttsStop');
+      const voicesSelect = document.getElementById('ttsVoices');
+      const rateInput = document.getElementById('ttsRate');
+      const pitchInput = document.getElementById('ttsPitch');
+      const autoBtn = document.getElementById('ttsToggleAuto');
+
+      const contentRoot = document.querySelector('main') || document.body;
+      let voices = [];
+      let sentences = [];
+      let idx = 0;
+
+      function populateVoices(){
+        voices = speechSynthesis.getVoices();
+        voicesSelect.innerHTML = '';
+        voices.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.voiceURI;
+          opt.textContent = `${v.name} (${v.lang})${v.default ? ' — default' : ''}`;
+          voicesSelect.appendChild(opt);
         });
-        inner += '</ul>';
-        review.innerHTML = inner;
-        form.appendChild(review);
-        // friendly popup
-        setTimeout(()=>{ alert('You missed some questions. Explanations have been added under the missed questions.'); }, 80);
-      } else {
-        const perfect = document.createElement('div');
-        perfect.id = 'reviewBox';
-        perfect.style.marginTop = '12px';
-        perfect.style.padding = '12px';
-        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
-        perfect.style.borderRadius = '10px';
-        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
-        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
-        form.appendChild(perfect);
+        const saved = localStorage.getItem('lesson2.voice');
+        if (saved) voicesSelect.value = saved;
       }
-      submitBtn.disabled = true;
-    }
+      populateVoices();
+      if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
 
-    function resetQuiz() {
-      form.reset();
-      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-      resultSpan.textContent = '';
-      submitBtn.disabled = false;
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-      localStorage.removeItem(scoreKey);
-    }
-
-    submitBtn.addEventListener('click', grade);
-    resetBtn.addEventListener('click', resetQuiz);
-
-    // Restore previous attempt if user already attempted
-    const prev = localStorage.getItem(scoreKey);
-    if (localStorage.getItem('lesson1-attempted')) {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      if (prev) {
-        resultSpan.textContent = `Previous Score: ${prev}%`;
-        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
+      function getText(){
+        if (!contentRoot) return document.body.innerText;
+        const nodes = contentRoot.querySelectorAll('h1,h2,h3,h4,p,li');
+        return Array.from(nodes).map(n => n.innerText.trim()).filter(Boolean).join('.\n');
       }
-    }
+      function buildSentences(text){
+        return text.split(/(?<=[.?!])\s+/);
+      }
+
+      function speakAll(){
+        cancel();
+        const raw = getText();
+        sentences = buildSentences(raw);
+        idx = 0;
+        speakNext();
+      }
+      function speakNext(){
+        if (idx >= sentences.length) return;
+        const s = sentences[idx++];
+        const u = new SpeechSynthesisUtterance(s);
+        const selURI = voicesSelect.value;
+        const sel = voices.find(v => v.voiceURI === selURI) || voices.find(v => v.default) || voices[0];
+        if (sel) u.voice = sel;
+        u.rate = parseFloat(rateInput.value);
+        u.pitch = parseFloat(pitchInput.value);
+        u.onstart = () => highlightSentence(s);
+        u.onend = () => { removeHighlights(); setTimeout(()=> speakNext(), 80); };
+        speechSynthesis.speak(u);
+      }
+      function cancel(){ if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
+      function pause(){ if (speechSynthesis.speaking) speechSynthesis.pause(); }
+      function resume(){ if (speechSynthesis.paused) speechSynthesis.resume(); }
+
+      function highlightSentence(sentence){
+        removeHighlights();
+        const root = document.querySelector('.lesson-content');
+        if (!root) return;
+        const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').trim().slice(0, 300);
+        if (!safe) return;
+        const regex = new RegExp(safe);
+        root.innerHTML = root.innerHTML.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
+      }
+      function removeHighlights(){
+        const root = document.querySelector('.lesson-content');
+        if (!root) return;
+        const els = root.querySelectorAll('.tts-highlight');
+        els.forEach(el => { el.outerHTML = el.textContent; });
+      }
+
+      playBtn.addEventListener('click', () => {
+        if (speechSynthesis.paused) return resume();
+        if (speechSynthesis.speaking) return;
+        speakAll();
+        localStorage.setItem('lesson2.voice', voicesSelect.value || '');
+        localStorage.setItem('lesson2.rate', rateInput.value);
+        localStorage.setItem('lesson2.pitch', pitchInput.value);
+      });
+      pauseBtn.addEventListener('click', () => {
+        if (speechSynthesis.speaking) pause();
+        else if (speechSynthesis.paused) resume();
+      });
+      stopBtn.addEventListener('click', () => { cancel(); removeHighlights(); });
+
+      voicesSelect.addEventListener('change', ()=> localStorage.setItem('lesson2.voice', voicesSelect.value));
+      rateInput.addEventListener('change', ()=> localStorage.setItem('lesson2.rate', rateInput.value));
+      pitchInput.addEventListener('change', ()=> localStorage.setItem('lesson2.pitch', pitchInput.value));
+      const savedAuto = localStorage.getItem('lesson2.auto') === 'true';
+      autoBtn.style.opacity = savedAuto ? '1' : '0.6';
+      autoBtn.addEventListener('click', ()=> {
+        const cur = localStorage.getItem('lesson2.auto') === 'true';
+        localStorage.setItem('lesson2.auto', (!cur).toString());
+        autoBtn.style.opacity = (!cur) ? '1' : '0.6';
+      });
+
+      const applySaved = () => {
+        const sv = localStorage.getItem('lesson2.voice');
+        if (sv && voices.find(v=>v.voiceURI===sv)) voicesSelect.value = sv;
+        const sr = localStorage.getItem('lesson2.rate') || rateInput.value;
+        const sp = localStorage.getItem('lesson2.pitch') || pitchInput.value;
+        rateInput.value = sr; pitchInput.value = sp;
+        if (localStorage.getItem('lesson2.auto') === 'true') {
+          try { speakAll(); } catch(e) { console.warn('Auto TTS blocked'); }
+        }
+      };
+
+      let tries = 0;
+      const iv = setInterval(()=> {
+        if (speechSynthesis.getVoices().length) {
+          populateVoices(); applySaved(); clearInterval(iv);
+        } else if (++tries > 30) { applySaved(); clearInterval(iv); }
+      }, 200);
+    })();
   </script>
 </body>
 </html>

@@ -1,547 +1,614 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Lesson 11 – Threat Detection & Response</title>
-
-  <style>
-    :root {
-      --bg: #0b1220;
-      --card: #111a2e;
-      --muted: #8aa0c3;
-      --text: #e7eefc;
-      --accent: #6ea8ff;
-      --accent-2: #7ef0c1;
-      --warning: #ffdf6e;
-      --danger: #ff7e93;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
-    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
-    .container{max-width:1100px;margin:0 auto;padding:18px}
-    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
-    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-    .hero{padding:28px 20px 8px}
-    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
-    .subtitle{color:var(--muted);font-size:15px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
-    .list{margin:0;padding-left:18px}
-    .list li{margin:8px 0}
-    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
-    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
-    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
-    .q-options{display:grid;gap:8px;margin-top:8px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
-    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn.ghost{background:transparent}
-    .result{font-size:18px;font-weight:700}
-    .good{color:var(--accent-2)}
-    .mid{color:var(--warning)}
-    .bad{color:var(--danger)}
-    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
-    .section-title{margin:0 0 8px}
-    .muted{color:var(--muted)}
-    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
-    .meta{display:flex;gap:8px;flex-wrap:wrap}
-    .attempt-btn{margin-top:12px}
-    .long-read{line-height:1.65;font-size:15px}
-    .small{font-size:13px;color:var(--muted)}
-    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    table{width:100%;border-collapse:collapse;margin-top:8px}
-    table th, table td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03)}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lesson 11 — Threat Detection & Response (Expanded Deep Dive) + TTS + Quiz</title>
+<style>
+  :root{
+    --bg:#041028; --card:#0f2236; --muted:#9db7d9; --text:#e9f6ff;
+    --accent:#57a7ff; --accent2:#7ef0c8; --danger:#ff7a7a; --ok:#9ef0b2;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+  body{background:linear-gradient(135deg,var(--bg) 0%, #021427 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+  .container{max-width:1200px;margin:0 auto;padding:20px}
+  header{position:sticky;top:0;background:rgba(2,10,30,0.65);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03);padding:12px 0;z-index:40}
+  .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .badge{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#021024;padding:8px 14px;border-radius:999px;font-weight:800}
+  h1{font-size:clamp(22px,3.6vw,36px);margin:6px 0}
+  .subtitle{color:var(--muted);font-size:14px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);padding:18px;border-radius:12px;margin-top:18px;box-shadow:0 10px 30px rgba(0,0,0,0.45)}
+  .list{padding-left:20px}
+  .list li{margin:8px 0}
+  .muted{color:var(--muted)}
+  .callout{background:linear-gradient(180deg,rgba(126,240,193,0.04),rgba(126,240,193,0.02));border:1px solid rgba(126,240,193,0.08);padding:10px;border-radius:8px}
+  .warn{background:linear-gradient(180deg,rgba(255,123,123,0.04),rgba(255,123,123,0.02));border:1px solid rgba(255,123,123,0.06);padding:10px;border-radius:8px}
+  .controls{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .btn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;color:var(--text);cursor:pointer;font-weight:700}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#021024;border:none}
+  pre{background:rgba(0,0,0,0.15);padding:12px;border-radius:8px;overflow:auto}
+  footer{opacity:.9;padding:30px 0 60px;font-size:13px;color:var(--muted)}
+  .section-sub{color:var(--muted);margin-top:6px;font-size:13px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:980px){.grid{grid-template-columns:1fr}}
+  .quiz .q{margin:12px 0;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02)}
+  .result{margin-top:12px;padding:12px;border-radius:8px}
+  .small{font-size:13px;color:var(--muted)}
+  code{background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:6px}
+  .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(1,6,12,0.88);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:340px}
+  .tts-bar button{background:linear-gradient(45deg,#ff0080,#7928ca);border:none;color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer;min-width:44px}
+  .tts-bar .small{padding:6px 8px;min-width:36px}
+  .tts-bar select,.tts-bar input[type="range"]{background:rgba(255,255,255,0.06);color:#00ffcc;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:8px;font-family:inherit}
+  .tts-highlight{background:rgba(0,255,200,0.15);transition:background 0.2s;padding:0 2px;border-radius:3px}
+  @media (max-width:600px){.tts-bar{left:50%;transform:translateX(-50%);right:auto;bottom:12px;min-width:88%}}
+  .kpi{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .kpi .card{kflex:1;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+</style>
 </head>
 <body>
   <header>
-    <div class="container header-row">
-      <div style="display:flex;align-items:center;gap:12px">
+    <div class="container hdr">
+      <div style="display:flex;gap:12px;align-items:center">
         <span class="badge">Lesson 11</span>
         <div>
-          <strong>Threat Detection & Response — Lesson 11</strong>
-          <div class="small muted">SIEM, IDS/EDR, incident response, hunting and MDR</div>
+          <strong>Threat Detection & Response — Expanded Deep Dive</strong>
+          <div class="subtitle">In-depth explanations: SIEM internals, detection engineering, IR playbooks, threat hunting, MDR considerations, KPIs, legal & forensics, plus TTS and a 10-question quiz.</div>
         </div>
       </div>
-      <div>
-        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" id="downloadNotes">📥 Download Notes</button>
+        <button class="btn primary" id="copyMd">📋 Copy as Markdown</button>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <section class="hero card">
-      <h1 class="title">Threat Detection & Response (TDR)</h1>
-      <p class="subtitle">Detect threats early, respond quickly and reduce impact. This lesson covers key terms (events/alerts/incidents), SIEM, detection techniques, the incident lifecycle, threat hunting, and MDR.</p>
+    <article class="card lesson-content">
 
-      <div class="chips">
-        <span class="chip">SIEM</span>
-        <span class="chip">EDR</span>
-        <span class="chip">SOAR</span>
-        <span class="chip">Threat Hunting</span>
-        <span class="chip">IR</span>
-      </div>
-    </section>
+      <h1>Threat Detection & Response — Full Explanation</h1>
+      <p class="section-sub">This lesson expands the basic definitions into operational guidance: what to log, why SIEM normalization matters, how to build reliable detections, the incident response playbook, threat hunting techniques, how MDR works, what KPIs to track, and legal/forensics considerations.</p>
 
-    <section class="card long-read" aria-labelledby="terms">
-      <h2 id="terms" class="section-title">Important Terms — Event, Alert, Incident</h2>
-      <p><strong>Event</strong> — any logged action or change (login, file write, configuration change, network flow). Events are raw telemetry.</p>
-      <p><strong>Alert</strong> — a flagged condition produced by analytics/rules (for example "multiple failed logins then successful login"). Alerts need triage.</p>
-      <p><strong>Incident</strong> — confirmed or highly likely malicious activity that requires investigation and response (e.g., confirmed credential theft, malware foothold).</p>
-      <div class="explain">Good detection systems reduce false positives and provide context so analysts can quickly decide whether an alert becomes an incident.</div>
-    </section>
+      <section class="card">
+        <h2>Important terms — Event, Alert, Incident (detailed)</h2>
+        <p>
+          These three terms form the hierarchy of severity in security monitoring. Understanding the operational differences helps you design reliable monitoring and avoid analyst overload.
+        </p>
 
-    <section class="card long-read" aria-labelledby="siem">
-      <h2 id="siem" class="section-title">SIEM — Security Information & Event Management</h2>
-      <p>SIEM systems collect logs and telemetry from many sources (firewalls, proxies, servers, endpoints, cloud services), normalize the data, apply correlation rules and analytics, and generate alerts. Modern SIEMs also integrate threat intelligence, user and entity behavior analytics (UEBA), and retention for forensic searches.</p>
+        <h3>Event (expanded)</h3>
+        <p class="muted">
+          An event is a single observable data point: a login attempt, a process spawn, a DNS lookup, a firewall accept/deny, or a configuration change. Events are high-volume — thousands to millions per day in mid-sized networks — and are the raw material for detection.
+        </p>
+        <p>
+          <strong>Examples of event sources:</strong>
+          <ul class="list">
+            <li>Windows Security logs (logon success/failure, privilege changes)</li>
+            <li>Syslog from routers, switches, firewalls</li>
+            <li>Application logs (web server access logs, database audit logs)</li>
+            <li>Endpoint telemetry (process creation, file writes, driver events)</li>
+            <li>Cloud platform audit logs (IAM changes, API calls)</li>
+            <li>Network flows (NetFlow, sFlow) and packet captures</li>
+          </ul>
+        </p>
 
-      <h3>SIEM core capabilities</h3>
-      <ul class="list">
-        <li>Centralized log collection and normalization</li>
-        <li>Correlation rules and detection analytics</li>
-        <li>Alerting, dashboards and investigation workflows</li>
-        <li>Long-term storage for compliance and forensics</li>
-      </ul>
+        <h3>Alert (expanded)</h3>
+        <p class="muted">
+          An alert is generated when a rule, analytics model, correlation, or threshold flags one or more events as suspicious. Alerts are how monitoring surfaces potential problems to humans. A single malicious campaign might generate dozens of alerts across many devices.
+        </p>
+        <p>
+          Effective alerts are:
+          <ul class="list">
+            <li><strong>Actionable:</strong> contain sufficient context to triage (who, what, where, when)</li>
+            <li><strong>Prioritized:</strong> scored by risk so analysts focus on critical items</li>
+            <li><strong>Tuned:</strong> tuned to reduce noise and false positives</li>
+          </ul>
+        </p>
 
-      <h3>Logs you should ingest (examples)</h3>
-      <ul class="list">
-        <li>Authentication logs (AD, LDAP, cloud SSO)</li>
-        <li>Endpoint events (EDR alerts, process launch, file changes)</li>
-        <li>Network flows / firewall logs</li>
-        <li>Web proxy and DNS logs</li>
-        <li>Application logs and database access</li>
-      </ul>
-    </section>
+        <h3>Incident (expanded)</h3>
+        <p class="muted">
+          An incident is an event or collection of alerts that represent an actual compromise, data leak, or operational disruption. Incidents require documented IR action: containment, eradication, recovery and post-incident lessons. Proper incident classification (severity, scope, business impact) drives escalation and legal/PR notification.
+        </p>
 
-    <section class="card long-read" aria-labelledby="what-is-threat">
-      <h2 id="what-is-threat" class="section-title">What is a Threat?</h2>
-      <p>A threat is any potential cause of an unwanted incident that may harm an organization. That includes threat actors (criminal groups, insiders), threat vectors (phishing, exploit), and threat events (malware, data exfiltration).</p>
-    </section>
+        <div class="callout">
+          <strong>Operational note:</strong> teams should maintain a triage playbook that defines how events become alerts and alerts become incidents — with owners, timelines, and decision gates to avoid slow or inconsistent responses.
+        </div>
+      </section>
 
-    <section class="card long-read" aria-labelledby="tdr">
-      <h2 id="tdr" class="section-title">Threat Detection & Response (TDR) — overview</h2>
-      <p>TDR combines continuous monitoring (detection) with the capability to act (response) — ideally in an automated, repeatable way. Teams use SIEM, EDR, NIDS/HIDS, SOAR playbooks and human analysts to detect, investigate, contain and remediate threats.</p>
+      <section class="card">
+        <h2>SIEM deep dive — architecture, data, and detection engineering</h2>
+        <p>
+          SIEMs do more than collect logs. They provide a pipeline: ingest → normalize → enrich → correlate → alert → investigate. Each stage needs careful design to be effective at scale.
+        </p>
 
-      <h3>Detection types</h3>
-      <ul class="list">
-        <li><strong>Signature-based:</strong> detect known bad patterns (malware hashes, IOC matches). Fast but limited to known threats.</li>
-        <li><strong>Anomaly-based / Behavioral:</strong> baseline normal behavior and flag deviations (UEBA). Good for detecting novel attacks but may need tuning.</li>
-        <li><strong>Heuristic / Rule-based:</strong> combination rules (e.g., admin login from new country + atypical data transfer).</li>
-        <li><strong>Threat intelligence matching:</strong> matching external IOCs (bad IPs, domains) with internal telemetry.</li>
-      </ul>
-    </section>
+        <h3>Ingest: what to collect and why</h3>
+        <p class="muted">
+          You should collect logs that help answer common IR questions: who did what, where, when, and how. Prioritize identity systems, endpoints, network security devices, cloud audit logs, and critical application logs. Not all logs are equally valuable — balance cost with usefulness.
+        </p>
+        <p>
+          <strong>High-value log types:</strong>
+          <ul class="list">
+            <li>Authentication events (success/failure, MFA challenge)</li>
+            <li>Privilege use (sudo, admin actions)</li>
+            <li>Process execution and persistence mechanisms (services, scheduled tasks)</li>
+            <li>File integrity / creation events for sensitive directories</li>
+            <li>DNS queries and unusual external IP contacts</li>
+            <li>Network flows for lateral movement detection</li>
+          </ul>
+        </p>
 
-    <section class="card long-read" aria-labelledby="process">
-      <h2 id="process" class="section-title">Threat detection & response process</h2>
-      <p>An effective TDR pipeline typically follows:</p>
-      <ol class="list">
-        <li><strong>Collection:</strong> ingest logs and telemetry centrally (agents, flows, API pulls).</li>
-        <li><strong>Normalize & enrich:</strong> add context (asset owner, geo, business criticality, threat intel).</li>
-        <li><strong>Detection:</strong> run rules, analytics, and machine learning to surface suspicious activity.</li>
-        <li><strong>Alerting & triage:</strong> prioritize and assign alerts to analysts; reduce noise through tuning.</li>
-        <li><strong>Investigation:</strong> gather additional data, pivot through logs and endpoint artifacts to confirm scope.</li>
-        <li><strong>Response & containment:</strong> isolate hosts, block IOCs, revoke credentials, run playbooks.</li>
-        <li><strong>Eradication & recovery:</strong> remove malware, patch vulnerabilities, restore systems from clean backups.</li>
-        <li><strong>Lessons learned:</strong> update detections, playbooks and harden systems to prevent recurrence.</li>
-      </ol>
-    </section>
+        <h3>Normalization & enrichment</h3>
+        <p class="muted">
+          Normalization converts vendor-specific fields into a common schema (e.g., src_ip, dest_ip, username). Enrichment adds business context: asset owner, device type, criticality, recent vulnerability score, geolocation, and threat-intel match. Good enrichment dramatically reduces investigation time.
+        </p>
 
-    <section class="card long-read" aria-labelledby="ir">
-      <h2 id="ir" class="section-title">Incident — what it means and classification</h2>
-      <p>An incident is any event that actually or potentially jeopardizes the confidentiality, integrity, or availability of an organization's systems. Incidents are often classified by impact and severity (low / medium / high / critical) and by type (malware, data breach, insider threat).</p>
-    </section>
+        <h3>Detection engineering</h3>
+        <p>
+          Detection engineering is the process of turning threat hypotheses into reliable, repeatable detection logic. It blends rules, statistical baselines, and machine learning. Key practices:
+          <ul class="list">
+            <li>Define clear detection goals (what attacker behavior are you targeting?)</li>
+            <li>Create tests using both benign and malicious data (reduce false positives)</li>
+            <li>Use threat intelligence to parameterize rules (IOC lists, malicious IPs)</li>
+            <li>Continuously measure detection performance (true positive rate, false positive rate)</li>
+          </ul>
+        </p>
 
-    <section class="card long-read" aria-labelledby="6phases">
-      <h2 id="6phases" class="section-title">6 Phases of the Incident Response Lifecycle</h2>
-      <ol class="list">
-        <li><strong>Preparation:</strong> policies, playbooks, tooling, backups, runbooks, training and communication plans.</li>
-        <li><strong>Identification:</strong> detect suspicious activity and confirm whether it’s an incident.</li>
-        <li><strong>Containment:</strong> short-term containment (isolate host) and long-term containment (network segmentation).</li>
-        <li><strong>Eradication:</strong> remove root cause (malware, backdoors) and close exploited vectors.</li>
-        <li><strong>Recovery:</strong> restore systems to normal operation, monitor for recurrence.</li>
-        <li><strong>Lessons Learned:</strong> post-incident review, update controls and playbooks, and share findings with stakeholders.</li>
-      </ol>
+        <h3>Example detection rule (pseudo)</h3>
+        <pre>
+IF (Multiple failed authentications for same username from different source IPs within 10 mins)
+AND (one successful authentication thereafter from an uncommon country)
+THEN create alert: "Possible credential stuffing / account takeover"
+SCORE: 8/10, OWNER: identity-team
+        </pre>
 
-      <div class="callout"><strong>Note:</strong> invest heavily in Preparation — it reduces confusion and speeds response during an incident.</div>
-    </section>
+        <div class="small muted">This rule is enriched by user location history, device profiling (known device/unknown device), and MFA status to avoid false positives.</div>
+      </section>
 
-    <section class="card long-read" aria-labelledby="hunting">
-      <h2 id="hunting" class="section-title">Threat Hunting — proactive detection</h2>
-      <p>Threat hunting is a proactive search for threats that bypass automated detections. Hunters formulate hypotheses (e.g., "Are there any unusual PowerShell usage patterns?"), collect relevant telemetry, and investigate anomalies.</p>
+      <section class="card">
+        <h2>Threat Detection & Response process — operational playbook</h2>
+        <p>
+          A practical TDR program ties monitoring to a response playbook. Below is an operational sequence you can implement in a SOC.
+        </p>
 
-      <h3>Hunt workflow</h3>
-      <ol class="list">
-        <li>Hypothesis (based on intel or analytics)</li>
-        <li>Data collection and enrichment (EDR, logs, flows)</li>
-        <li>Investigation and pivoting</li>
-        <li>Containment & remediation if confirmed</li>
-        <li>Feed findings back into detection rules</li>
-      </ol>
+        <h3>Operational flow</h3>
+        <ol class="list">
+          <li><strong>Alert triage:</strong> validate alert, gather context (asset, user, recent changes), assign severity.</li>
+          <li><strong>Scope & impact:</strong> determine affected systems, data at risk, and potential lateral movement.</li>
+          <li><strong>Containment:</strong> isolate endpoints, block malicious IPs, disable compromised accounts.</li>
+          <li><strong>Eradication:</strong> remove malware/backdoors, patch vulnerable services, reset credentials.</li>
+          <li><strong>Recovery:</strong> restore from known-good images/backups, reintroduce systems under monitoring.</li>
+          <li><strong>Post-incident:</strong> capture lessons, update detections and controls, notify stakeholders and regulators if required.</li>
+        </ol>
 
-      <h3>Skills & tools</h3>
-      <ul class="list">
-        <li>Proficient query skills (SIEM search, Yara, Sigma)</li>
-        <li>Knowledge of attacker TTPs (MITRE ATT&CK)</li>
-        <li>Strong forensics and endpoint knowledge (EDR)</li>
-      </ul>
-    </section>
+        <h3>Example playbook snippet — ransomware detection</h3>
+        <ul class="list">
+          <li>Trigger: sudden spike in file encryption rates on file server + process spawning 'vssadmin' or deletion of shadow copies.</li>
+          <li>Immediate actions: isolate server network segment, preserve volatile memory for forensics, block C2 domains.</li>
+          <li>Communication: notify incident manager, legal, backup team; stop scheduled backups to avoid corrupting backups.</li>
+          <li>Remediation: restore files from offline backups after eradication; rotate service accounts.</li>
+        </ul>
+      </section>
 
-    <section class="card long-read" aria-labelledby="mdr">
-      <h2 id="mdr" class="section-title">Managed Detection & Response (MDR)</h2>
-      <p>MDR vendors provide outsourced detection, investigation and response capabilities — useful for organizations without mature SOCs. MDR offerings often include managed SIEM/EDR, dedicated analysts, threat hunting, and incident response support.</p>
+      <section class="card">
+        <h2>Incident response (IR) — forensic & legal considerations</h2>
+        <p>
+          IR isn't just technical — there are legal, privacy, and evidentiary issues. Collect data in ways that preserve chain of custody if criminal action is possible. Know your local breach notification laws and preserve logs for regulatory inquiries.
+        </p>
 
-      <h3>When to consider MDR</h3>
-      <ul class="list">
-        <li>Limited internal staff or SOC maturity</li>
-        <li>Need 24/7 monitoring without building in-house team</li>
-        <li>Want fast access to experienced threat hunters and IR expertise</li>
-      </ul>
-    </section>
+        <h3>Forensics basics</h3>
+        <ul class="list">
+          <li>Take images of affected disks when possible and document timestamps.</li>
+          <li>Capture volatile data: memory, open network connections, running processes.</li>
+          <li>Preserve logs in append-only storage and record who accessed them.</li>
+          <li>Limit remediation steps that would overwrite evidence before forensics completes.</li>
+        </ul>
 
-    <section class="card long-read" aria-labelledby="practicals">
-      <h2 id="practicals" class="section-title">Practical controls, KPIs & playbook items</h2>
-      <h3>Key controls to implement</h3>
-      <ul class="list">
-        <li>Deploy central logging and retain for investigations</li>
-        <li>Use EDR on endpoints to capture process, network, and file activity</li>
-        <li>Implement network flow collection (NetFlow/IPFIX) and DNS logging</li>
-        <li>Enrich alerts with asset criticality and owner data</li>
-        <li>Use automated containment via SOAR for high-confidence alerts</li>
-      </ul>
+        <h3>Legal & compliance</h3>
+        <p class="muted">
+          In some industries, notification to regulators and affected customers is legally required within a set timeframe. Coordinate with legal teams before public statements and follow documented escalation paths.
+        </p>
+      </section>
 
-      <h3>Useful KPIs</h3>
-      <ul class="list">
-        <li>Mean time to detection (MTTD)</li>
-        <li>Mean time to respond/contain (MTTR)</li>
-        <li>Number of alerts per analyst per day</li>
-        <li>False positive rate</li>
-        <li>% of alerts closed with automated playbooks</li>
-      </ul>
+      <section class="card">
+        <h2>Threat hunting — techniques and example investigations</h2>
+        <p>
+          Hunting turns assumptions about attacker behavior into queries across telemetry. Common hypotheses: "attackers will try to enumerate active directory groups" or "malware will attempt DNS resolution to non-typical domains".
+        </p>
 
-      <h3>Example runbook checklist for suspected malware</h3>
-      <ol class="list">
-        <li>Isolate host, preserve volatile data (memory, active connections).</li>
-        <li>Collect EDR artifacts (process tree, parent/child relationships, file hashes).</li>
-        <li>Block known IOCs at network edge and on endpoint.</li>
-        <li>Identify initial access vector (phishing, RDP, exploit) and patch or disable it.</li>
-        <li>Reimage host if necessary and restore from trusted backup.</li>
-      </ol>
-    </section>
+        <h3>Data-driven hunting techniques</h3>
+        <ul class="list">
+          <li><strong>Blind anomaly detection:</strong> look for deviations from baseline behavior (uncommon processes, unusual outbound connections).</li>
+          <li><strong>Indicator pivoting:</strong> use IOC feeds to search historical logs for signs of past compromise.</li>
+          <li><strong>Hunt boxes:</strong> prebuilt queries tuned for specific TTPs (e.g., PowerShell abuse, Mimikatz patterns).</li>
+          <li><strong>Hunt orchestration:</strong> capture findings into playbooks to convert hunts into detection rules.</li>
+        </ul>
 
-    <section class="card" aria-labelledby="download">
-      <h2 id="download" class="section-title">Download Notes</h2>
-      <p class="muted">Click to download a short summary of this lesson for offline reference.</p>
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary" id="downloadNotes">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated read time: ~20 mins</span></div>
-      </div>
-    </section>
+        <h3>Example hunt — lateral movement via SMB</h3>
+        <ol class="list">
+          <li>Hypothesis: compromised user is attempting to access multiple file shares using remote execution tools.</li>
+          <li>Search logs for authentication events to multiple servers from same user within short timeframe + suspicious process spawn (wmic, psexec).</li>
+          <li>If found: escalate to containment (disable user account, disconnect host) and investigate lateral scope.</li>
+        </ol>
+      </section>
 
-    <!-- QUIZ -->
-    <section class="card" aria-labelledby="quiz">
-      <h2 id="quiz" class="section-title">Lesson 11 Quiz — Threat Detection & Response</h2>
-      <p class="muted">When ready, click <strong>Attempt Quiz</strong>. The quiz has 10 questions and explanations appear for missed items.</p>
+      <section class="card">
+        <h2>Managed Detection & Response (MDR) — what to expect</h2>
+        <p>
+          MDR providers deliver people + process + tooling. When contracting MDR, look for SLA specifics, data ownership, playbook alignment, and how they integrate with your identity & change-management processes.
+        </p>
 
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
-        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated quiz time: ~6–12 mins</span></div>
-      </div>
+        <h3>Key MDR deliverables</h3>
+        <ul class="list">
+          <li>24/7 monitoring & alerting</li>
+          <li>Proactive threat hunting and IOC sharing</li>
+          <li>Incident containment guidance or direct containment actions (if delegated)</li>
+          <li>Regular reporting, threat posture reviews, and detection tuning</li>
+        </ul>
 
-      <form id="quizForm" style="display:none;margin-top:14px;">
-        <!-- Q1 -->
-        <div class="q-card">
-          <h4>1) Which statement best describes a SIEM?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q1" value="a"/> A platform that collects, normalizes and correlates logs to produce security alerts</label>
-            <label><input type="radio" name="q1" value="b"/> A backup product for file recovery</label>
-            <label><input type="radio" name="q1" value="c"/> A tool that only blocks spam emails</label>
-          </div>
+        <div class="small muted">
+          Ensure contracts define response boundaries (who can isolate hosts), data retention, and confidentiality of shared telemetry.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>KPIs & metrics — measuring SOC effectiveness</h2>
+        <p>
+          Metrics help you track progress and justify investment. Useful KPIs include:
+        </p>
+        <div class="kpi">
+          <div class="card"><strong>Mean Time to Detect (MTTD)</strong><div class="small muted">How long on average between compromise and detection.</div></div>
+          <div class="card"><strong>Mean Time to Respond (MTTR)</strong><div class="small muted">Time from detection to containment.</div></div>
+          <div class="card"><strong>False Positive Rate</strong><div class="small muted">Percentage of alerts that are not actionable.</div></div>
+          <div class="card"><strong>Coverage of critical assets</strong><div class="small muted">Percent of Tier-1 assets with full telemetry.</div></div>
+        </div>
+        <p class="small muted">Aim to reduce MTTD/MTTR over time and to instrument critical systems first.</p>
+      </section>
+
+      <section class="card">
+        <h2>Detection automation & SOAR</h2>
+        <p>
+          SOAR platforms automate repetitive response steps (isolate host, block IP, enrich alert with intel) and orchestrate multi-tool workflows. Use automation to accelerate routine containment, but gate high-impact actions (like universal account disable) behind human approval.
+        </p>
+
+        <h3>Example automated playbook</h3>
+        <ol class="list">
+          <li>Alert: suspicious process executing from temporary directory.</li>
+          <li>Automated enrichment: fetch file hash, reputation, recent parent process.</li>
+          <li>If reputation is malicious: automatically quarantine endpoint; create incident ticket; notify analyst.</li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2>Common attack scenarios and practical detection tips</h2>
+        <p>
+          Below are common intrusions and signs that help detection:
+        </p>
+
+        <ul class="list">
+          <li><strong>Credential compromise:</strong> look for abnormal login geography, impossible travel, login to many systems in short time, or new device types.</li>
+          <li><strong>Ransomware:</strong> spike in file delete/rename operations, processes creating many file modifications, suspicious use of volume shadow copy deletion commands.</li>
+          <li><strong>Data exfiltration:</strong> large transfers to unusual external IPs, bulk DNS TXT records, unusual archive creation and upload patterns.</li>
+          <li><strong>Command & Control (C2):</strong> beaconing patterns to rare domains, consistent intervals between callbacks, use of dynamic DNS.</li>
+        </ul>
+      </section>
+
+      <section class="card quiz" aria-labelledby="quiz">
+        <h2 id="quiz">10-question Quiz — Check your understanding</h2>
+
+        <div class="q">
+          <strong>1.</strong> What best describes "normalization" in a SIEM?<br>
+          <label><input type="radio" name="q1" value="a"> Converting different vendor log formats to a common schema</label><br>
+          <label><input type="radio" name="q1" value="b"> Deleting old logs</label><br>
+          <label><input type="radio" name="q1" value="c"> Encrypting log storage</label>
         </div>
 
-        <!-- Q2 -->
-        <div class="q-card">
-          <h4>2) Which detection type is best for known malware signatures?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q2" value="a"/> Signature-based detection</label>
-            <label><input type="radio" name="q2" value="b"/> UEBA anomaly detection</label>
-            <label><input type="radio" name="q2" value="c"/> Manual log review only</label>
-          </div>
+        <div class="q">
+          <strong>2.</strong> Which log source is most critical to detect account takeover attempts?<br>
+          <label><input type="radio" name="q2" value="a"> Authentication/Identity logs (AD, cloud IAM)</label><br>
+          <label><input type="radio" name="q2" value="b"> Printer logs</label><br>
+          <label><input type="radio" name="q2" value="c"> Weather API logs</label>
         </div>
 
-        <!-- Q3 -->
-        <div class="q-card">
-          <h4>3) Which of these is NOT a phase of the incident response lifecycle?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q3" value="a"/> Eradication</label>
-            <label><input type="radio" name="q3" value="b"/> Monetization</label>
-            <label><input type="radio" name="q3" value="c"/> Recovery</label>
-          </div>
+        <div class="q">
+          <strong>3.</strong> Which of the following is a good enrichment value to add to alerts?<br>
+          <label><input type="radio" name="q3" value="a"> Asset owner and business criticality</label><br>
+          <label><input type="radio" name="q3" value="b"> The user's favorite color</label><br>
+          <label><input type="radio" name="q3" value="c"> The number of tabs open in the user's browser</label>
         </div>
 
-        <!-- Q4 -->
-        <div class="q-card">
-          <h4>4) Threat hunting is best described as:</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q4" value="a"/> Actively searching your environment for hidden threats</label>
-            <label><input type="radio" name="q4" value="b"/> Passive collection of DNS logs only</label>
-            <label><input type="radio" name="q4" value="c"/> Only deploying firewalls</label>
-          </div>
+        <div class="q">
+          <strong>4.</strong> What is a reasonable first containment step for a confirmed infected endpoint?<br>
+          <label><input type="radio" name="q4" value="a"> Isolate endpoint from network while preserving logs</label><br>
+          <label><input type="radio" name="q4" value="b"> Immediately wipe the disk without imaging</label><br>
+          <label><input type="radio" name="q4" value="c"> Publicly post the user's name</label>
         </div>
 
-        <!-- Q5 -->
-        <div class="q-card">
-          <h4>5) Which data source is most useful for investigating a suspected endpoint compromise?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q5" value="a"/> Endpoint Detection & Response (EDR) process and file artifacts</label>
-            <label><input type="radio" name="q5" value="b"/> Parking lot CCTV footage</label>
-            <label><input type="radio" name="q5" value="c"/> Marketing email opens</label>
-          </div>
+        <div class="q">
+          <strong>5.</strong> Threat hunting improves detection by:<br>
+          <label><input type="radio" name="q5" value="a"> Creating hypotheses and converting findings into rules</label><br>
+          <label><input type="radio" name="q5" value="b"> Turning off the SIEM</label><br>
+          <label><input type="radio" name="q5" value="c"> Only running vulnerability scans</label>
         </div>
 
-        <!-- Q6 -->
-        <div class="q-card">
-          <h4>6) What is a useful KPI for SOC performance?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q6" value="a"/> Mean Time To Detect (MTTD)</label>
-            <label><input type="radio" name="q6" value="b"/> Number of coffee breaks per analyst</label>
-            <label><input type="radio" name="q6" value="c"/> Number of unique wallpapers</label>
-          </div>
+        <div class="q">
+          <strong>6.</strong> Which KPI indicates the speed of your detection program?<br>
+          <label><input type="radio" name="q6" value="a"> Mean Time to Detect (MTTD)</label><br>
+          <label><input type="radio" name="q6" value="b"> Number of printers installed</label><br>
+          <label><input type="radio" name="q6" value="c"> Number of fonts on the server</label>
         </div>
 
-        <!-- Q7 -->
-        <div class="q-card">
-          <h4>7) Which automation tool can help orchestrate repeated IR steps?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q7" value="a"/> SOAR (Security Orchestration, Automation and Response)</label>
-            <label><input type="radio" name="q7" value="b"/> A simple spreadsheet</label>
-            <label><input type="radio" name="q7" value="c"/> A text editor with no integration</label>
-          </div>
+        <div class="q">
+          <strong>7.</strong> Why would you gate certain automated SOAR actions behind human approval?<br>
+          <label><input type="radio" name="q7" value="a"> To prevent widespread disruption from an automated false positive</label><br>
+          <label><input type="radio" name="q7" value="b"> To make the process slower intentionally</label><br>
+          <label><input type="radio" name="q7" value="c"> To increase email volume</label>
         </div>
 
-        <!-- Q8 -->
-        <div class="q-card">
-          <h4>8) Which approach reduces false positives in detection?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q8" value="a"/> Tuning rules, enriching alerts with context and using baselines</label>
-            <label><input type="radio" name="q8" value="b"/> Turning off all alerts</label>
-            <label><input type="radio" name="q8" value="c"/> Doubling the alert volume</label>
-          </div>
+        <div class="q">
+          <strong>8.</strong> What does "chain of custody" ensure when collecting forensic evidence?<br>
+          <label><input type="radio" name="q8" value="a"> That evidence was handled in a documented, secure way to preserve admissibility</label><br>
+          <label><input type="radio" name="q8" value="b"> That the evidence was immediately deleted</label><br>
+          <label><input type="radio" name="q8" value="c"> That logs are never collected</label>
         </div>
 
-        <!-- Q9 -->
-        <div class="q-card">
-          <h4>9) When should you engage your ISP or upstream provider during a major network-based attack?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q9" value="a"/> When attack traffic saturates links and local mitigations are insufficient</label>
-            <label><input type="radio" name="q9" value="b"/> Only after months</label>
-            <label><input type="radio" name="q9" value="c"/> Never contact them</label>
-          </div>
+        <div class="q">
+          <strong>9.</strong> MDR contracts should explicitly define:<br>
+          <label><input type="radio" name="q9" value="a"> SLAs, data ownership, scope of containment actions</label><br>
+          <label><input type="radio" name="q9" value="b"> How many coffee breaks analysts get</label><br>
+          <label><input type="radio" name="q9" value="c"> The vendor's logo size</label>
         </div>
 
-        <!-- Q10 -->
-        <div class="q-card">
-          <h4>10) What is an advantage of using MDR services?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q10" value="a"/> Access to experienced analysts and 24/7 monitoring without building a full in-house SOC</label>
-            <label><input type="radio" name="q10" value="b"/> It removes the need for any internal security processes</label>
-            <label><input type="radio" name="q10" value="c"/> It guarantees no incidents will ever happen</label>
-          </div>
+        <div class="q">
+          <strong>10.</strong> Which is an indicator of potential data exfiltration?<br>
+          <label><input type="radio" name="q10" value="a"> Large encrypted uploads to cloud storage from a workstation at off-hours</label><br>
+          <label><input type="radio" name="q10" value="b"> Normal inbound web traffic during business hours</label><br>
+          <label><input type="radio" name="q10" value="c"> A scheduled system backup to an approved offline device</label>
         </div>
 
-        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
-          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
-          <button type="button" class="btn" id="resetQuiz">Reset</button>
-          <span id="quizResult" class="result" aria-live="polite"></span>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <button class="btn primary" id="grade">Grade Quiz</button>
+          <button class="btn" id="showAnswers">Show Answers & Explanations</button>
         </div>
-      </form>
-    </section>
+
+        <div id="result" class="result"></div>
+      </section>
+
+      <section class="card">
+        <h2>Suggested next steps & learning paths</h2>
+        <p>
+          If you manage or build detection programs, follow these practical next steps:
+        </p>
+        <ol class="list">
+          <li>Inventory your telemetry: map which assets emit which logs and prioritize instrumentation of Tier-1 assets.</li>
+          <li>Create a detection backlog: list threats you want to detect (ransomware, credential stuffing, C2) and build detections in priority order.</li>
+          <li>Run tabletop exercises: simulate incidents to test playbooks, communications, and escalation paths.</li>
+          <li>Practice hunting: schedule regular hunt campaigns and convert findings into rules.</li>
+          <li>Measure: track MTTD/MTTR and false positive rates and iterate.</li>
+        </ol>
+      </section>
+
+    </article>
 
     <footer class="container">
-      <p>© Learning Playground – Threat Detection & Response • Lesson 11</p>
+      <p>© Security Academy — Threat Detection & Response — Expanded</p>
     </footer>
   </main>
 
-  <script>
-    /* Theme toggle (persist) */
-    const themeBtn = document.getElementById('toggleTheme');
-    const keyTheme = 'lesson11-theme';
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const applyTheme = (mode) => {
-      if (mode === 'light') {
-        document.documentElement.style.setProperty('--bg','#f7f9ff');
-        document.documentElement.style.setProperty('--card','#ffffff');
-        document.documentElement.style.setProperty('--text','#0b1220');
-        document.documentElement.style.setProperty('--muted','#4a5875');
-        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
-      } else {
-        document.documentElement.style.setProperty('--bg','#0b1220');
-        document.documentElement.style.setProperty('--card','#111a2e');
-        document.documentElement.style.setProperty('--text','#e7eefc');
-        document.documentElement.style.setProperty('--muted','#8aa0c3');
-        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
+  <!-- TTS bar -->
+  <div id="ttsBar" class="tts-bar" role="region" aria-label="Text to Speech Controls">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" title="Pause">⏸</button>
+    <button id="ttsStop" title="Stop">⏹</button>
+    <span class="small">Voice</span>
+    <select id="ttsVoices" aria-label="Select voice"></select>
+    <span class="small">Rate</span>
+    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+    <span class="small">Pitch</span>
+    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+    <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+  </div>
+
+<script>
+  // Download/Copy handlers
+  document.getElementById('downloadNotes').addEventListener('click', () => {
+    const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
+    const lines = [];
+    nodes.forEach(n => {
+      const text = n.innerText.trim();
+      if (text) lines.push(text);
+    });
+    const blob = new Blob([lines.join('\n\n')], {type:'text/plain'});
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = 'Lesson11_ThreatDetection_Expanded_Notes.txt'; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+  });
+
+  document.getElementById('copyMd').addEventListener('click', async () => {
+    const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
+    let md = '';
+    nodes.forEach(n => {
+      const tag = n.tagName.toLowerCase();
+      const txt = n.innerText.trim();
+      if (!txt) return;
+      if (tag === 'h1') md += `# ${txt}\n\n`;
+      else if (tag === 'h2') md += `## ${txt}\n\n`;
+      else if (tag === 'h3') md += `### ${txt}\n\n`;
+      else if (tag === 'pre') md += '```\n' + txt + '\n```\n\n';
+      else if (tag === 'li') md += `- ${txt}\n`;
+      else md += `${txt}\n\n`;
+    });
+    try { await navigator.clipboard.writeText(md); alert('Copied expanded notes as Markdown.'); }
+    catch(e){ alert('Could not copy to clipboard.'); }
+  });
+
+  // Quiz answers & explanations (expanded)
+  const answers = {
+    q1: {a:true,  b:false, c:false, explain:"Normalization converts heterogeneous log formats into a common schema so correlation works across sources."},
+    q2: {a:true,  b:false, c:false, explain:"Authentication and identity systems (Active Directory, cloud IAM) are primary sources for account takeover detection."},
+    q3: {a:true,  b:false, c:false, explain:"Adding asset owner and business criticality helps prioritize and route alerts correctly."},
+    q4: {a:true,  b:false, c:false, explain:"Isolating the infected endpoint protects others while preserving forensic data for analysis."},
+    q5: {a:true,  b:false, c:false, explain:"Hunting creates hypotheses and converts findings to repeatable detections."},
+    q6: {a:true,  b:false, c:false, explain:"MTTD measures how fast your monitoring detects true compromises."},
+    q7: {a:true,  b:false, c:false, explain:"Gating prevents automatic actions from causing broad disruption due to false positives."},
+    q8: {a:true,  b:false, c:false, explain:"Chain of custody ensures evidence integrity and documented handling for legal admissibility."},
+    q9: {a:true,  b:false, c:false, explain:"MDR contracts must clearly define SLAs, data ownership, and what actions the provider may take."},
+    q10:{a:true,  b:false, c:false, explain:"Large off-hours encrypted uploads from workstations can indicate unauthorized exfiltration to cloud storage."}
+  };
+
+  document.getElementById('grade').addEventListener('click', () => {
+    let score = 0; const explanations = [];
+    for (let i=1;i<=10;i++){
+      const name = 'q'+i;
+      const sel = document.querySelector(`input[name="${name}"]:checked`);
+      const user = sel ? sel.value : '(no answer)';
+      const isCorrect = sel && answers[name][sel.value]===true;
+      if (isCorrect) score++;
+      explanations.push(`<strong>Q${i}:</strong> Your answer: ${user}. ${isCorrect?'<span style="color:var(--ok)">Correct</span>':'<span style="color:var(--danger)">Incorrect</span>' }<br><em>Explanation:</em> ${answers[name].explain}`);
+    }
+    const out = document.getElementById('result');
+    out.innerHTML = `<strong>Score:</strong> ${score} / 10<br><div style="margin-top:8px">${explanations.join('<hr>')}</div>`;
+    out.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  document.getElementById('showAnswers').addEventListener('click', () => {
+    const out = document.getElementById('result');
+    const lines = [];
+    for (let i=1;i<=10;i++){
+      const key = 'q'+i;
+      const correct = Object.keys(answers[key]).find(k=>k!=='explain' && answers[key][k]===true);
+      lines.push(`<strong>Q${i} correct answer:</strong> ${correct.toUpperCase()}. <em>${answers[key].explain}</em>`);
+    }
+    out.innerHTML = lines.join('<hr>');
+    out.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  // TTS module (Web Speech API) — improved highlighting and sentence handling
+  (function(){
+    if (!('speechSynthesis' in window)) {
+      const bar = document.getElementById('ttsBar'); if (bar) bar.style.display='none';
+      return;
+    }
+    const playBtn = document.getElementById('ttsPlay');
+    const pauseBtn = document.getElementById('ttsPause');
+    const stopBtn = document.getElementById('ttsStop');
+    const voicesSelect = document.getElementById('ttsVoices');
+    const rateInput = document.getElementById('ttsRate');
+    const pitchInput = document.getElementById('ttsPitch');
+    const autoBtn = document.getElementById('ttsToggleAuto');
+
+    let voices = [];
+    function populateVoices(){
+      voices = speechSynthesis.getVoices();
+      voicesSelect.innerHTML='';
+      voices.forEach(v=>{
+        const opt = document.createElement('option'); opt.value = v.voiceURI;
+        opt.textContent = `${v.name} (${v.lang})${v.default?' — default':''}`;
+        voicesSelect.appendChild(opt);
+      });
+      const saved = localStorage.getItem('lesson11.voice');
+      if (saved) voicesSelect.value = saved;
+    }
+    populateVoices();
+    if (speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged = populateVoices;
+
+    function getTextForTTS(){
+      // prefer the main sections and paragraphs but avoid quiz inputs
+      const nodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content p');
+      return Array.from(nodes)
+        .map(n=>{
+          // skip the short labels from controls
+          if (n.closest('.quiz')) return '';
+          return n.innerText.trim();
+        })
+        .filter(Boolean)
+        .join('.\n');
+    }
+
+    function speakAll(){
+      cancel();
+      const raw = getTextForTTS();
+      const sentences = raw.split(/(?<=[.?!:])\s+/);
+      let idx = 0;
+      function speakNext(){
+        if (idx >= sentences.length) { removeHighlights(); return; }
+        const s = sentences[idx++] ;
+        const u = new SpeechSynthesisUtterance(s);
+        const selURI = voicesSelect.value;
+        const sel = voices.find(v=>v.voiceURI===selURI) || voices.find(v=>v.default) || voices[0];
+        if (sel) u.voice = sel;
+        u.rate = parseFloat(rateInput.value);
+        u.pitch = parseFloat(pitchInput.value);
+        u.onstart = ()=> highlightSentence(s);
+        u.onend = ()=> { setTimeout(()=> speakNext(), 120); };
+        speechSynthesis.speak(u);
       }
-    };
-    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
-    applyTheme(storedTheme);
-    themeBtn.addEventListener('click', () => {
-      const cur = localStorage.getItem(keyTheme) || storedTheme;
-      const next = cur === 'dark' ? 'light' : 'dark';
-      localStorage.setItem(keyTheme, next);
-      applyTheme(next);
+      speakNext();
+    }
+
+    function cancel(){ if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
+    function pause(){ if (speechSynthesis.speaking) speechSynthesis.pause(); }
+    function resume(){ if (speechSynthesis.paused) speechSynthesis.resume(); }
+
+    function highlightSentence(sentence){
+      removeHighlights();
+      const lesson = document.querySelector('.lesson-content');
+      if (!lesson) return;
+      const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').trim().slice(0,200); // limit regex length
+      if (!safe) return;
+      const regex = new RegExp(safe);
+      // replace only the first match to avoid mangling structure
+      lesson.innerHTML = lesson.innerHTML.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
+    }
+    function removeHighlights(){
+      const lesson = document.querySelector('.lesson-content');
+      if (!lesson) return;
+      const els = lesson.querySelectorAll('.tts-highlight');
+      els.forEach(el => { el.outerHTML = el.textContent; });
+    }
+
+    playBtn.addEventListener('click', ()=> {
+      if (speechSynthesis.paused) return resume();
+      if (speechSynthesis.speaking) return;
+      speakAll();
+      localStorage.setItem('lesson11.voice', voicesSelect.value || '');
+      localStorage.setItem('lesson11.rate', rateInput.value);
+      localStorage.setItem('lesson11.pitch', pitchInput.value);
+    });
+    pauseBtn.addEventListener('click', ()=> {
+      if (speechSynthesis.speaking) pause();
+      else if (speechSynthesis.paused) resume();
+    });
+    stopBtn.addEventListener('click', ()=> { cancel(); removeHighlights(); });
+
+    voicesSelect.addEventListener('change', ()=> localStorage.setItem('lesson11.voice', voicesSelect.value));
+    rateInput.addEventListener('change', ()=> localStorage.setItem('lesson11.rate', rateInput.value));
+    pitchInput.addEventListener('change', ()=> localStorage.setItem('lesson11.pitch', pitchInput.value));
+
+    const savedAuto = localStorage.getItem('lesson11.auto') === 'true';
+    autoBtn.style.opacity = savedAuto ? '1' : '0.6';
+    autoBtn.addEventListener('click', ()=> {
+      const cur = localStorage.getItem('lesson11.auto') === 'true';
+      localStorage.setItem('lesson11.auto', (!cur).toString());
+      autoBtn.style.opacity = (!cur) ? '1' : '0.6';
     });
 
-    /* Download notes */
-    function downloadNotes() {
-      const title = 'Lesson11_ThreatDetection_Response_Notes.txt';
-      const content = [
-        'Lesson 11 – Threat Detection & Response',
-        '',
-        'Contents:',
-        '- Important terms: Event, Alert, Incident',
-        '- SIEM & what logs to ingest',
-        '- Detection types: signature, anomaly, heuristic, TI',
-        '- Incident Response Lifecycle: Preparation, Identification, Containment, Eradication, Recovery, Lessons Learned',
-        '- Threat Hunting workflow and MDR overview',
-        '- Practical KPIs and runbook checklist',
-        '',
-        'Key reminders:',
-        '- Collect central logs and EDR telemetry',
-        '- Tune detections to reduce noise',
-        '- Practice playbooks and keep contacts for ISP/MDR',
-        '- Use automation (SOAR) for repeatable containment'
-      ].join('\\n');
-      const blob = new Blob([content], {type:'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = title; document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-    }
-    document.getElementById('downloadNotes').addEventListener('click', downloadNotes);
-    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
-
-    /* Quiz logic */
-    const answers = { q1:'a', q2:'a', q3:'b', q4:'a', q5:'a', q6:'a', q7:'a', q8:'a', q9:'a', q10:'a' };
-    const explanations = {
-      q1: 'A SIEM collects, normalizes and correlates logs to produce actionable alerts.',
-      q2: 'Signature-based detection is used for known malware patterns (hashes, signatures).',
-      q3: 'Monetization is not a phase in the IR lifecycle; the lifecycle includes preparation, identification, containment, eradication, recovery and lessons learned.',
-      q4: 'Threat hunting is proactive analysis searching for unknown threats inside your environment.',
-      q5: 'EDR provides endpoint artifacts (process, file, registry) useful to investigate compromises.',
-      q6: 'MTTD (Mean Time To Detect) is a common SOC KPI to measure detection speed.',
-      q7: 'SOAR automates and orchestrates repeated incident response steps (containment, enrichment, ticketing).',
-      q8: 'Tuning rules and enriching alerts with context reduces false positives and focuses analysts on real threats.',
-      q9: 'Engage ISP/upstream provider when attack traffic saturates links and local controls are insufficient.',
-      q10: 'MDR gives you access to experienced analysts and 24/7 monitoring without building a full in-house SOC.'
+    const applySaved = () => {
+      const sv = localStorage.getItem('lesson11.voice');
+      if (sv && voices.find(v=>v.voiceURI===sv)) voicesSelect.value = sv;
+      const sr = localStorage.getItem('lesson11.rate') || rateInput.value;
+      const sp = localStorage.getItem('lesson11.pitch') || pitchInput.value;
+      rateInput.value = sr; pitchInput.value = sp;
+      if (localStorage.getItem('lesson11.auto') === 'true') {
+        try { speakAll(); } catch(e) { console.warn('Auto TTS blocked'); }
+      }
     };
 
-    const form = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitQuiz');
-    const resetBtn = document.getElementById('resetQuiz');
-    const resultSpan = document.getElementById('quizResult');
-    const scoreKey = 'lesson11-tdr-score';
-    const attemptBtn = document.getElementById('attemptBtn');
-
-    attemptBtn.addEventListener('click', () => {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      localStorage.setItem('lesson11-attempted', '1');
-      const saved = localStorage.getItem(scoreKey);
-      if (saved) {
-        resultSpan.textContent = `Previous Score: ${saved}%`;
-        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
-      }
-      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
-    });
-
-    function grade() {
-      let score = 0; let total = Object.keys(answers).length;
-      const missed = [];
-      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
-      for (const q of Object.keys(answers)) {
-        const el = form.querySelector(`input[name="${q}"]:checked`);
-        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-        if (!el) { missed.push(q); continue; }
-        if (el.value === answers[q]) {
-          score++;
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
-        } else {
-          missed.push(q);
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
-        }
-      }
-      const pct = Math.round((score/total)*100);
-      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
-      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
-      localStorage.setItem(scoreKey, pct);
-
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-      if (missed.length) {
-        const review = document.createElement('div');
-        review.id = 'reviewBox';
-        review.style.marginTop = '12px';
-        review.style.padding = '12px';
-        review.style.border = '1px solid rgba(255,255,255,0.06)';
-        review.style.borderRadius = '10px';
-        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
-        let inner = '<strong>Review (missed questions)</strong><ul>';
-        missed.forEach(m => {
-          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
-          const radio = form.querySelector(`input[name="${m}"]`);
-          if (radio) {
-            const qCard = radio.closest('.q-card');
-            if (qCard) {
-              const ex = document.createElement('div');
-              ex.className = 'explain';
-              ex.textContent = explanations[m];
-              qCard.appendChild(ex);
-            }
-          }
-        });
-        inner += '</ul>';
-        review.innerHTML = inner;
-        form.appendChild(review);
-        setTimeout(()=>{ alert('You missed some questions — explanations were added under the missed questions.'); }, 80);
-      } else {
-        const perfect = document.createElement('div');
-        perfect.id = 'reviewBox';
-        perfect.style.marginTop = '12px';
-        perfect.style.padding = '12px';
-        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
-        perfect.style.borderRadius = '10px';
-        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
-        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
-        form.appendChild(perfect);
-      }
-      submitBtn.disabled = true;
-    }
-
-    function resetQuiz() {
-      form.reset();
-      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-      resultSpan.textContent = '';
-      submitBtn.disabled = false;
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-      localStorage.removeItem(scoreKey);
-    }
-
-    submitBtn.addEventListener('click', grade);
-    resetBtn.addEventListener('click', resetQuiz);
-
-    // Restore previous attempt if user already attempted
-    const prev = localStorage.getItem(scoreKey);
-    if (localStorage.getItem('lesson11-attempted')) {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      if (prev) {
-        resultSpan.textContent = `Previous Score: ${prev}%`;
-        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
-      }
-    }
-  </script>
+    let tries = 0;
+    const iv = setInterval(()=> {
+      if (speechSynthesis.getVoices().length) {
+        populateVoices(); applySaved(); clearInterval(iv);
+      } else if (++tries > 30) { applySaved(); clearInterval(iv); }
+    }, 200);
+  })();
+</script>
 </body>
 </html>

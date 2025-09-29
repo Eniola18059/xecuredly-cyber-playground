@@ -1,56 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Lesson 6 – Identity & Access Management (IAM)</title>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lesson 6 – Identity & Access Management (Expanded)</title>
+  <meta name="description" content="Lesson 6: Identity & Access Management — deep dive: identities, authentication, authorization, federation, SSO, PAM, RBAC/ABAC, lifecycle, best practices and Linux hands-on." />
   <style>
-    :root {
-      --bg: #0b1220;
-      --card: #111a2e;
-      --muted: #8aa0c3;
-      --text: #e7eefc;
-      --accent: #6ea8ff;
-      --accent-2: #7ef0c1;
-      --warning: #ffdf6e;
-      --danger: #ff7e93;
+    :root{
+      --bg:#0b1220;
+      --card:#111a2e;
+      --muted:#8aa0c3;
+      --text:#e7eefc;
+      --accent:#6ea8ff;
+      --accent-2:#7ef0c1;
+      --warn:#ffdf6e;
+      --danger:#ff7e93;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
-    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    body{background:linear-gradient(135deg,#0b1220 0%,#101b34 100%);color:var(--text);-webkit-font-smoothing:antialiased}
     .container{max-width:1100px;margin:0 auto;padding:18px}
-    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.75);border-bottom:1px solid rgba(255,255,255,0.06)}
     .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase}
     .hero{padding:28px 20px 8px}
     .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
     .subtitle{color:var(--muted);font-size:15px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
     .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
-    .list{margin:0;padding-left:18px}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .long-read{line-height:1.75;font-size:15px}
+    .list{padding-left:18px}
     .list li{margin:8px 0}
-    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
-    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
-    .q-options{display:grid;gap:8px;margin-top:8px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
-    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn.ghost{background:transparent}
-    .result{font-size:18px;font-weight:700}
-    .good{color:var(--accent-2)}
-    .mid{color:var(--warning)}
-    .bad{color:var(--danger)}
-    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
-    .section-title{margin:0 0 8px}
-    .muted{color:var(--muted)}
-    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
-    .meta{display:flex;gap:8px;flex-wrap:wrap}
-    .attempt-btn{margin-top:12px}
-    .long-read{line-height:1.65;font-size:15px}
     .small{font-size:13px;color:var(--muted)}
-    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    .code-block{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;font-size:13px;color:var(--muted);background:rgba(255,255,255,0.03);padding:10px;border-radius:8px}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.04),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.08);padding:10px;border-radius:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.04),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.08);padding:10px;border-radius:10px}
+    .kbd{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,0.02);font-family:monospace}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.03);cursor:pointer;font-weight:700}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    pre{white-space:pre-wrap;background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
+    .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(0,0,0,0.65);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:260px}
+    .tts-bar button{background:linear-gradient(45deg,#ff0080,#7928ca);border:none;color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer}
+    .tts-bar select,.tts-bar input[type="range"]{background:rgba(255,255,255,0.06);color:#00ffcc;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:8px;font-family:inherit}
+    .tts-highlight{background:rgba(0,255,200,0.12);padding:0 2px;border-radius:3px}
+    @media (max-width:600px){.tts-bar{left:50%;transform:translateX(-50%);right:auto;bottom:12px;min-width:88%}}
   </style>
 </head>
 <body>
@@ -59,313 +54,381 @@
       <div style="display:flex;align-items:center;gap:12px">
         <span class="badge">Lesson 6</span>
         <div>
-          <strong>Identity & Access Management (IAM) — Lesson 6</strong>
-          <div class="small muted">Authentication • Authorization • Policies • Linux permissions (hands-on)</div>
+          <strong>Identity & Access Management — Deep Dive (Expanded)</strong>
+          <div class="small muted">Concepts • Federation • SSO • PAM • RBAC/ABAC • Linux lab</div>
         </div>
       </div>
       <div>
-        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+        <button class="btn" id="toggleTheme" title="Toggle theme">🌗 Theme</button>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <section class="hero card">
-      <h1 class="title">Identity & Access Management (IAM)</h1>
-      <p class="subtitle">Why identities matter, how authentication and authorization work, access regulation, password protection, identity theft and practical Linux permission management.</p>
+    <article class="lesson-content">
 
-      <div class="chips">
-        <span class="chip">IAM</span>
-        <span class="chip">Authentication</span>
-        <span class="chip">Authorization</span>
-        <span class="chip">RBAC</span>
-        <span class="chip">chmod</span>
-      </div>
-    </section>
-
-    <!-- Table of content -->
-    <section class="card long-read" aria-labelledby="toc">
-      <h2 id="toc" class="section-title">Table of Content</h2>
-      <ol class="list">
-        <li>What is IAM?</li>
-        <li>What is an Identity?</li>
-        <li>Authentication & Authorization</li>
-        <li>How Does IAM Work?</li>
-        <li>Regulation of access</li>
-        <li>Password protection</li>
-        <li>Identity theft</li>
-        <li>IdAM (Hands-on) — Linux examples</li>
-        <li>Adding and granting permissions to users in Linux (examples)</li>
-      </ol>
-    </section>
-
-    <!-- What is IAM -->
-    <section class="card long-read" aria-labelledby="what-iam">
-      <h2 id="what-iam" class="section-title">What is IAM?</h2>
-      <p>Identity and Access Management (IAM) is the set of processes, policies and tools that ensure the right individuals and machines (identities) can access the right resources at the right time for the right reasons. IAM centralizes identity lifecycle, authentication methods, and authorization rules so administrators don't have to manage credentials in every app individually.</p>
-    </section>
-
-    <!-- What is an Identity -->
-    <section class="card long-read" aria-labelledby="what-identity">
-      <h2 id="what-identity" class="section-title">What is an Identity?</h2>
-      <p>A digital identity is a collection of attributes and identifiers that uniquely represent a person, software component, machine, device or resource. Common identifiers include email addresses, usernames, government IDs, IP or MAC addresses, device certificates and service principals. Identities are used for authentication, authorization, auditing and communication.</p>
-      <ul class="list">
-        <li>Email address</li>
-        <li>Username / credentials</li>
-        <li>Government-issued ID (where applicable)</li>
-        <li>Device identifiers (MAC, IP, certificates)</li>
-      </ul>
-    </section>
-
-    <!-- Authentication & Authorization -->
-    <section class="card long-read" aria-labelledby="authn-authz">
-      <h2 id="authn-authz" class="section-title">Authentication & Authorization</h2>
-      <h3>Authentication</h3>
-      <p>Authentication proves an identity is who (or what) it claims to be. Typical mechanisms: passwords, multi-factor authentication (MFA), hardware tokens (YubiKey), biometrics, and X.509 certificates. Strong authentication reduces the likelihood of credential-based breaches.</p>
-
-      <h3>Authorization</h3>
-      <p>Authorization determines what an authenticated identity is allowed to do: which resources it can read, write or manage. Authorization is implemented via access control models (ACLs), Role-Based Access Control (RBAC), Attribute-Based Access Control (ABAC) or policy engines.</p>
-    </section>
-
-    <!-- How IAM works -->
-    <section class="card long-read" aria-labelledby="how-works">
-      <h2 id="how-works" class="section-title">How Does IAM Work?</h2>
-      <p>At a high level IAM performs two tasks:</p>
-      <ol class="list">
-        <li><strong>Authenticate:</strong> verify an identity's presented credentials (password, token, certificate) against a trusted store or identity provider (IdP).</li>
-        <li><strong>Authorize:</strong> grant an appropriate level of access based on roles, policies or attributes (least privilege), and log the activity for audit.</li>
-      </ol>
-      <p>Modern IAM often integrates Single Sign-On (SSO), OAuth/OpenID Connect for delegated access, and automated provisioning/deprovisioning to manage identity lifecycle.</p>
-    </section>
-
-    <!-- Regulation of access -->
-    <section class="card long-read" aria-labelledby="regulation">
-      <h2 id="regulation" class="section-title">Regulation of Access</h2>
-      <p>Regulating access is about defining and enforcing who can do what, when and under what conditions. Key practices:</p>
-      <ul class="list">
-        <li><strong>Access control policies</strong> — codify allowed actions and constraints.</li>
-        <li><strong>Strong authentication</strong> — enforce MFA and modern auth flows.</li>
-        <li><strong>Role-Based Access Control (RBAC)</strong> — assign permissions to roles, then to users.</li>
-        <li><strong>Least privilege</strong> — give users the minimum access they need.</li>
-        <li><strong>Auditing & monitoring</strong> — log access and review for anomalies.</li>
-        <li><strong>Just-in-time access</strong> — temporary elevation reduces standing privileges.</li>
-      </ul>
-    </section>
-
-    <!-- Password protection -->
-    <section class="card long-read" aria-labelledby="passwords">
-      <h2 id="passwords" class="section-title">Password Protection</h2>
-      <p>Good password hygiene remains important even as organizations adopt MFA. Best practices:</p>
-      <ul class="list">
-        <li>Use unique, high-entropy passwords (or passphrases) per account.</li>
-        <li>Store salted, slow hashes (e.g., bcrypt, Argon2) — never plaintext.</li>
-        <li>Enforce MFA for privileged and remote access.</li>
-        <li>Use password managers to avoid reuse.</li>
-        <li>Rotate or revoke credentials when compromised or when employees leave.</li>
-      </ul>
-      <div class="callout">
-        <strong>Reality check:</strong> credential reuse is still common; attackers often succeed with stolen passwords paired with lack of MFA.
-      </div>
-    </section>
-
-    <!-- Identity theft -->
-    <section class="card long-read" aria-labelledby="identity-theft">
-      <h2 id="identity-theft" class="section-title">Identity Theft</h2>
-      <p>Identity theft happens when an attacker uses another person's identifying information to commit fraud. Common causes: oversharing personal info, phishing, social engineering, data breaches. Defenses include minimizing public personal data, monitoring for breaches, and rapid incident response.</p>
-    </section>
-
-    <!-- Hands-on IdAM -->
-    <section class="card long-read" aria-labelledby="hands-on">
-      <h2 id="hands-on" class="section-title">IdAM (Identity & Access Management) — Hands-On</h2>
-      <p>This section gives safe, local examples you can try in an isolated VM to practice identity and permission management.</p>
-
-      <h3>Linux: users, groups and permissions (practical examples)</h3>
-      <p>Common commands (run as root or with <code>sudo</code>):</p>
-      <div class="code-block">
-        <strong>Create a user:</strong><br>
-        <code>sudo useradd -m alice</code><br><br>
-
-        <strong>Create a group:</strong><br>
-        <code>sudo groupadd auditors</code><br><br>
-
-        <strong>Add user to a group:</strong><br>
-        <code>sudo usermod -aG auditors alice</code><br><br>
-
-        <strong>Change file owner/group:</strong><br>
-        <code>sudo chown alice:auditors /srv/report.txt</code><br><br>
-
-        <strong>Change permissions (symbolic):</strong><br>
-        <code>sudo chmod u=rw,g=r,o= /srv/report.txt</code><br><br>
-
-        <strong>Change permissions (numeric):</strong><br>
-        <code>sudo chmod 640 /srv/report.txt</code><br><br>
-
-        <strong>Set sticky bit or setgid (directory):</strong><br>
-        <code>sudo chmod g+s /srv/shared</code>
-      </div>
-
-      <h4>Short explanation of numeric modes</h4>
-      <p>Numeric permission bits: owner, group, others. Each is 4 (read) + 2 (write) + 1 (execute). Example: <code>640</code> = owner read/write (6), group read (4), others none (0).</p>
-
-      <h4>Example: grant temporary sudo (least privilege)</h4>
-      <div class="code-block">
-        <code>sudo usermod -aG sudo tempadmin</code><br>
-        <em>— or better: configure sudoers for specific commands with visudo for fine-grained privileges.</em>
-      </div>
-
-      <div class="callout">
-        <strong>Hands-on tip:</strong> Practice these commands in a disposable VM. Mistakes to root/group/permissions can lock out accounts—always snapshot before experimenting.
-      </div>
-    </section>
-
-    <!-- Adding permissions summary -->
-    <section class="card long-read" aria-labelledby="adding">
-      <h2 id="adding" class="section-title">Adding & Granting Permissions — Summary</h2>
-      <ul class="list">
-        <li>Use groups to manage access for multiple users rather than changing many file owners.</li>
-        <li>Favor least privilege: grant minimal permissions required for tasks.</li>
-        <li>Use sudoers and role-specific accounts instead of shared root credentials.</li>
-        <li>Audit group membership and sudo access regularly.</li>
-      </ul>
-    </section>
-
-    <!-- Download notes -->
-    <section class="card" aria-labelledby="notes">
-      <h2 id="notes" class="section-title">Download Notes</h2>
-      <p class="muted">Click to download a plain-text version of this lesson for offline reading.</p>
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated read time: ~15 mins</span></div>
-      </div>
-    </section>
-
-    <!-- Quiz Gate -->
-    <section class="card" aria-labelledby="quiz">
-      <h2 id="quiz" class="section-title">Lesson 6 Quiz — Identity & Access Management</h2>
-      <p class="muted">Click <strong>Attempt Quiz</strong> when ready. The quiz has 10 questions; missed questions show inline explanations.</p>
-
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
-        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
-      </div>
-
-      <form id="quizForm" style="display:none;margin-top:14px;">
-        <!-- Q1 -->
-        <div class="q-card">
-          <h4>1) What does IAM primarily do?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q1" value="a"/> Ensure the right identities have appropriate access to resources</label>
-            <label><input type="radio" name="q1" value="b"/> Replace all operating systems</label>
-            <label><input type="radio" name="q1" value="c"/> Backup data automatically every minute</label>
-          </div>
+      <section class="hero card">
+        <h1 class="title">Identity & Access Management (IdAM) — Expanded Module</h1>
+        <p class="subtitle">Comprehensive guide: concepts, protocols, lifecycle, secure design patterns, practical Linux user/group exercises and operational advice for production IAM.</p>
+        <div class="chips">
+          <span class="chip">IAM</span><span class="chip">SSO</span><span class="chip">SAML</span><span class="chip">OIDC</span><span class="chip">PAM</span>
         </div>
+      </section>
 
-        <!-- Q2 -->
-        <div class="q-card">
-          <h4>2) Which of these is an example of a "digital identity" attribute?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q2" value="a"/> A coffee brand you like</label>
-            <label><input type="radio" name="q2" value="b"/> An email address or username</label>
-            <label><input type="radio" name="q2" value="c"/> The color of your chair</label>
-          </div>
-        </div>
+      <!-- TOC -->
+      <section class="card" aria-labelledby="toc">
+        <h2 id="toc" class="section-title">Table of Content</h2>
+        <ol class="list">
+          <li>What is an IAM?</li>
+          <li>What is an Identity?</li>
+          <li>Authentication & factors</li>
+          <li>Authorization, models & PoLP</li>
+          <li>How IAM works (lifecycle, provisioning, federation)</li>
+          <li>SSO, SAML, OAuth2, OpenID Connect</li>
+          <li>Privileged Access Management (PAM)</li>
+          <li>Password best practices & account recovery</li>
+          <li>Identity theft — prevention & detection</li>
+          <li>Hands-on: Linux users, groups, ACLs, sudo</li>
+          <li>Monitoring, metrics & compliance</li>
+        </ol>
+      </section>
 
-        <!-- Q3 -->
-        <div class="q-card">
-          <h4>3) Authentication is best described as:</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q3" value="a"/> Determining what resources a user can access</label>
-            <label><input type="radio" name="q3" value="b"/> Verifying that a user or device is who it claims to be</label>
-            <label><input type="radio" name="q3" value="c"/> Monitoring network traffic only</label>
-          </div>
+      <!-- What is IAM -->
+      <section class="card long-read" aria-labelledby="whatiam">
+        <h2 id="whatiam" class="section-title">What is an IAM?</h2>
+        <p>
+          Identity and Access Management (IAM) is the strategic combination of policies, processes, and technologies that ensures the right identities (people, services, devices) can access the right resources under the right conditions.
+        </p>
+        <div class="explain">
+          <p class="small muted">IAM solves operational problems (account provisioning, password resets), security problems (least privilege, MFA enforcement), and compliance problems (auditable access logs, segregation of duties).</p>
+          <p>In modern environments IAM is central — cloud platforms (AWS, Azure, GCP) expose IAM APIs; SaaS apps integrate via SAML/OIDC; enterprises link HR systems to automate lifecycle events (hire, role-change, exit).</p>
         </div>
+      </section>
 
-        <!-- Q4 -->
-        <div class="q-card">
-          <h4>4) Authorization differs from authentication because it:</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q4" value="a"/> Verifies credentials</label>
-            <label><input type="radio" name="q4" value="b"/> Grants permissions to resources based on policies or roles</label>
-            <label><input type="radio" name="q4" value="c"/> Changes a user's password automatically</label>
-          </div>
+      <!-- Identity -->
+      <section class="card long-read" aria-labelledby="identity">
+        <h2 id="identity" class="section-title">What is an Identity?</h2>
+        <p>
+          A digital identity is a set of attributes (claims) that uniquely identify an entity. Attributes include usernames, emails, UIDs, device IDs, X.509 certificate subject, groups, roles, and contextual claims (location, device posture).
+        </p>
+        <div class="explain">
+          <p class="small muted">An identity can be:</p>
+          <ul class="list">
+            <li>a person (employee, contractor)</li>
+            <li>a service account (automation, CI/CD runner)</li>
+            <li>a device (IoT sensor, server)</li>
+            <li>a federated identity (Google account, Azure AD user)</li>
+          </ul>
+          <p>Design note: treat non-human identities with the same security rigor as humans — rotate keys, apply least privilege, assign lifecycle ownership.</p>
         </div>
+      </section>
 
-        <!-- Q5 -->
-        <div class="q-card">
-          <h4>5) Which principle says users should have only the access they need?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q5" value="a"/> Least Privilege</label>
-            <label><input type="radio" name="q5" value="b"/> Maximum Accession</label>
-            <label><input type="radio" name="q5" value="c"/> Open Access</label>
-          </div>
-        </div>
+      <!-- Authentication -->
+      <section class="card long-read" aria-labelledby="authn">
+        <h2 id="authn" class="section-title">Authentication — proving who you are</h2>
+        <p>
+          Authentication verifies an identity. Modern authentication combines multiple factors, adaptive signals, and hardware-backed methods to reduce compromise risk.
+        </p>
 
-        <!-- Q6 -->
-        <div class="q-card">
-          <h4>6) Best practice for storing passwords is to:</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q6" value="a"/> Store plaintext passwords in a file</label>
-            <label><input type="radio" name="q6" value="b"/> Store salted, slow hashes (e.g., bcrypt, Argon2)</label>
-            <label><input type="radio" name="q6" value="c"/> Email passwords to users daily</label>
-          </div>
-        </div>
+        <h3>Authentication factors</h3>
+        <ul class="list">
+          <li><strong>Knowledge:</strong> passwords, PINs — cheap but weakest.</li>
+          <li><strong>Possession:</strong> TOTP apps, hardware keys (FIDO2/WebAuthn), smartcards — resistant to phishing when hardware-backed.</li>
+          <li><strong>Inherence:</strong> biometrics (fingerprint, face) — convenient but require fallback and privacy care.</li>
+          <li><strong>Location/Device posture:</strong> IP range, geolocation, MFA only from trusted device.</li>
+        </ul>
 
-        <!-- Q7 -->
-        <div class="q-card">
-          <h4>7) Which Linux command changes file ownership?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q7" value="a"/> chmod</label>
-            <label><input type="radio" name="q7" value="b"/> chown</label>
-            <label><input type="radio" name="q7" value="c"/> grep</label>
-          </div>
-        </div>
+        <h3>Adaptive & risk-based authentication</h3>
+        <p class="small muted">Systems evaluate risk (new device, unusual location, rapid impossible travel) and can step up authentication (require MFA, block access, or prompt for revalidation).</p>
 
-        <!-- Q8 -->
-        <div class="q-card">
-          <h4>8) What does numeric permission mode 640 mean?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q8" value="a"/> owner read/write, group read, others none</label>
-            <label><input type="radio" name="q8" value="b"/> owner execute only, group write, others read</label>
-            <label><input type="radio" name="q8" value="c"/> everyone read/write/execute</label>
-          </div>
+        <div class="callout">
+          <strong>Recommendation:</strong> prefer phishing-resistant MFA (FIDO2 / hardware tokens). Avoid SMS-based MFA for high-value accounts — SMS can be intercepted or SIM-swapped.
         </div>
+      </section>
 
-        <!-- Q9 -->
-        <div class="q-card">
-          <h4>9) Which is an effective way to defend against identity theft?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q9" value="a"/> Overshare personal details on social media</label>
-            <label><input type="radio" name="q9" value="b"/> Use MFA, monitor accounts and limit public personal info</label>
-            <label><input type="radio" name="q9" value="c"/> Reuse the same password everywhere</label>
-          </div>
-        </div>
+      <!-- Authorization -->
+      <section class="card long-read" aria-labelledby="authz">
+        <h2 id="authz" class="section-title">Authorization — determining what you can do</h2>
+        <p>
+          Authorization maps identities to permissions using roles, groups, attributes, and policies. It enforces access control at resource, API, and data levels.
+        </p>
 
-        <!-- Q10 -->
-        <div class="q-card">
-          <h4>10) Which access model assigns permissions to roles and then roles to users?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q10" value="a"/> ABAC (Attribute-Based Access Control)</label>
-            <label><input type="radio" name="q10" value="b"/> RBAC (Role-Based Access Control)</label>
-            <label><input type="radio" name="q10" value="c"/> MAC (Mandatory Access Control) only</label>
-          </div>
-        </div>
+        <h3>Models</h3>
+        <ul class="list">
+          <li><strong>RBAC (Role-Based Access Control):</strong> roles simplify assignment (e.g., "HR-Analyst" role has read access to payroll). Works well when job functions map cleanly to permissions.</li>
+          <li><strong>ABAC (Attribute-Based Access Control):</strong> policy decisions use attributes — user.department == "Engineering" AND resource.sensitivity != "High" AND request.time in business-hours.</li>
+          <li><strong>PBAC (Policy-Based Access Control):</strong> centralized policy engines (OPA, XACML) evaluate complex rules.</li>
+        </ul>
 
-        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
-          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
-          <button type="button" class="btn" id="resetQuiz">Reset</button>
-          <span id="quizResult" class="result" aria-live="polite"></span>
+        <div class="explain">
+          <p class="small muted">Hybrid approaches are common — RBAC for coarse control, ABAC for exceptions and contextual rules. Always enforce separation of duties for sensitive workflows (e.g., developer cannot deploy to production without approval).</p>
         </div>
-      </form>
-    </section>
+      </section>
+
+      <!-- How IAM works -->
+      <section class="card long-read" aria-labelledby="how">
+        <h2 id="how" class="section-title">How IAM Works — lifecycle & components</h2>
+        <ol class="list">
+          <li><strong>Provisioning:</strong> create account, set initial roles/groups, issue credentials.</li>
+          <li><strong>Authentication:</strong> verify credentials & factors (SSO, MFA).</li>
+          <li><strong>Authorization:</strong> policy check to allow/deny actions.</li>
+          <li><strong>Session management:</strong> tokens, expiry, refresh and revocation.</li>
+          <li><strong>Attestation / Access certification:</strong> periodic review of who has access and why.</li>
+          <li><strong>De-provisioning:</strong> remove access when role changes or employee leaves.</li>
+        </ol>
+
+        <h3>Important protocols & standards</h3>
+        <ul class="list">
+          <li><strong>SCIM</strong> — automates user provisioning between HR/IdP and apps.</li>
+          <li><strong>SAML</strong> — XML-based federation used for enterprise SSO.</li>
+          <li><strong>OAuth2</strong> — delegated authorization for APIs.</li>
+          <li><strong>OpenID Connect (OIDC)</strong> — identity layer on top of OAuth2 for authentication.</li>
+        </ul>
+
+        <div class="explain">
+          <p class="small muted">Design tip: integrate HR/Identity Source of Truth (HRIS) with IAM to automate lifecycle events and reduce orphaned accounts.</p>
+        </div>
+      </section>
+
+      <!-- SSO and Protocols -->
+      <section class="card long-read" aria-labelledby="sso">
+        <h2 id="sso" class="section-title">SSO, Federation & Protocols (SAML / OAuth2 / OIDC)</h2>
+        <p>
+          Single Sign-On (SSO) reduces credential fatigue and centralizes authentication. Federation allows identities from one domain (IdP) to access resources in another domain (SP).
+        </p>
+
+        <h3>SAML (Security Assertion Markup Language)</h3>
+        <p class="small muted">SAML issues assertions (XML) from an Identity Provider (IdP) to a Service Provider (SP) asserting the user identity and attributes. Common in enterprise web SSO.</p>
+
+        <h3>OAuth2 & OIDC</h3>
+        <p class="small muted">OAuth2 issues tokens for delegated access (e.g., apps accessing APIs on a user's behalf). OIDC sits on OAuth2 to provide user identity (ID Token) suitable for modern web & mobile apps.</p>
+
+        <div class="callout">
+          <strong>Operational reminder:</strong> rotate signing keys, monitor token usage, set short token lifetimes and use refresh tokens with caution (tied to client security).
+        </div>
+      </section>
+
+      <!-- PAM -->
+      <section class="card long-read" aria-labelledby="pam">
+        <h2 id="pam" class="section-title">Privileged Access Management (PAM)</h2>
+        <p>
+          PAM focuses on securing elevated accounts (root, admin, service accounts). Privileged actions are high-risk and require tighter controls: session recording, just-in-time access, approval workflows, and vaulting of secrets.
+        </p>
+        <ul class="list">
+          <li>Use a secrets vault (HashiCorp Vault, AWS Secrets Manager) instead of plaintext credentials.</li>
+          <li>Require session recording and approval for sensitive operations.</li>
+          <li>Implement just-in-time (JIT) elevation: grant temporary privileges for a limited window.</li>
+        </ul>
+      </section>
+
+      <!-- Passwords & Recovery -->
+      <section class="card long-read" aria-labelledby="pw">
+        <h2 id="pw" class="section-title">Password Best Practices & Account Recovery</h2>
+        <ul class="list">
+          <li>Use passphrases or long random passwords (>12–16 chars).</li>
+          <li>Server-side: store only salted, memory-hard hashes (Argon2, bcrypt with proper parameters).</li>
+          <li>Encourage password managers and block reused or breached passwords (integrate with breach databases).</li>
+          <li>Account recovery must be secure: avoid weak fallbacks (mother's maiden name). Employ multi-step recovery and human checks for high-risk accounts.</li>
+        </ul>
+        <div class="explain">
+          <p class="small muted">Usability: long complex passwords + password manager + MFA offers high security with acceptable user experience. Avoid excessive forced rotation unless compromise suspected.</p>
+        </div>
+      </section>
+
+      <!-- Identity theft -->
+      <section class="card long-read" aria-labelledby="theft">
+        <h2 id="theft" class="section-title">Identity Theft — detection & mitigation</h2>
+        <p>
+          Identity theft uses stolen identifiers to impersonate victims. Early detection (anomaly detection, unusual transactions) and strong prevention (encryption, MFA) reduce impact.
+        </p>
+        <ul class="list">
+          <li>Monitor for credential leaks and block compromised credentials.</li>
+          <li>Use behavioral analytics to detect account takeover (impossible travel, new device with fresh cookies).</li>
+          <li>Educate users about phishing, social engineering and safe handling of PII.</li>
+        </ul>
+      </section>
+
+      <!-- Monitoring & Metrics -->
+      <section class="card long-read" aria-labelledby="metrics">
+        <h2 id="metrics" class="section-title">Monitoring, Metrics & Compliance</h2>
+        <p>
+          IAM programs should be measurable. Key metrics:
+        </p>
+        <ul class="list">
+          <li>Time-to-provision and time-to-deprovision</li>
+          <li>Percentage of accounts with MFA enabled</li>
+          <li>Number of privileged accounts and JIT elevation events</li>
+          <li>Number of orphaned accounts found during audits</li>
+          <li>Number of failed login attempts and account lockouts</li>
+        </ul>
+        <div class="explain">
+          <p class="small muted">Audit logs should be tamper-evident and retained per policy for compliance (e.g., SOX, PCI, HIPAA). Regularly run access certification campaigns.</p>
+        </div>
+      </section>
+
+      <!-- Hands-on: Linux -->
+      <section class="card long-read" aria-labelledby="lab">
+        <h2 id="lab" class="section-title">Hands-On: Linux Users, Groups, ACLs, Sudo (Expanded)</h2>
+
+        <p>Below is a step-by-step lab. Run in a disposable VM (Ubuntu/Debian) — do NOT run on production systems.</p>
+
+        <div class="warn"><strong>Lab safety:</strong> this is destructive to test accounts; use snapshots and isolate network access.</div>
+
+        <h3>1) Create groups</h3>
+        <pre><code class="kbd">sudo groupadd securityTeam
+sudo groupadd softwareTeam
+# verify
+getent group securityTeam
+getent group softwareTeam</code></pre>
+
+        <h3>2) Create users with home directories</h3>
+        <pre><code class="kbd">sudo useradd -m -s /bin/bash user1
+sudo useradd -m -s /bin/bash user2
+sudo useradd -m -s /bin/bash user3
+sudo useradd -m -s /bin/bash user4
+# set passwords
+sudo passwd user1
+sudo passwd user2
+sudo passwd user3
+sudo passwd user4</code></pre>
+
+        <h3>3) Add users to groups (append safely)</h3>
+        <pre><code class="kbd">sudo usermod -aG securityTeam user1
+sudo usermod -aG securityTeam user2
+sudo usermod -aG softwareTeam user3
+sudo usermod -aG softwareTeam user4
+# verify membership
+id user2
+groups user2</code></pre>
+
+        <h3>4) Create a file as user1 and change group</h3>
+        <pre><code class="kbd">sudo -i -u user1 bash
+echo "This is the file created by user1" > /home/user1/user1file.txt
+ls -l /home/user1/user1file.txt
+# change file group to securityTeam
+chgrp securityTeam /home/user1/user1file.txt
+ls -l /home/user1/user1file.txt
+exit</code></pre>
+
+        <h3>5) Grant group write permission</h3>
+        <pre><code class="kbd"># grant group write so other securityTeam members can edit
+sudo chmod g+w /home/user1/user1file.txt
+ls -l /home/user1/user1file.txt
+# expected: -rw-rw-r--  user1 securityTeam</code></pre>
+
+        <h3>6) Test editing as user2</h3>
+        <pre><code class="kbd">sudo -i -u user2 bash
+# copy file locally to show editing overwrites vs append
+cp /home/user1/user1file.txt /home/user2
+echo "Edited by user2 on $(date)" >> /home/user1/user1file.txt
+cat /home/user1/user1file.txt
+exit</code></pre>
+
+        <h3>7) Ownership vs permissions vs ACLs</h3>
+        <pre><code class="kbd"># change owner (if required)
+sudo chown user1:securityTeam /home/user1/user1file.txt
+
+# view ACLs (Access Control Lists)
+getfacl /home/user1/user1file.txt
+
+# give explicit ACL so user2 has rw even if group perms change
+sudo setfacl -m u:user2:rw /home/user1/user1file.txt
+getfacl /home/user1/user1file.txt</code></pre>
+
+        <h3>8) Sudoers & delegated admin</h3>
+        <pre><code class="kbd"># create a securityAdmin group and allow sudo for specific commands
+sudo groupadd securityAdmin
+sudo usermod -aG securityAdmin youradminuser
+
+# add a rule using visudo (safer)
+sudo EDITOR='tee -a' visudo <<'EOF'
+%securityAdmin ALL=(ALL) /usr/bin/systemctl, /usr/bin/journalctl, /usr/bin/sshd
+EOF
+
+# verify sudo: run as a securityAdmin member
+sudo -l</code></pre>
+
+        <h3>9) Cleanup (lab)</h3>
+        <pre><code class="kbd"># remove users and optionally home directories
+sudo deluser --remove-home user1 || sudo userdel -r user1
+sudo deluser --remove-home user2
+sudo deluser --remove-home user3
+sudo deluser --remove-home user4
+# remove groups
+sudo groupdel securityTeam
+sudo groupdel softwareTeam
+sudo groupdel securityAdmin</code></pre>
+
+        <div class="explain">
+          <p class="small muted">Notes:
+            <ul>
+              <li>Many distros provide <code>adduser</code> wrapper that's friendlier than <code>useradd</code>. Use distro guidance.</li>
+              <li>ACLs provide per-user allowances beyond the standard owner/group/other model. Use <code>setfacl</code> / <code>getfacl</code> when you need finer control.</li>
+              <li>In production, use directory services (LDAP/AD/FreeIPA) and centralized provisioning (SCIM) rather than ad-hoc Linux accounts.</li>
+            </ul>
+          </p>
+        </div>
+      </section>
+
+      <!-- governance -->
+      <section class="card long-read" aria-labelledby="governance">
+        <h2 id="governance" class="section-title">Governance, Compliance & Policies</h2>
+        <p>
+          IAM implementations should be guided by policies: account lifecycle rules, privileged access reviews, acceptable use, and incident response. Map IAM controls to compliance frameworks relevant to your industry (PCI, HIPAA, SOX, GDPR).
+        </p>
+        <div class="explain">
+          <p class="small muted">Practical governance actions: schedule quarterly access reviews, define SOD (segregation of duties) rules, maintain tamper-evident logs, and require MFA for all privileged roles.</p>
+        </div>
+      </section>
+
+      <!-- final -->
+      <section class="card long-read" aria-labelledby="final">
+        <h2 id="final" class="section-title">Final Recommendations & Next Steps</h2>
+        <ul class="list">
+          <li>Enable MFA for all accounts; prefer hardware-backed tokens (FIDO2) for admins.</li>
+          <li>Automate provisioning/deprovisioning via SCIM + HR integration.</li>
+          <li>Use short-lived credentials for automation (use roles & temporary tokens).</li>
+          <li>Implement PAM for elevated accounts and secrets vaulting for service credentials.</li>
+          <li>Measure and report IAM KPIs regularly and run access certification campaigns.</li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="download">
+        <h2 id="download" class="section-title">Download / Export</h2>
+        <p class="small muted">Download expanded lesson notes or copy Markdown for your LMS.</p>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <button class="btn primary" id="downloadNotes">📥 Download Notes (Text)</button>
+          <button class="btn" id="copyMarkdown">📋 Copy Markdown</button>
+        </div>
+      </section>
+
+    </article>
 
     <footer class="container">
-      <p>© Learning Playground – Identity & Access Management • Lesson 6</p>
+      <p>© Learning Playground – Identity & Access Management • Lesson 6 (Expanded)</p>
     </footer>
   </main>
 
+  <!-- TTS Bar -->
+  <div id="ttsBar" class="tts-bar" aria-hidden="false">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" class="small" title="Pause">⏸</button>
+    <button id="ttsStop" class="small" title="Stop">⏹</button>
+
+    <span class="label">Voice</span>
+    <select id="ttsVoices" aria-label="Select voice"></select>
+
+    <span class="label">Rate</span>
+    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <span class="label">Pitch</span>
+    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+  </div>
+
   <script>
-    /* Theme toggle (persist) */
+    /* Theme toggle */
     const themeBtn = document.getElementById('toggleTheme');
     const keyTheme = 'lesson6-theme';
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -375,13 +438,11 @@
         document.documentElement.style.setProperty('--card','#ffffff');
         document.documentElement.style.setProperty('--text','#0b1220');
         document.documentElement.style.setProperty('--muted','#4a5875');
-        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
       } else {
         document.documentElement.style.setProperty('--bg','#0b1220');
         document.documentElement.style.setProperty('--card','#111a2e');
         document.documentElement.style.setProperty('--text','#e7eefc');
         document.documentElement.style.setProperty('--muted','#8aa0c3');
-        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
       }
     };
     const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
@@ -394,163 +455,163 @@
     });
 
     /* Download notes */
-    function downloadNotes() {
-      const title = 'Lesson6_IAM_Notes.txt';
-      const content = [
-        'Lesson 6 – Identity & Access Management (IAM)',
-        '',
-        'Table of Content',
-        'What is IAM?',
-        'What is an Identity?',
-        'Authentication & Authorization',
-        'How Does IAM Work?',
-        'Regulation of access',
-        'Password protection',
-        'Identity theft',
-        'Adding and granting permissions to users in Linux (hands-on)',
-        '',
-        'Key commands:',
-        'useradd - create user',
-        'groupadd - create group',
-        'usermod -aG group user - add user to group',
-        'chown owner:group file - change owner/group',
-        'chmod 640 file - set permissions',
-        '',
-        'Best practices: MFA, least privilege, RBAC, audit logs, password hashing & salting, use password managers.'
-      ].join('\\n');
+    document.getElementById('downloadNotes').addEventListener('click', () => {
+      const title = 'Lesson6_IdAM_Notes_Expanded.txt';
+      const nodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content p, .lesson-content li, .lesson-content pre');
+      const lines = [];
+      nodes.forEach(n => {
+        const tag = n.tagName.toLowerCase();
+        if (tag === 'h1' || tag === 'h2') lines.push('\n' + n.innerText + '\n');
+        else lines.push(n.innerText);
+      });
+      const content = lines.join('\n');
       const blob = new Blob([content], {type:'text/plain'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      const a = document.createElement('a'); a.href = url; a.download = title; document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-    }
-    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
-    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
-
-    /* Quiz logic */
-    const answers = { q1:'a', q2:'b', q3:'b', q4:'b', q5:'a', q6:'b', q7:'b', q8:'a', q9:'b', q10:'b' };
-    const explanations = {
-      q1: 'IAM ensures the right identities have appropriate access to resources via authentication, authorization and policies.',
-      q2: 'An email address or username is a typical digital identity attribute.',
-      q3: 'Authentication is the process of verifying the identity (who you are).',
-      q4: 'Authorization grants permissions to resources based on policies, roles or attributes (what you can do).',
-      q5: 'Least privilege means giving users only the access they need to perform their job.',
-      q6: 'Passwords should be stored as salted, slow hashes (e.g., bcrypt, Argon2) rather than plaintext.',
-      q7: 'chown changes file ownership (owner and/or group). chmod changes permissions.',
-      q8: '640 = owner read/write (6), group read (4), others none (0).',
-      q9: 'Use MFA, monitoring and limit public personal info to reduce identity theft risk.',
-      q10: 'RBAC assigns permissions to roles which are then granted to users; it simplifies permission management.'
-    };
-    const form = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitQuiz');
-    const resetBtn = document.getElementById('resetQuiz');
-    const resultSpan = document.getElementById('quizResult');
-    const scoreKey = 'lesson6-iam-score';
-    const attemptBtn = document.getElementById('attemptBtn');
-
-    attemptBtn.addEventListener('click', () => {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      localStorage.setItem('lesson6-attempted', '1');
-      const saved = localStorage.getItem(scoreKey);
-      if (saved) {
-        resultSpan.textContent = `Previous Score: ${saved}%`;
-        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
-      }
-      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
     });
 
-    function grade() {
-      let score = 0; let total = Object.keys(answers).length;
-      const missed = [];
-      // remove prior inline explanations
-      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
-      for (const q of Object.keys(answers)) {
-        const el = form.querySelector(`input[name="${q}"]:checked`);
-        // clear previous highlight
-        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-        if (!el) { missed.push(q); continue; }
-        if (el.value === answers[q]) {
-          score++;
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
-        } else {
-          missed.push(q);
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
+    /* Copy Markdown */
+    document.getElementById('copyMarkdown').addEventListener('click', async () => {
+      const nodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content p, .lesson-content li, .lesson-content pre');
+      let md = '';
+      nodes.forEach(n => {
+        const tag = n.tagName.toLowerCase();
+        if (tag === 'h1') md += `# ${n.innerText}\n\n`;
+        else if (tag === 'h2') md += `## ${n.innerText}\n\n`;
+        else if (tag === 'li') md += `- ${n.innerText}\n`;
+        else if (tag === 'pre') md += '```\n' + n.innerText + '\n```\n\n';
+        else md += `${n.innerText}\n\n`;
+      });
+      try { await navigator.clipboard.writeText(md); alert('Copied lesson content as Markdown to clipboard.'); }
+      catch(e){ alert('Could not copy to clipboard.'); }
+    });
+
+    /* TTS module using Web Speech API */
+    (function () {
+      if (!('speechSynthesis' in window)) {
+        console.warn('TTS not supported in this browser.');
+        const bar = document.getElementById('ttsBar'); if (bar) bar.style.display = 'none';
+        return;
+      }
+      const playBtn = document.getElementById('ttsPlay');
+      const pauseBtn = document.getElementById('ttsPause');
+      const stopBtn = document.getElementById('ttsStop');
+      const voicesSelect = document.getElementById('ttsVoices');
+      const rateInput = document.getElementById('ttsRate');
+      const pitchInput = document.getElementById('ttsPitch');
+      const autoBtn = document.getElementById('ttsToggleAuto');
+      const lesson = document.querySelector('.lesson-content') || document.body;
+
+      let utterance = null, sentences = [], currentIndex = 0, readyVoices = [];
+      const prefs = {
+        voiceURI: localStorage.getItem('tts.voice') || '',
+        rate: parseFloat(localStorage.getItem('tts.rate')) || 1,
+        pitch: parseFloat(localStorage.getItem('tts.pitch')) || 1,
+        auto: localStorage.getItem('tts.auto') === 'true' || false
+      };
+      rateInput.value = prefs.rate;
+      pitchInput.value = prefs.pitch;
+      autoBtn.style.opacity = prefs.auto ? '1' : '0.6';
+
+      function populateVoices() {
+        const voices = speechSynthesis.getVoices();
+        readyVoices = voices;
+        voicesSelect.innerHTML = '';
+        voices.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.voiceURI;
+          opt.textContent = `${v.name} (${v.lang})${v.default ? ' — default' : ''}`;
+          voicesSelect.appendChild(opt);
+        });
+        if (prefs.voiceURI) {
+          const found = [...voices].find(v => v.voiceURI === prefs.voiceURI);
+          if (found) voicesSelect.value = prefs.voiceURI;
         }
       }
-      const pct = Math.round((score/total)*100);
-      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
-      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
-      localStorage.setItem(scoreKey, pct);
+      populateVoices();
+      if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
 
-      // remove old review box
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-
-      if (missed.length) {
-        const review = document.createElement('div');
-        review.id = 'reviewBox';
-        review.style.marginTop = '12px';
-        review.style.padding = '12px';
-        review.style.border = '1px solid rgba(255,255,255,0.06)';
-        review.style.borderRadius = '10px';
-        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
-        let inner = '<strong>Review (missed questions)</strong><ul>';
-        missed.forEach(m => {
-          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
-          // attach inline explanation under the missed question
-          const radio = form.querySelector(`input[name="${m}"]`);
-          if (radio) {
-            const qCard = radio.closest('.q-card');
-            if (qCard) {
-              const ex = document.createElement('div');
-              ex.className = 'explain';
-              ex.textContent = explanations[m];
-              qCard.appendChild(ex);
-            }
-          }
-        });
-        inner += '</ul>';
-        review.innerHTML = inner;
-        form.appendChild(review);
-        setTimeout(()=>{ alert('You missed some questions. Explanations were added under each missed question.'); }, 80);
-      } else {
-        const perfect = document.createElement('div');
-        perfect.id = 'reviewBox';
-        perfect.style.marginTop = '12px';
-        perfect.style.padding = '12px';
-        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
-        perfect.style.borderRadius = '10px';
-        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
-        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
-        form.appendChild(perfect);
+      function getText() {
+        const nodes = lesson.querySelectorAll('h1,h2,p,li,pre');
+        return Array.from(nodes).map(n => n.innerText.trim()).filter(Boolean).join('.\n');
       }
-      submitBtn.disabled = true;
-    }
+      function buildSentences(text) { return text.split(/(?<=[.?!])\s+/); }
 
-    function resetQuiz() {
-      form.reset();
-      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-      resultSpan.textContent = '';
-      submitBtn.disabled = false;
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-      localStorage.removeItem(scoreKey);
-    }
-
-    submitBtn.addEventListener('click', grade);
-    resetBtn.addEventListener('click', resetQuiz);
-
-    // Restore previous attempt if user already attempted
-    const prev = localStorage.getItem(scoreKey);
-    if (localStorage.getItem('lesson6-attempted')) {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      if (prev) {
-        resultSpan.textContent = `Previous Score: ${prev}%`;
-        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
+      function speakFrom(index = 0) {
+        const text = getText();
+        sentences = buildSentences(text);
+        currentIndex = index;
+        if (currentIndex >= sentences.length) return;
+        speakSentence(sentences[currentIndex]);
       }
-    }
+      function speakSentence(sentence) {
+        if (!sentence || sentence.trim() === '') { currentIndex++; if (currentIndex < sentences.length) speakSentence(sentences[currentIndex]); return; }
+        cancel();
+        utterance = new SpeechSynthesisUtterance(sentence);
+        const voiceURI = voicesSelect.value || prefs.voiceURI;
+        const selected = readyVoices.find(v => v.voiceURI === voiceURI) || readyVoices.find(v => v.default) || readyVoices[0];
+        if (selected) utterance.voice = selected;
+        utterance.rate = parseFloat(rateInput.value);
+        utterance.pitch = parseFloat(pitchInput.value);
+        utterance.onstart = () => highlightSentence(sentence);
+        utterance.onend = () => {
+          currentIndex++;
+          if (currentIndex < sentences.length) setTimeout(()=>speakSentence(sentences[currentIndex]), 120);
+          else clearHighlights();
+        };
+        speechSynthesis.speak(utterance);
+      }
+      function cancel(){ if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
+      function pause(){ if (speechSynthesis.speaking) speechSynthesis.pause(); }
+      function resume(){ if (speechSynthesis.paused) speechSynthesis.resume(); }
+
+      function highlightSentence(sentence) {
+        clearHighlights();
+        const text = lesson.innerHTML;
+        const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').trim();
+        if (!safe) return;
+        const regex = new RegExp(safe);
+        const newHtml = text.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
+        if (newHtml !== text) lesson.innerHTML = newHtml;
+      }
+      function clearHighlights() {
+        const highlights = lesson.querySelectorAll('.tts-highlight');
+        highlights.forEach(el => { const txt = el.textContent; el.outerHTML = txt; });
+      }
+
+      playBtn.addEventListener('click', () => { if (speechSynthesis.paused) return resume(); if (speechSynthesis.speaking) return; speakFrom(0); savePrefs(); });
+      pauseBtn.addEventListener('click', () => { if (speechSynthesis.speaking) pause(); else if (speechSynthesis.paused) resume(); });
+      stopBtn.addEventListener('click', () => { cancel(); clearHighlights(); });
+      voicesSelect.addEventListener('change', savePrefs);
+      rateInput.addEventListener('change', savePrefs);
+      pitchInput.addEventListener('change', savePrefs);
+      autoBtn.addEventListener('click', () => { prefs.auto = !prefs.auto; localStorage.setItem('tts.auto', prefs.auto); autoBtn.style.opacity = prefs.auto ? '1' : '0.6'; });
+
+      function savePrefs() {
+        localStorage.setItem('tts.voice', voicesSelect.value || '');
+        localStorage.setItem('tts.rate', rateInput.value);
+        localStorage.setItem('tts.pitch', pitchInput.value);
+      }
+
+      function applySavedSettings() {
+        rateInput.value = prefs.rate;
+        pitchInput.value = prefs.pitch;
+        if (prefs.voiceURI && voicesSelect.options.length) voicesSelect.value = prefs.voiceURI;
+      }
+
+      let attempts = 0;
+      const voiceApplyInterval = setInterval(() => {
+        if (speechSynthesis.getVoices().length) { populateVoices(); applySavedSettings(); clearInterval(voiceApplyInterval); }
+        else if (attempts++ > 20) { applySavedSettings(); clearInterval(voiceApplyInterval); }
+      }, 300);
+
+      window.addEventListener('load', () => {
+        setTimeout(() => { if (prefs.auto) { try { speakFrom(0); } catch(e) { console.warn('Auto TTS blocked'); } } }, 700);
+      });
+
+      window.__Lesson6TTS = { speakFrom, cancel, pause, resume, getText };
+    })();
   </script>
 </body>
 </html>

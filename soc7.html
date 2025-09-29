@@ -3,18 +3,11 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Lesson 7 – Vulnerability Assessment & System Hacking</title>
-
+  <title>Lesson 7 – IdAM & Vulnerability Assessment (Expanded)</title>
   <style>
-    :root {
-      --bg: #0b1220;
-      --card: #111a2e;
-      --muted: #8aa0c3;
-      --text: #e7eefc;
-      --accent: #6ea8ff;
-      --accent-2: #7ef0c1;
-      --warning: #ffdf6e;
-      --danger: #ff7e93;
+    :root{
+      --bg:#0b1220; --card:#111a2e; --muted:#8aa0c3; --text:#e7eefc;
+      --accent:#6ea8ff; --accent-2:#7ef0c1; --warning:#ffdf6e; --danger:#ff7e93;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
@@ -29,31 +22,31 @@
     .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
     .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
     .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
-    .list{margin:0;padding-left:18px}
+    .long-read{line-height:1.7;font-size:15px}
+    .list{margin:0;padding-left:20px}
     .list li{margin:8px 0}
-    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
-    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
-    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
-    .subtitle small{display:block;color:var(--muted);margin-top:6px}
-    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
-    .q-options{display:grid;gap:8px;margin-top:8px}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
     .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
     .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn.ghost{background:transparent}
+    .muted{color:var(--muted)}
+    footer{opacity:.8;font-size:13px;padding:30px 0 60px}
+    pre{white-space:pre-wrap}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
     .result{font-size:18px;font-weight:700}
     .good{color:var(--accent-2)}
     .mid{color:var(--warning)}
     .bad{color:var(--danger)}
-    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
-    .section-title{margin:0 0 8px}
-    .muted{color:var(--muted)}
-    pre{white-space:pre-wrap;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
-    .meta{display:flex;gap:8px;flex-wrap:wrap}
-    .attempt-btn{margin-top:12px}
-    .long-read{line-height:1.65;font-size:15px}
-    .small{font-size:13px;color:var(--muted)}
-    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    .code-block{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Roboto Mono,monospace;font-size:13px;color:var(--muted);background:rgba(255,255,255,0.03);padding:10px;border-radius:8px}
+    /* TTS control bar */
+    .tts-bar { position: fixed; right: 18px; bottom: 18px; z-index: 9999; background: rgba(0,0,0,0.65); color: #00ffcc; padding: 10px 12px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.6); font-family: 'Share Tech Mono', monospace; display: flex; gap: 8px; align-items: center; backdrop-filter: blur(6px); min-width: 280px; }
+    .tts-bar button { background: linear-gradient(45deg,#ff0080,#7928ca); border: none; color: #fff; padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-width: 44px; }
+    .tts-bar select, .tts-bar input[type="range"] { background: rgba(255,255,255,0.06); color: #00ffcc; border: 1px solid rgba(255,255,255,0.06); padding: 6px; border-radius: 8px; font-family: inherit; }
+    .tts-highlight { background: rgba(0,255,200,0.15); transition: background 0.2s; padding:0 2px; border-radius:3px }
+    @media (max-width:600px){ .tts-bar{ left:50%; transform:translateX(-50%); right:auto; bottom:12px; min-width:88% } }
+    .grid-2{display:grid;gap:16px;grid-template-columns:1fr}
+    @media(min-width:900px){ .grid-2{grid-template-columns:1fr 420px} }
+    .sidebar-card{position:sticky;top:84px}
   </style>
 </head>
 <body>
@@ -62,8 +55,8 @@
       <div style="display:flex;align-items:center;gap:12px">
         <span class="badge">Lesson 7</span>
         <div>
-          <strong>Vulnerability Assessment & System Hacking — Lesson 7</strong>
-          <div class="small muted">Discovery • Prioritization • Tools • Defensive controls • Safe labs</div>
+          <strong>IdAM & Vulnerability Assessment — Expanded</strong>
+          <div class="small muted">Identity, Access Management • Vulnerability Assessment • System Hacking Labs • Quizzes</div>
         </div>
       </div>
       <div>
@@ -72,335 +65,592 @@
     </div>
   </header>
 
-  <main class="container">
-    <section class="hero card">
-      <h1 class="title">Vulnerability Assessment & System Hacking</h1>
-      <p class="subtitle">How to find, score, and manage security weaknesses — plus high-level coverage of system-hacking techniques and how defenders reduce risk.</p>
+  <main class="container grid-2">
+    <article class="lesson-content">
 
-      <div class="chips">
-        <span class="chip">Vulnerability</span>
-        <span class="chip">Assessment</span>
-        <span class="chip">Scanning</span>
-        <span class="chip">CVE</span>
-        <span class="chip">Password Cracking</span>
+      <section class="hero card">
+        <h1 class="title">Identity & Access Management (IdAM) + Vulnerability Assessment</h1>
+        <p class="subtitle">Comprehensive, expanded coverage of Identity lifecycle, authentication & authorization, policy models, password best practices, Linux hands-on IdAM labs, vulnerability assessment lifecycle and system hacking techniques.</p>
+        <div class="chips">
+          <span class="chip">IAM</span><span class="chip">MFA</span><span class="chip">RBAC</span><span class="chip">Vulnerability</span><span class="chip">Nessus</span><span class="chip">System Hacking</span>
+        </div>
+      </section>
+
+      <!-- Table of contents -->
+      <section class="card long-read" aria-labelledby="toc">
+        <h2 id="toc" class="section-title">Table of Contents</h2>
+        <ol class="list">
+          <li>What is an IAM?</li>
+          <li>What is an Identity?</li>
+          <li>Authentication & Authorization</li>
+          <li>How IAM works / provisioning / sessions</li>
+          <li>Access regulation: RBAC, ABAC, PoLP</li>
+          <li>Password protection & MFA</li>
+          <li>Identity theft & defenses</li>
+          <li>Hands-on: Linux user/group permissions</li>
+          <li>Vulnerability Assessment: lifecycle & tools</li>
+          <li>System hacking basics: scanning, enumeration, privilege escalation</li>
+          <li>Password cracking & keyloggers</li>
+          <li>Quizzes (IAM + Vulnerability)</li>
+        </ol>
+      </section>
+
+      <!-- IAM definition -->
+      <section class="card long-read" aria-labelledby="what-iam">
+        <h2 id="what-iam" class="section-title">1. What is an IAM?</h2>
+        <p>
+          Identity and Access Management (IAM) is the set of policies, processes, and technologies that ensure the right people and machines (identities)
+          have the right access to the right resources at the right time — and that unauthorized access is prevented. IAM supports onboarding, offboarding,
+          authorization changes, and auditing across many systems.
+        </p>
+        <div class="explain">
+          <p class="small muted"><strong>Why it matters:</strong> without a consolidated IAM approach organizations face excessive privileged accounts, orphaned access, compliance gaps, and increased risk of data breaches.</p>
+          <p><strong>Modern IAM capabilities</strong> include single sign-on (SSO), federated identity (OAuth/OIDC/SAML), multi-factor authentication (MFA), privileged access management (PAM), automated provisioning, identity governance, and analytics-driven anomaly detection.</p>
+        </div>
+      </section>
+
+      <!-- Identity -->
+      <section class="card long-read" aria-labelledby="what-identity">
+        <h2 id="what-identity" class="section-title">2. What is an Identity?</h2>
+        <p>
+          A digital identity is a collection of attributes that uniquely identify a person, machine, or thing in a computing environment: usernames, email, employee ID,
+          device MAC addresses, X.509 certificates, API keys, service principals, etc.
+        </p>
+        <div class="explain">
+          <p><strong>Identity types:</strong></p>
+          <ul class="list">
+            <li><strong>Human identities:</strong> employees, contractors, customers (login credentials, MFA devices)</li>
+            <li><strong>Machine/service identities:</strong> application service accounts, Kubernetes service accounts, API keys</li>
+            <li><strong>Device identities:</strong> IoT devices with certificates or unique hardware IDs</li>
+          </ul>
+          <p class="small muted">Strong identity hygiene includes canonical identifiers, lifecycle management, ownership, and deprovisioning when roles change.</p>
+        </div>
+      </section>
+
+      <!-- Authentication -->
+      <section class="card long-read" aria-labelledby="authn">
+        <h2 id="authn" class="section-title">3. Authentication — proving who you are</h2>
+        <p>
+          Authentication is the mechanism of verifying identity. It's the gateway to authorization; if authentication is weak, everything else fails.
+        </p>
+
+        <h3>Authentication factors (expanded)</h3>
+        <ul class="list">
+          <li><strong>Something you know:</strong> passwords, PINs, knowledge-based answers. Easy to implement but vulnerable to phishing, reuse and leaks.</li>
+          <li><strong>Something you have:</strong> OTP tokens (hardware or app), FIDO2/WebAuthn security keys, smartcards. Good protection against remote credential theft.</li>
+          <li><strong>Something you are:</strong> biometrics like fingerprint, face, voice. Convenient but requires privacy and fallback considerations (you can't change your fingerprint).</li>
+          <li><strong>Adaptive / risk-based:</strong> uses context (location, device posture, time of day) to step up authentication or block access.</li>
+        </ul>
+
+        <div class="explain">
+          <p class="small muted">MFA recommendations: prefer phishing-resistant factors (security keys, platform authenticators) over SMS OTP. Use adaptive policies to reduce friction while maximizing security.</p>
+        </div>
+
+        <h3>Quiz — Authentication (quick)</h3>
+        <div class="q-card" id="authQuizCard">
+          <h4>1) Which factor is phishing-resistant?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="a1" value="a"/> SMS OTP</label>
+            <label><input type="radio" name="a1" value="b"/> Security key (FIDO2/WebAuthn)</label>
+            <label><input type="radio" name="a1" value="c"/> Password</label>
+          </div>
+          <div style="margin-top:10px"><button class="btn primary" id="gradeAuth">Grade</button> <span id="authResult" class="small"></span></div>
+        </div>
+      </section>
+
+      <!-- Authorization -->
+      <section class="card long-read" aria-labelledby="authz">
+        <h2 id="authz" class="section-title">4. Authorization — what you're allowed to do</h2>
+        <p>
+          Authorization determines actions and data a verified identity may perform or access. Implementing good authorization models reduces blast radius and enforces compliance.
+        </p>
+
+        <h3>Access models</h3>
+        <ul class="list">
+          <li><strong>Role-Based Access Control (RBAC):</strong> assign permissions to roles, assign users to roles. Great for predictable org structures.</li>
+          <li><strong>Attribute-Based Access Control (ABAC):</strong> policies evaluate attributes (user role, resource sensitivity, time, location). Powerful for dynamic policies.</li>
+          <li><strong>Policy-Based Access Control / PBAC:</strong> centralized policies evaluate requests (useful when combining context and attributes).</li>
+          <li><strong>Least Privilege (PoLP):</strong> grant only the minimal access to perform tasks and revoke when no longer needed.</li>
+        </ul>
+
+        <div class="explain">
+          <p class="small muted">Practical guidance: use RBAC for coarse-grained role assignment and ABAC for fine-grained, context-aware decisions. Combine with periodic access reviews and automated provisioning to avoid entitlement creep.</p>
+        </div>
+      </section>
+
+      <!-- IAM Operations -->
+      <section class="card long-read" aria-labelledby="how-iam-works">
+        <h2 id="how-iam-works" class="section-title">5. How IAM Works — lifecycle & operations</h2>
+        <p>
+          IAM systems connect identity stores (HR systems, AD, cloud IAM) to applications via connectors, SAML/OIDC, SCIM provisioning, and enforce authentication & authorization policies.
+        </p>
+
+        <h3>Core operations</h3>
+        <ul class="list">
+          <li><strong>Provisioning:</strong> create accounts, assign roles automatically when HR record indicates hire/role change.</li>
+          <li><strong>Deprovisioning:</strong> promptly revoke access at offboarding to avoid orphaned credentials.</li>
+          <li><strong>Just-in-time access & approval flows:</strong> temporary elevation with audit trail and expiry.</li>
+          <li><strong>Audit & certification:</strong> scheduled reviews where managers certify who should keep access.</li>
+          <li><strong>Federation:</strong> SSO between organizations (SAML/OIDC) to avoid sharing passwords across domains.</li>
+        </ul>
+
+        <div class="explain">
+          <p class="small muted">Automation is key: automate provisioning/deprovisioning, entitlement reviews, and password rotation to reduce human error and reaction time.</p>
+        </div>
+      </section>
+
+      <!-- Password protection -->
+      <section class="card long-read" aria-labelledby="passwords">
+        <h2 id="passwords" class="section-title">6. Password Protection & MFA</h2>
+        <p>
+          Passwords remain ubiquitous. Improve safety by enforcing complexity, uniqueness, storage best practices, and combining with MFA.
+        </p>
+
+        <h3>Storage & hashing</h3>
+        <ul class="list">
+          <li>Never store plaintext. Store salted, slow hashes (Argon2, bcrypt, scrypt, PBKDF2).</li>
+          <li>Use per-user salt (random) and a work factor appropriate for current hardware.</li>
+          <li>Use password breach checks (e.g., k-Anonymity HIBP API or internal breach datasets) on password set/change.</li>
+        </ul>
+
+        <h3>Password policies & user experience</h3>
+        <p class="small muted">Avoid overly punitive complexity that leads to reuse — favor passphrases + MFA + breach detection. Encourage password managers for secure unique passwords.</p>
+
+        <div class="explain">
+          <p><strong>Multi-Factor Advice:</strong> prefer app-based TOTP & hardware/WebAuthn keys for high-value accounts. Regularly review recovery flows — account recovery is a common attack vector.</p>
+        </div>
+      </section>
+
+      <!-- Identity theft -->
+      <section class="card long-read" aria-labelledby="identity-theft">
+        <h2 id="identity-theft" class="section-title">7. Identity Theft — risks & protections</h2>
+        <p>
+          Identity theft arises when attackers successfully impersonate users. This leads to fraud, data breaches, and lateral movement in corporate environments.
+        </p>
+        <div class="explain">
+          <ul class="list">
+            <li>Protect PII with encryption, data minimization, and strict access controls.</li>
+            <li>Monitor for abnormal usage patterns (new devices, impossible travel, high-risk actions).</li>
+            <li>Train users to spot phishing and use phishing-resistant MFA to raise attack cost.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Hands-on Linux IdAM -->
+      <section class="card long-read" aria-labelledby="linux-labs">
+        <h2 id="linux-labs" class="section-title">8. Hands-on: Linux users, groups & permissions (IdAM lab)</h2>
+        <p class="small muted">Commands assume sudo privileges and a Debian/Ubuntu-style environment. Be careful and use a disposable VM for practice.</p>
+
+        <h3>Step-by-step (expanded)</h3>
+        <ol class="list">
+          <li><strong>Create groups</strong>: <code>sudo groupadd securityTeam</code> and <code>sudo groupadd softwareTeam</code>. Groups centralize permissions.</li>
+          <li><strong>Verify group file tail</strong>: <code>tail -n 6 /etc/group</code> to inspect the end of group definitions after creation.</li>
+          <li><strong>Create users</strong>: create 4 users with home directories: <code>sudo useradd -m user1</code> ... <code>user4</code>. Add comment: <code>-c "Security team member"</code> if desired.</li>
+          <li><strong>Set passwords</strong>: <code>sudo passwd user1</code> ... ensure secure test passwords in labs (never use real passwords).</li>
+          <li><strong>Add users to groups</strong>: <code>sudo usermod -aG securityTeam user1</code> and <code>user2</code>; <code>sudo usermod -aG softwareTeam user3</code> and <code>user4</code>. Note: prefer usermod -aG over adduser for scripts.</li>
+          <li><strong>Validate /etc/passwd & /etc/group</strong>: <code>tail -n 6 /etc/passwd</code> and <code>tail -n 6 /etc/group</code>.</li>
+          <li><strong>Create a file as user1</strong>: <code>su - user1</code>, then <code>echo "This is the file created by user1" > user1file.txt</code>.</li>
+          <li><strong>Check permissions</strong>: <code>ls -l user1file.txt</code> — expected <code>-rw-r--r-- user1 user1group</code> initially.</li>
+          <li><strong>Change group</strong>: <code>chgrp securityTeam user1file.txt</code>. Now group is <code>securityTeam</code>.</li>
+          <li><strong>Grant write to group</strong>: <code>chmod g+w user1file.txt</code>. Now group members (user2) can edit file.</li>
+          <li><strong>Test edit</strong>: <code>su - user2</code> and try <code>echo "user2 edited" >> ~/user1file.txt</code> (assuming paths), or use an editor.</li>
+          <li><strong>Advanced ACLs</strong>: if you need per-user fine-grained control, use POSIX ACLs: <code>sudo setfacl -m u:user2:rw user1file.txt</code> and view with <code>getfacl user1file.txt</code>.</li>
+        </ol>
+
+        <div class="explain">
+          <p class="small muted">Notes: file ownership (user:group) plus permission bits (owner/group/other) create the basic impermeable lines. Use ACLs where Unix perms are insufficient. For sudo rules use <code>/etc/sudoers</code> and <code>visudo</code> to avoid syntactic mistakes.</p>
+        </div>
+
+        <h3>Linux lab pitfalls & hardening</h3>
+        <ul class="list">
+          <li>Limit sudoers to required commands using command restrictions.</li>
+          <li>Disable direct root login and use sudo with auditable logs.</li>
+          <li>Use centralized identity (LDAP/AD) for larger orgs to simplify provisioning.</li>
+        </ul>
+      </section>
+
+      <!-- IAM Quiz -->
+      <section class="card" aria-labelledby="iam-quiz">
+        <h2 id="iam-quiz" class="section-title">Quiz A — Identity & Access Management</h2>
+        <p class="muted">10 questions. Grade shows explanations for missed items.</p>
+
+        <form id="iamQuizForm">
+          <!-- Q1 -->
+          <div class="q-card">
+            <h4>1) Which of these best describes ABAC?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq1" value="a"/> Access based only on assigned role</label>
+              <label><input type="radio" name="iq1" value="b"/> Access decisions based on attributes like user role, resource sensitivity and environment</label>
+              <label><input type="radio" name="iq1" value="c"/> Manual approval only</label>
+            </div>
+          </div>
+          <!-- Q2 -->
+          <div class="q-card">
+            <h4>2) Best storage for passwords?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq2" value="a"/> Plaintext in DB</label>
+              <label><input type="radio" name="iq2" value="b"/> Salted, slow hash (Argon2/bcrypt)</label>
+              <label><input type="radio" name="iq2" value="c"/> Encrypted with reversible symmetric key stored next to DB</label>
+            </div>
+          </div>
+          <!-- Q3 -->
+          <div class="q-card">
+            <h4>3) Which is phishing-resistant?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq3" value="a"/> SMS OTP</label>
+              <label><input type="radio" name="iq3" value="b"/> TOTP mobile app (authenticator)</label>
+              <label><input type="radio" name="iq3" value="c"/> FIDO2/WebAuthn security key</label>
+            </div>
+          </div>
+          <!-- Q4 -->
+          <div class="q-card">
+            <h4>4) Principle of Least Privilege means:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq4" value="a"/> Grant admin rights to all users</label>
+              <label><input type="radio" name="iq4" value="b"/> Grant only the minimal permissions required for a task</label>
+              <label><input type="radio" name="iq4" value="c"/> Remove all auditing</label>
+            </div>
+          </div>
+          <!-- Q5 -->
+          <div class="q-card">
+            <h4>5) SCIM is used for:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq5" value="a"/> Provisioning users between identity and apps</label>
+              <label><input type="radio" name="iq5" value="b"/> Encrypting data at rest</label>
+              <label><input type="radio" name="iq5" value="c"/> Monitoring network traffic</label>
+            </div>
+          </div>
+
+          <!-- Q6 -->
+          <div class="q-card">
+            <h4>6) Deprovisioning should occur:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq6" value="a"/> When an employee changes job roles and no longer needs previous access</label>
+              <label><input type="radio" name="iq6" value="b"/> Only at end of year</label>
+              <label><input type="radio" name="iq6" value="c"/> Never</label>
+            </div>
+          </div>
+
+          <!-- Q7 -->
+          <div class="q-card">
+            <h4>7) A machine identity might be:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq7" value="a"/> API key or service principal</label>
+              <label><input type="radio" name="iq7" value="b"/> Employee phone number only</label>
+              <label><input type="radio" name="iq7" value="c"/> Physical office keycard only</label>
+            </div>
+          </div>
+
+          <!-- Q8 -->
+          <div class="q-card">
+            <h4>8) Auditing access should include:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq8" value="a"/> Who accessed what, when, and from where</label>
+              <label><input type="radio" name="iq8" value="b"/> Only action names without user IDs</label>
+              <label><input type="radio" name="iq8" value="c"/> No logs to avoid storage costs</label>
+            </div>
+          </div>
+
+          <!-- Q9 -->
+          <div class="q-card">
+            <h4>9) Federation protocols include:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq9" value="a"/> SAML & OIDC</label>
+              <label><input type="radio" name="iq9" value="b"/> FTP & SMTP</label>
+              <label><input type="radio" name="iq9" value="c"/> SNMP & ICMP</label>
+            </div>
+          </div>
+
+          <!-- Q10 -->
+          <div class="q-card">
+            <h4>10) Which is a good recovery control?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq10" value="a"/> Weak security questions only</label>
+              <label><input type="radio" name="iq10" value="b"/> Multi-factor recovery with verification and human review</label>
+              <label><input type="radio" name="iq10" value="c"/> Publicly posted reset tokens</label>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+            <button type="button" class="btn primary" id="submitIam">Submit IAM Quiz</button>
+            <button type="button" class="btn" id="resetIam">Reset</button>
+            <span id="iamResult" class="result" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Vulnerability Assessment -->
+      <section class="card long-read" aria-labelledby="vuln-what">
+        <h2 id="vuln-what" class="section-title">9. Vulnerability — definition & assessment overview</h2>
+        <p>
+          A vulnerability is a weakness (software bug, misconfiguration, design flaw, or missing control) that an attacker can exploit to perform unauthorized actions.
+        </p>
+        <div class="explain">
+          <p class="small muted">Assessments identify, quantify and prioritize vulnerabilities to enable risk-based remediation.</p>
+          <p><strong>Level of risk formula (practical perspective):</strong></p>
+          <pre>LevelOfRisk = (ThreatLikelihood * VulnerabilitySeverity) / CountermeasureStrength * BusinessImpact</pre>
+        </div>
+
+        <h3>Assessment process (expanded)</h3>
+        <ol class="list">
+          <li><strong>Asset discovery:</strong> inventory everything — endpoints, cloud assets, databases, containers, IAM identities.</li>
+          <li><strong>Vulnerability scanning:</strong> automated scans using Nessus/OpenVAS/Nmap for known CVEs and weak configs.</li>
+          <li><strong>Analysis & prioritization:</strong> map CVSS, asset criticality, exploitability, and business impact to create remediation priority.</li>
+          <li><strong>Remediation & verification:</strong> patch, mitigate, or accept risk; then verify with follow-up scans.</li>
+        </ol>
+      </section>
+
+      <!-- Tools -->
+      <section class="card long-read" aria-labelledby="vuln-tools">
+        <h2 id="vuln-tools" class="section-title">10. Vulnerability Assessment Tools & Scoring</h2>
+        <p>
+          Common tools: Nessus (commercial/edu), OpenVAS (open), Nmap (discovery/port & OS fingerprinting), Burp Suite (web app testing), Metasploit (exploit validation), Wireshark (packet analysis).
+        </p>
+
+        <h3>CVSS scoring</h3>
+        <p class="small muted">CVSS measures base, temporal and environmental scores. Treat CVSS as an input into risk-based prioritization — pair it with asset value and threat intelligence.</p>
+      </section>
+
+      <!-- System Hacking -->
+      <section class="card long-read" aria-labelledby="sys-hack">
+        <h2 id="sys-hack" class="section-title">11. System Hacking — stages & techniques</h2>
+        <p>
+          System hacking is the lifecycle of exploiting a target: footprinting → scanning → enumeration → vulnerability analysis → gaining access → maintaining access → covering tracks.
+        </p>
+
+        <h3>Gaining access techniques</h3>
+        <ul class="list">
+          <li>Brute-force & credential stuffing (leaked credentials)</li>
+          <li>Exploiting unpatched software (CVE-based)</li>
+          <li>Social engineering (phishing, vishing)</li>
+          <li>Web application attacks (SQLi, RCE)</li>
+        </ul>
+
+        <h3>Privilege escalation</h3>
+        <p class="small muted">After initial access, attackers often seek higher privileges via misconfigurations (SUID files, weak sudoers entries), unpatched kernel bugs, or credential harvesting.</p>
+
+        <h3>Hiding files & persistence</h3>
+        <p>Techniques include creating hidden files, cron jobs, registry autoruns (Windows), kernel rootkits, or scheduled tasks.</p>
+
+        <h3>Clearing logs</h3>
+        <p class="small muted">Attackers may remove evidence from logs to avoid detection; defenders should use centralized immutable logs and integrity checks to prevent tampering.</p>
+      </section>
+
+      <!-- Tools & Nessus -->
+      <section class="card long-read" aria-labelledby="nessus">
+        <h2 id="nessus" class="section-title">12. Scan & Find Vulnerabilities (Nessus example)</h2>
+        <p>
+          Nessus is commonly used to run authenticated and unauthenticated scans to find CVEs, weak configs, missing patches, and policy violations.
+        </p>
+        <ol class="list">
+          <li>Install Nessus (download package for your distro), install and start service.</li>
+          <li>Create scans: discovery, credentialed host audit, web application checks.</li>
+          <li>Run scans, triage findings by CVSS + asset criticality, and create remediation tickets.</li>
+        </ol>
+        <div class="explain">
+          <p class="small muted">Credentialed scans yield better results (can check registry, file versions, installed packages). Always get written permission to scan networks you do not own.</p>
+        </div>
+      </section>
+
+      <!-- Password Breaking -->
+      <section class="card long-read" aria-labelledby="pwd-break">
+        <h2 id="pwd-break" class="section-title">13. Password Breaking & Recovery tools</h2>
+        <p>
+          Common password cracking workflows include hash collection, identifying hash type, and running tools like Hashcat with rockyou or custom wordlists and rules.
+        </p>
+        <div class="explain">
+          <ul class="list">
+            <li><strong>Hash collection:</strong> obtain /etc/shadow, NTLM hashes, or DB leaks.</li>
+            <li><strong>Hash type identification:</strong> use hash-identifier or online tools.</li>
+            <li><strong>Cracking:</strong> dictionary, rule-based, mask, or brute-force attacks. GPUs accelerate cracking dramatically.</li>
+          </ul>
+          <p class="small muted">Always use cracking tools responsibly and only in authorized labs or with client permission.</p>
+        </div>
+      </section>
+
+      <!-- Keyloggers -->
+      <section class="card long-read" aria-labelledby="keyloggers">
+        <h2 id="keyloggers" class="section-title">14. Keyloggers — risks & detection</h2>
+        <p>
+          Keyloggers capture keystrokes. They can be hardware (USB devices) or software (kernel/user-space). They are used by attackers to harvest credentials.
+        </p>
+        <div class="explain">
+          <ul class="list">
+            <li>Detect via EDR/anti-malware, unusual processes, or kernel module anomalies.</li>
+            <li>Mitigate with MFA, regular endpoint scans, and restricting use of removable devices.</li>
+            <li>For demo code: only use well-audited training examples in an isolated environment (never on production systems or third-party machines).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Vulnerability Quiz -->
+      <section class="card" aria-labelledby="vuln-quiz">
+        <h2 id="vuln-quiz" class="section-title">Quiz B — Vulnerability Assessment & System Hacking</h2>
+        <p class="muted">10 questions covering lifecycle, tools, and basic attack/defense concepts.</p>
+
+        <form id="vulnQuizForm">
+          <!-- VQ1 -->
+          <div class="q-card">
+            <h4>1) Which tool is primarily used for port scanning and host discovery?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq1" value="a"/> Nessus</label>
+              <label><input type="radio" name="vq1" value="b"/> Nmap</label>
+              <label><input type="radio" name="vq1" value="c"/> Wireshark</label>
+            </div>
+          </div>
+          <!-- VQ2 -->
+          <div class="q-card">
+            <h4>2) A credentialed vulnerability scan is:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq2" value="a"/> A scan performed using valid credentials to access deeper host info</label>
+              <label><input type="radio" name="vq2" value="b"/> A scan without credentials only checking open ports</label>
+              <label><input type="radio" name="vq2" value="c"/> A manual code review</label>
+            </div>
+          </div>
+          <!-- VQ3 -->
+          <div class="q-card">
+            <h4>3) CVSS score 9.5 is:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq3" value="a"/> Low</label>
+              <label><input type="radio" name="vq3" value="b"/> High</label>
+              <label><input type="radio" name="vq3" value="c"/> Critical</label>
+            </div>
+          </div>
+          <!-- VQ4 -->
+          <div class="q-card">
+            <h4>4) Which is an example of privilege escalation?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq4" value="a"/> A user runs sudo to perform admin tasks when allowed</label>
+              <label><input type="radio" name="vq4" value="b"/> An attacker exploits SUID binary to gain root</label>
+              <label><input type="radio" name="vq4" value="c"/> Both</label>
+            </div>
+          </div>
+          <!-- VQ5 -->
+          <div class="q-card">
+            <h4>5) Good mitigation against log tampering is:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq5" value="a"/> Centralized, write-once (immutable) logs</label>
+              <label><input type="radio" name="vq5" value="b"/> Disabling logging</label>
+              <label><input type="radio" name="vq5" value="c"/> Local-only logs</label>
+            </div>
+          </div>
+
+          <!-- VQ6 -->
+          <div class="q-card">
+            <h4>6) Nessus vs OpenVAS: which statement is right?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq6" value="a"/> Nessus is commercial; OpenVAS is open-source</label>
+              <label><input type="radio" name="vq6" value="b"/> Both are identical in licensing</label>
+              <label><input type="radio" name="vq6" value="c"/> Neither can scan web apps</label>
+            </div>
+          </div>
+
+          <!-- VQ7 -->
+          <div class="q-card">
+            <h4>7) Which attack captures keystrokes?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq7" value="a"/> Phishing</label>
+              <label><input type="radio" name="vq7" value="b"/> Keylogger</label>
+              <label><input type="radio" name="vq7" value="c"/> DDoS</label>
+            </div>
+          </div>
+
+          <!-- VQ8 -->
+          <div class="q-card">
+            <h4>8) Responsible disclosure means:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq8" value="a"/> Publicly reveal exploit immediately</label>
+              <label><input type="radio" name="vq8" value="b"/> Notify vendor and coordinate a fix before public release</label>
+              <label><input type="radio" name="vq8" value="c"/> Sell exploit on darknet</label>
+            </div>
+          </div>
+
+          <!-- VQ9 -->
+          <div class="q-card">
+            <h4>9) Which is used to inspect packets in detail?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq9" value="a"/> Wireshark</label>
+              <label><input type="radio" name="vq9" value="b"/> Metasploit</label>
+              <label><input type="radio" name="vq9" value="c"/> Nessus</label>
+            </div>
+          </div>
+
+          <!-- VQ10 -->
+          <div class="q-card">
+            <h4>10) Before performing scans on a client network you must:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq10" value="a"/> Get written authorization/permission</label>
+              <label><input type="radio" name="vq10" value="b"/> Start scanning immediately to find issues</label>
+              <label><input type="radio" name="vq10" value="c"/> Post results publicly</label>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+            <button type="button" class="btn primary" id="submitVuln">Submit Vulnerability Quiz</button>
+            <button type="button" class="btn" id="resetVuln">Reset</button>
+            <span id="vulnResult" class="result" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Download / Copy -->
+      <section class="card" aria-labelledby="download">
+        <h2 id="download" class="section-title">Download / Copy</h2>
+        <p class="small muted">Download lesson notes or copy as Markdown for an LMS or handouts.</p>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <button class="btn primary" id="downloadNotes">📥 Download Notes (Text)</button>
+          <button class="btn" id="copyMarkdown">📋 Copy Markdown</button>
+        </div>
+      </section>
+
+      <footer class="container">
+        <p>© Learning Playground – IdAM & Vulnerability Assessment • Lesson 7 (Expanded)</p>
+      </footer>
+    </article>
+
+    <!-- Sidebar -->
+    <aside class="sidebar-card">
+      <div class="card">
+        <h3 class="section-title">Quick Links</h3>
+        <ul class="list">
+          <li><a href="#what-iam">What is IAM?</a></li>
+          <li><a href="#authn">Authentication</a></li>
+          <li><a href="#linux-labs">Linux Hands-on</a></li>
+          <li><a href="#iam-quiz">IAM Quiz</a></li>
+          <li><a href="#vuln-what">Vulnerability Overview</a></li>
+          <li><a href="#vuln-quiz">Vulnerability Quiz</a></li>
+        </ul>
       </div>
-    </section>
 
-    <!-- TOC -->
-    <section class="card long-read" aria-labelledby="toc">
-      <h2 id="toc" class="section-title">Table of Content</h2>
-      <ol class="list">
-        <li>What Is a Vulnerability?</li>
-        <li>Vulnerability Assessment and Process</li>
-        <li>Types of Vulnerability Analysis</li>
-        <li>Vulnerability Management Lifecycle</li>
-        <li>Vulnerability Assessment Tools</li>
-        <li>Vulnerability Scoring Systems</li>
-        <li>Vulnerability Assessment Report</li>
-        <li>System Hacking (conceptual)</li>
-        <li>Scan and Find Vulnerabilities with Tools (high level)</li>
-        <li>Password Breaking (overview)</li>
-        <li>Keyloggers & Keystroke Capture (overview)</li>
-      </ol>
-    </section>
-
-    <!-- What is a vulnerability -->
-    <section class="card long-read" aria-labelledby="what">
-      <h2 id="what" class="section-title">What Is a Vulnerability?</h2>
-      <p>A vulnerability is any flaw, misconfiguration, weakness or missing control in hardware, software, or processes that can be used by an attacker to compromise confidentiality, integrity or availability. Examples include unpatched software, weak passwords, open ports, default credentials, insecure configurations, and logical application bugs.</p>
-      <div class="callout">
-        <strong>Risk vs. vulnerability:</strong> a vulnerability is a technical weakness; risk is the combination of vulnerability, likelihood, and impact on the business.
+      <div class="card" style="margin-top:12px">
+        <h3 class="section-title">Cheat sheet</h3>
+        <ul class="list">
+          <li><strong>RBAC</strong>: Roles → Permissions → Users</li>
+          <li><strong>ABAC</strong>: Policies evaluate attributes</li>
+          <li><strong>MFA</strong>: Use phishing-resistant keys</li>
+          <li><strong>Vulnerability cycle</strong>: Discover → Assess → Remediate → Verify</li>
+        </ul>
       </div>
-    </section>
-
-    <!-- Vulnerability Assessment -->
-    <section class="card long-read" aria-labelledby="vuln-assess">
-      <h2 id="vuln-assess" class="section-title">Vulnerability Assessment — Purpose & Process</h2>
-      <p>Vulnerability assessment is a repeatable process that discovers weaknesses, quantifies their severity, and helps prioritize remediation. The goal is not just to find issues but to inform decision makers about fixes and compensating controls.</p>
-      <h3>Typical steps</h3>
-      <ol class="list">
-        <li><strong>Scope definition:</strong> assets, networks, applications and constraints.</li>
-        <li><strong>Asset discovery:</strong> identify hosts, services, and owners.</li>
-        <li><strong>Automated scanning:</strong> run authenticated and unauthenticated scans with vetted tools.</li>
-        <li><strong>Manual verification:</strong> reduce false positives and validate findings.</li>
-        <li><strong>Prioritization:</strong> rank by severity, exploitability and business impact.</li>
-        <li><strong>Reporting & remediation:</strong> deliver actionable reports and track fixes.</li>
-        <li><strong>Re-scan & verify:</strong> confirm remediation and close the loop.</li>
-      </ol>
-    </section>
-
-    <!-- Types -->
-    <section class="card long-read" aria-labelledby="types">
-      <h2 id="types" class="section-title">Types of Vulnerability Analysis</h2>
-      <p>Different scopes require different techniques. Common types:</p>
-      <ul class="list">
-        <li><strong>Network-based scanning:</strong> discover live hosts, open ports and network-exposed services.</li>
-        <li><strong>Host-based scanning:</strong> inspect installed software, missing patches, insecure configurations and local policy issues.</li>
-        <li><strong>Wireless scanning:</strong> assess Wi-Fi configuration, encryption and rogue access points.</li>
-        <li><strong>Application scanning:</strong> scan web and mobile apps for injection flaws, insecure authentication, and misconfigurations.</li>
-        <li><strong>Database scanning:</strong> identify misconfigurations, weak accounts and injection points specific to DB engines.</li>
-      </ul>
-      <div class="explain">Note: automated scanners are powerful but produce false positives — manual validation is essential.</div>
-    </section>
-
-    <!-- Lifecycle -->
-    <section class="card long-read" aria-labelledby="lifecycle">
-      <h2 id="lifecycle" class="section-title">Vulnerability Management Lifecycle</h2>
-      <p>A mature vulnerability program treats vulnerabilities as lifecycle items:</p>
-      <ol class="list">
-        <li><strong>Discovery:</strong> continuous asset and vulnerability discovery.</li>
-        <li><strong>Assessment:</strong> scan and classify findings.</li>
-        <li><strong>Prioritization:</strong> combine CVSS, exploitability, asset criticality, threat intelligence.</li>
-        <li><strong>Remediation:</strong> patch, reconfigure, or mitigate (apply compensating controls).</li>
-        <li><strong>Verification:</strong> re-scan to confirm fixes.</li>
-        <li><strong>Reporting & metrics:</strong> track mean time to remediation (MTTR), patch coverage and residual risk.</li>
-      </ol>
-    </section>
-
-    <!-- Tools -->
-    <section class="card long-read" aria-labelledby="tools">
-      <h2 id="tools" class="section-title">Vulnerability Assessment Tools (overview)</h2>
-      <p>There are many commercial and open-source tools. Below are categories and notable examples (high-level descriptions only):</p>
-      <ul class="list">
-        <li><strong>Network scanners:</strong> tools that map hosts and ports to find exposed services (example: Nmap).</li>
-        <li><strong>Vulnerability scanners:</strong> software that checks services and software versions against known vulnerabilities (e.g., Nessus, OpenVAS).</li>
-        <li><strong>Web scanners / proxy suites:</strong> designed for web apps, find injection flaws, authentication issues and business logic errors (e.g., Burp Suite).</li>
-        <li><strong>Packet capture/analysis:</strong> Wireshark for inspecting network traffic for anomalies and protocol issues.</li>
-        <li><strong>Exploit frameworks (defensive study):</strong> used by red teams and researchers to validate vulnerabilities in controlled labs (e.g., Metasploit). Use only in authorized environments.</li>
-      </ul>
-      <div class="callout">
-        <strong>Safety note:</strong> Tools that can exploit vulnerabilities should only be used in isolated labs or on systems where you have explicit permission.
-      </div>
-    </section>
-
-    <!-- Scoring -->
-    <section class="card long-read" aria-labelledby="scoring">
-      <h2 id="scoring" class="section-title">Vulnerability Scoring Systems</h2>
-      <p>Scoring systems (like CVSS) help quantify severity so teams can prioritize. Scores consider base impact, exploitability, and environmental factors. Scores typically range 0 (none) to 10 (critical). Scores should be combined with business context — a low CVSS on a critical customer database may be more urgent than a high CVSS on a development server.</p>
-    </section>
-
-    <!-- Reporting -->
-    <section class="card long-read" aria-labelledby="report">
-      <h2 id="report" class="section-title">Vulnerability Assessment Report</h2>
-      <p>A good report is actionable and tailored to the audience. Typical sections:</p>
-      <ul class="list">
-        <li><strong>Executive summary:</strong> high-level risk picture and recommended business actions.</li>
-        <li><strong>Finding listing:</strong> each vulnerability with description, affected assets, severity, CVSS score and evidence (screenshots/log snippets).</li>
-        <li><strong>Remediation guidance:</strong> step-by-step or references for patches, configuration changes or compensating controls.</li>
-        <li><strong>Risk acceptance:</strong> documented decisions if a vulnerability is deferred, with compensating controls and review dates.</li>
-        <li><strong>Appendices:</strong> raw scanner output, mitigation timelines and change requests.</li>
-      </ul>
-    </section>
-
-    <!-- System hacking -->
-    <section class="card long-read" aria-labelledby="sys-hack">
-      <h2 id="sys-hack" class="section-title">System Hacking — Conceptual Overview</h2>
-      <p><strong>System hacking</strong> refers to techniques attackers use to breach systems and escalate access. Ethical security professionals study these techniques to design better defenses and detection. Below we describe common techniques at a conceptual level — we do not provide step-by-step exploitation instructions.</p>
-
-      <h3>Password Cracking (overview)</h3>
-      <p>Password cracking means attempting to recover or guess passwords using various methods. Common high-level approaches:</p>
-      <ul class="list">
-        <li><strong>Brute force:</strong> try every possible combination. Computationally expensive; effective only for short/weak passwords.</li>
-        <li><strong>Dictionary attacks:</strong> try words and variants from curated lists (rockyou, breached-password lists) and common patterns.</li>
-        <li><strong>Hybrid attacks:</strong> dictionary plus mutations (adding digits, symbols).</li>
-        <li><strong>Offline cracking:</strong> attackers recover password hashes (e.g., from a database) and try to crack offline where speed is higher.</li>
-        <li><strong>Defensive note:</strong> enforce long passphrases, rate-limiting, account lockouts, MFA, and hashed+salted storage (bcrypt/Argon2).</li>
-      </ul>
-
-      <h3>Privilege Escalation</h3>
-      <p>After initial access, an attacker often tries to gain higher privileges. Two types:</p>
-      <ul class="list">
-        <li><strong>Vertical escalation:</strong> gain admin/root privileges from a normal user.</li>
-        <li><strong>Horizontal escalation:</strong> access another user's account with similar privileges to move laterally.</li>
-      </ul>
-      <p>Defenders reduce risk by applying least privilege, patching known privilege-escalation bugs, and monitoring for anomalous process starts and unusual use of administrative tools.</p>
-
-      <h3>Executing Applications & Persistence</h3>
-      <p>Attackers may drop and run tools to maintain access. Defenders use endpoint protection (EDR), application allowlists, and integrity monitoring to detect and block unauthorized binaries.</p>
-
-      <h3>Hiding Files & Anti-Forensics</h3>
-      <p>Techniques to hide presence include manipulating logs or using obscure file locations. Good monitoring, immutable logs and rapid incident response reduce the value of these techniques.</p>
-    </section>
-
-    <!-- Scan and find vulnerabilities -->
-    <section class="card long-read" aria-labelledby="scan-find">
-      <h2 id="scan-find" class="section-title">Scan and Find Vulnerabilities — High-level Workflow</h2>
-      <p>A responsible assessment follows a predictable workflow:</p>
-      <ol class="list">
-        <li><strong>Define scope & rules of engagement:</strong> which systems, times, and methods are allowed.</li>
-        <li><strong>Discovery and mapping:</strong> identify hosts and services (safe, non-invasive methods first).</li>
-        <li><strong>Automated scanning:</strong> run scanners with approved credentials where appropriate (authenticated scans find more issues).</li>
-        <li><strong>Manual review:</strong> validate findings and investigate business logic issues that tools miss.</li>
-        <li><strong>Deliver findings:</strong> prioritized, with remediation steps and timelines.</li>
-      </ol>
-      <div class="callout">
-        <strong>Lab safety:</strong> perform scans and any validation only against systems you own or have explicit written permission to test.
-      </div>
-    </section>
-
-    <!-- Password breaking / defenses -->
-    <section class="card long-read" aria-labelledby="password-break">
-      <h2 id="password-break" class="section-title">Password Breaking — Defenses & Detection</h2>
-      <p>Defensive controls that make password attacks impractical:</p>
-      <ul class="list">
-        <li><strong>MFA:</strong> even a compromised password often isn't enough when MFA is enforced.</li>
-        <li><strong>Rate limiting & account lockouts:</strong> block repeated login attempts and detect brute-force patterns.</li>
-        <li><strong>Strong hashing:</strong> store salted, slow hashes to slow offline cracking.</li>
-        <li><strong>Credential monitoring:</strong> check whether corporate credentials appear in breach collections and force resets when found.</li>
-      </ul>
-    </section>
-
-    <!-- Keyloggers -->
-    <section class="card long-read" aria-labelledby="keylog">
-      <h2 id="keylog" class="section-title">Keyloggers & Keystroke Capture — Overview & Mitigations</h2>
-      <p>Keyloggers record keystrokes and are typically delivered by malware or physical access. They can capture passwords and other sensitive input. Mitigations:</p>
-      <ul class="list">
-        <li>Use full-disk and file-system protections, endpoint detection and response (EDR) to detect suspicious processes.</li>
-        <li>Avoid entering sensitive data on untrusted devices; use MFA and one-time passwords where possible.</li>
-        <li>Keep systems patched, apply application allowlisting and remove unnecessary admin rights to limit malware installation.</li>
-      </ul>
-    </section>
-
-    <!-- Practical / safe labs reminder -->
-    <section class="card long-read" aria-labelledby="labs">
-      <h2 id="labs" class="section-title">Hands-On & Labs (Safe Practices)</h2>
-      <p>Practice vulnerability scanning and defensive tuning in isolated lab environments (VMs, vulnerable intentionally apps, or purpose-built range). Always obtain written permission for any activity on systems you do not own. Recommended safe lab resources include intentionally vulnerable VMs and local isolated networks.</p>
-    </section>
-
-    <!-- Download notes -->
-    <section class="card" aria-labelledby="notes">
-      <h2 id="notes" class="section-title">Download Notes</h2>
-      <p class="muted">Click to download a plain-text version of this lesson.</p>
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary" id="downloadNotesTop">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated read time: ~20–30 mins</span></div>
-      </div>
-    </section>
-
-    <!-- QUIZ GATE -->
-    <section class="card" aria-labelledby="quiz">
-      <h2 id="quiz" class="section-title">Lesson 7 Quiz — Vulnerability Assessment & System Hacking</h2>
-      <p class="muted">Click <strong>Attempt Quiz</strong> when ready. The quiz is gated so students can finish the reading first. There are 10 questions; missed ones show inline explanations.</p>
-
-      <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
-        <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
-        <button class="btn ghost" id="downloadNotesBottom">📥 Download Notes (Text)</button>
-        <div class="meta small"><span>Estimated quiz time: ~5–10 mins</span></div>
-      </div>
-
-      <form id="quizForm" style="display:none;margin-top:14px;">
-        <!-- Q1 -->
-        <div class="q-card">
-          <h4>1) Which of the following best defines a vulnerability?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q1" value="a"/> A weakness that can be exploited to harm confidentiality, integrity or availability</label>
-            <label><input type="radio" name="q1" value="b"/> A new feature added to software</label>
-            <label><input type="radio" name="q1" value="c"/> A backup file</label>
-          </div>
-        </div>
-
-        <!-- Q2 -->
-        <div class="q-card">
-          <h4>2) What is the first step in a responsible vulnerability assessment?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q2" value="a"/> Asset discovery and scope definition</label>
-            <label><input type="radio" name="q2" value="b"/> Immediately running destructive tests</label>
-            <label><input type="radio" name="q2" value="c"/> Publishing findings online</label>
-          </div>
-        </div>
-
-        <!-- Q3 -->
-        <div class="q-card">
-          <h4>3) Which tool category is used to capture and inspect network traffic?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q3" value="a"/> Packet analyzers (e.g., Wireshark)</label>
-            <label><input type="radio" name="q3" value="b"/> Word processors</label>
-            <label><input type="radio" name="q3" value="c"/> Media players</label>
-          </div>
-        </div>
-
-        <!-- Q4 -->
-        <div class="q-card">
-          <h4>4) Which statement about vulnerability scanners is correct?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q4" value="a"/> They always find every possible issue automatically</label>
-            <label><input type="radio" name="q4" value="b"/> They are useful but can produce false positives and need manual validation</label>
-            <label><input type="radio" name="q4" value="c"/> They are illegal to use under any circumstance</label>
-          </div>
-        </div>
-
-        <!-- Q5 -->
-        <div class="q-card">
-          <h4>5) What does CVSS provide?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q5" value="a"/> A numerical severity score for vulnerabilities</label>
-            <label><input type="radio" name="q5" value="b"/> A mechanism to encrypt traffic</label>
-            <label><input type="radio" name="q5" value="c"/> A protocol for file transfer</label>
-          </div>
-        </div>
-
-        <!-- Q6 -->
-        <div class="q-card">
-          <h4>6) Which password storage method is recommended?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q6" value="a"/> Plaintext files</label>
-            <label><input type="radio" name="q6" value="b"/> Salted, slow hashes (e.g., bcrypt, Argon2)</label>
-            <label><input type="radio" name="q6" value="c"/> Storing passwords in emails</label>
-          </div>
-        </div>
-
-        <!-- Q7 -->
-        <div class="q-card">
-          <h4>7) What is an important defensive control against keyloggers?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q7" value="a"/> Use privileged accounts for daily browsing</label>
-            <label><input type="radio" name="q7" value="b"/> Endpoint protection (EDR), application allowlisting and least privilege</label>
-            <label><input type="radio" name="q7" value="c"/> Disable MFA</label>
-          </div>
-        </div>
-
-        <!-- Q8 -->
-        <div class="q-card">
-          <h4>8) Which lifecycle activity confirms that a previously reported vulnerability has been fixed?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q8" value="a"/> Discovery</label>
-            <label><input type="radio" name="q8" value="b"/> Verification / re-scan</label>
-            <label><input type="radio" name="q8" value="c"/> Decommission only</label>
-          </div>
-        </div>
-
-        <!-- Q9 -->
-        <div class="q-card">
-          <h4>9) Which scanning approach is best for catching application logic issues?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q9" value="a"/> Automated-only scanning</label>
-            <label><input type="radio" name="q9" value="b"/> Combination of automated scanning and manual testing</label>
-            <label><input type="radio" name="q9" value="c"/> Ignoring the app entirely</label>
-          </div>
-        </div>
-
-        <!-- Q10 -->
-        <div class="q-card">
-          <h4>10) What should you always do before scanning or testing systems you don't own?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="q10" value="a"/> Obtain explicit written permission and define rules of engagement</label>
-            <label><input type="radio" name="q10" value="b"/> Start immediately without telling anyone</label>
-            <label><input type="radio" name="q10" value="c"/> Publish target details publicly</label>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
-          <button type="button" class="btn primary" id="submitQuiz">Submit Quiz</button>
-          <button type="button" class="btn" id="resetQuiz">Reset</button>
-          <span id="quizResult" class="result" aria-live="polite"></span>
-        </div>
-      </form>
-    </section>
-
-    <footer class="container">
-      <p>© Learning Playground – Vulnerability Assessment & System Hacking • Lesson 7</p>
-    </footer>
+    </aside>
   </main>
+
+  <!-- TTS Control Bar -->
+  <div id="ttsBar" class="tts-bar" aria-hidden="false">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" class="small" title="Pause">⏸</button>
+    <button id="ttsStop" class="small" title="Stop">⏹</button>
+
+    <span class="label">Voice</span>
+    <select id="ttsVoices" aria-label="Select voice"></select>
+
+    <span class="label">Rate</span>
+    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <span class="label">Pitch</span>
+    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+  </div>
 
   <script>
     /* Theme toggle (persist) */
@@ -413,13 +663,11 @@
         document.documentElement.style.setProperty('--card','#ffffff');
         document.documentElement.style.setProperty('--text','#0b1220');
         document.documentElement.style.setProperty('--muted','#4a5875');
-        document.body.style.background = 'linear-gradient(135deg,#f7f9ff 0%,#eef4ff 100%)';
       } else {
         document.documentElement.style.setProperty('--bg','#0b1220');
         document.documentElement.style.setProperty('--card','#111a2e');
         document.documentElement.style.setProperty('--text','#e7eefc');
         document.documentElement.style.setProperty('--muted','#8aa0c3');
-        document.body.style.background = 'linear-gradient(135deg,#0b1220 0%,#101b34 100%)';
       }
     };
     const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
@@ -431,86 +679,72 @@
       applyTheme(next);
     });
 
-    /* Download notes */
-    function downloadNotes() {
-      const title = 'Lesson7_Vulnerability_Assessment_Notes.txt';
-      const content = [
-        'Lesson 7 – Vulnerability Assessment & System Hacking',
-        '',
-        'Table of Content',
-        'What Is a Vulnerability?',
-        'Vulnerability Assessment and Process',
-        'Types of Vulnerability Analysis',
-        'Vulnerability Management Lifecycle',
-        'Vulnerability Assessment Tools',
-        'Vulnerability Scoring Systems',
-        'Vulnerability Assessment Report',
-        'System Hacking (conceptual)',
-        'Scan workflow and safe lab practices',
-        'Password breaking defensive measures',
-        'Keyloggers overview & mitigations',
-        '',
-        'Key defensive takeaways:',
-        '- Use authenticated scans where possible',
-        '- Validate scanner findings manually',
-        '- Prioritize by business impact and exploitability',
-        '- Patch, mitigate, verify, and measure time-to-remediate',
-        '- Always test only in authorized labs'
-      ].join('\\n');
-      const blob = new Blob([content], {type:'text/plain'});
+    /* Download notes as text */
+    document.getElementById('downloadNotes').addEventListener('click', () => {
+      const nodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content p, .lesson-content li');
+      const lines = [];
+      nodes.forEach(n => {
+        const tag = n.tagName.toLowerCase();
+        if (tag === 'h1') lines.push('\n' + n.innerText + '\n' + '-'.repeat(60));
+        else if (tag === 'h2') lines.push('\n' + n.innerText + '\n');
+        else lines.push(n.innerText);
+      });
+      const blob = new Blob([lines.join('\n')], {type:'text/plain'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      const a = document.createElement('a'); a.href = url; a.download = 'Lesson7_IdAM_Vuln_Notes.txt'; document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-    }
-    document.getElementById('downloadNotesTop').addEventListener('click', downloadNotes);
-    document.getElementById('downloadNotesBottom').addEventListener('click', downloadNotes);
-
-    /* Quiz logic */
-    const answers = { q1:'a', q2:'a', q3:'a', q4:'b', q5:'a', q6:'b', q7:'b', q8:'b', q9:'b', q10:'a' };
-    const explanations = {
-      q1: 'A vulnerability is a weakness that can be exploited to harm confidentiality, integrity or availability.',
-      q2: 'Before testing you should identify assets and define the scope (and rules) for the assessment.',
-      q3: 'Packet analyzers like Wireshark capture and inspect network traffic for analysis.',
-      q4: 'Scanners are useful but can produce false positives and require manual validation.',
-      q5: 'CVSS provides a numerical severity score for vulnerabilities to aid prioritization.',
-      q6: 'Passwords should be stored as salted, slow hashes (bcrypt, Argon2) — not plaintext.',
-      q7: 'Endpoint protection (EDR), allowlisting and least privilege help defend against keyloggers.',
-      q8: 'Verification or re-scanning confirms whether a previously reported vulnerability was actually fixed.',
-      q9: 'Application logic issues are best found by combining automated tools with manual testing.',
-      q10: 'Always obtain explicit written permission and define rules of engagement before testing systems you don’t own.'
-    };
-    const form = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitQuiz');
-    const resetBtn = document.getElementById('resetQuiz');
-    const resultSpan = document.getElementById('quizResult');
-    const scoreKey = 'lesson7-vuln-score';
-    const attemptBtn = document.getElementById('attemptBtn');
-
-    attemptBtn.addEventListener('click', () => {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      localStorage.setItem('lesson7-attempted', '1');
-      const saved = localStorage.getItem(scoreKey);
-      if (saved) {
-        resultSpan.textContent = `Previous Score: ${saved}%`;
-        resultSpan.className = 'result ' + (saved >= 80 ? 'good' : saved >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
-      }
-      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
     });
 
-    function grade() {
-      let score = 0; let total = Object.keys(answers).length;
-      const missed = [];
-      // remove prior inline explanations
-      form.querySelectorAll('.q-card .explain').forEach(e => e.remove());
-      for (const q of Object.keys(answers)) {
-        const el = form.querySelector(`input[name="${q}"]:checked`);
-        // clear previous highlight
-        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+    /* Copy Markdown */
+    document.getElementById('copyMarkdown').addEventListener('click', async () => {
+      const nodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content p, .lesson-content li');
+      let md = '';
+      nodes.forEach(n => {
+        const tag = n.tagName.toLowerCase();
+        if (tag === 'h1') md += `# ${n.innerText}\n\n`;
+        else if (tag === 'h2') md += `## ${n.innerText}\n\n`;
+        else if (tag === 'h3') md += `### ${n.innerText}\n\n`;
+        else if (tag === 'li') md += `- ${n.innerText}\n`;
+        else md += `${n.innerText}\n\n`;
+      });
+      try { await navigator.clipboard.writeText(md); alert('Copied lesson content as Markdown to clipboard.'); }
+      catch(e){ alert('Could not copy to clipboard.'); }
+    });
+
+    /* Small Authentication quiz (one question) */
+    document.getElementById('gradeAuth').addEventListener('click', () => {
+      const el = document.querySelector('input[name="a1"]:checked');
+      const out = document.getElementById('authResult');
+      if (!el) { out.textContent = 'Choose an answer.'; return; }
+      if (el.value === 'b') out.textContent = 'Correct — security keys are most phishing-resistant.'; else out.textContent = 'Not quite — FIDO2/WebAuthn security keys (hardware) are best.';
+    });
+
+    /* IAM Quiz logic */
+    const iamAnswers = { iq1:'b', iq2:'b', iq3:'c', iq4:'b', iq5:'a', iq6:'a', iq7:'a', iq8:'a', iq9:'a', iq10:'b' };
+    const iamExplanations = {
+      iq1: 'ABAC makes decisions based on attributes (user, resource, environment).',
+      iq2: 'Store passwords as salted, slow hashes like Argon2 or bcrypt.',
+      iq3: 'Security keys (FIDO2/WebAuthn) resist phishing better than TOTP or SMS.',
+      iq4: 'Least Privilege grants minimal necessary access.',
+      iq5: 'SCIM automates provisioning between identity providers and applications.',
+      iq6: 'Deprovision promptly on role change or offboarding.',
+      iq7: 'Machine identities include API keys and service principals.',
+      iq8: 'Audit should record who, what, when, where for traceability.',
+      iq9: 'SAML/OIDC are popular federation standards.',
+      iq10: 'Multi-factor recovery with verification and review is safest.'
+    };
+    const iamForm = document.getElementById('iamQuizForm');
+    const iamSubmit = document.getElementById('submitIam');
+    const iamReset = document.getElementById('resetIam');
+    const iamResult = document.getElementById('iamResult');
+    const iamKey = 'lesson7-iam-score';
+
+    function gradeIam() {
+      let score = 0, total = Object.keys(iamAnswers).length, missed = [];
+      for (const q of Object.keys(iamAnswers)) {
+        const el = iamForm.querySelector(`input[name="${q}"]:checked`);
         if (!el) { missed.push(q); continue; }
-        if (el.value === answers[q]) {
+        if (el.value === iamAnswers[q]) {
           score++;
           el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
         } else {
@@ -519,77 +753,224 @@
         }
       }
       const pct = Math.round((score/total)*100);
-      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
-      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
-      localStorage.setItem(scoreKey, pct);
-
-      // remove old review box
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-
+      iamResult.textContent = `Score: ${score}/${total} (${pct}%)`;
+      iamResult.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(iamKey, pct);
+      // show review
+      const existing = document.getElementById('iamReview');
+      if (existing) existing.remove();
+      const review = document.createElement('div');
+      review.id = 'iamReview';
+      review.style.marginTop = '12px';
+      review.style.padding = '12px';
+      review.style.borderRadius = '10px';
+      review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06))';
+      let inner = '<strong>Review</strong><ul>';
       if (missed.length) {
-        const review = document.createElement('div');
-        review.id = 'reviewBox';
-        review.style.marginTop = '12px';
-        review.style.padding = '12px';
-        review.style.border = '1px solid rgba(255,255,255,0.06)';
-        review.style.borderRadius = '10px';
-        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
-        let inner = '<strong>Review (missed questions)</strong><ul>';
         missed.forEach(m => {
-          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
-          // attach inline explanation under the missed question
-          const radio = form.querySelector(`input[name="${m}"]`);
-          if (radio) {
-            const qCard = radio.closest('.q-card');
-            if (qCard) {
-              const ex = document.createElement('div');
-              ex.className = 'explain';
-              ex.textContent = explanations[m];
-              qCard.appendChild(ex);
-            }
-          }
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${iamExplanations[m] || 'No explanation available.'}</li>`;
         });
-        inner += '</ul>';
-        review.innerHTML = inner;
-        form.appendChild(review);
-        setTimeout(()=>{ alert('You missed some questions. Explanations were added under the missed questions.'); }, 80);
       } else {
-        const perfect = document.createElement('div');
-        perfect.id = 'reviewBox';
-        perfect.style.marginTop = '12px';
-        perfect.style.padding = '12px';
-        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
-        perfect.style.borderRadius = '10px';
-        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
-        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
-        form.appendChild(perfect);
+        inner += '<li>Perfect! You answered all IAM questions correctly.</li>';
       }
-      submitBtn.disabled = true;
+      inner += '</ul>';
+      review.innerHTML = inner;
+      iamForm.appendChild(review);
+      iamSubmit.disabled = true;
     }
+    iamSubmit.addEventListener('click', gradeIam);
+    iamReset.addEventListener('click', () => {
+      iamForm.reset();
+      iamForm.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      iamResult.textContent = ''; iamSubmit.disabled = false;
+      const existing = document.getElementById('iamReview'); if (existing) existing.remove();
+      localStorage.removeItem(iamKey);
+    });
 
-    function resetQuiz() {
-      form.reset();
-      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-      resultSpan.textContent = '';
-      submitBtn.disabled = false;
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-      localStorage.removeItem(scoreKey);
-    }
-
-    submitBtn.addEventListener('click', grade);
-    resetBtn.addEventListener('click', resetQuiz);
-
-    // Restore previous attempt if user already attempted
-    const prev = localStorage.getItem(scoreKey);
-    if (localStorage.getItem('lesson7-attempted')) {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      if (prev) {
-        resultSpan.textContent = `Previous Score: ${prev}%`;
-        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
+    // Restore previous IAM score if attempted
+    if (localStorage.getItem(iamKey)) {
+      const prev = parseInt(localStorage.getItem(iamKey),10);
+      if (!isNaN(prev)) {
+        document.getElementById('iamResult').textContent = `Previous Score: ${prev}%`;
+        document.getElementById('iamResult').className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        document.getElementById('submitIam').disabled = true;
       }
     }
+
+    /* Vulnerability Quiz logic */
+    const vulnAnswers = { vq1:'b', vq2:'a', vq3:'c', vq4:'c', vq5:'a', vq6:'a', vq7:'b', vq8:'b', vq9:'a', vq10:'a' };
+    const vulnExplanations = {
+      vq1: 'Nmap is a primary tool for host discovery and port scanning.',
+      vq2: 'Credentialed scans use valid credentials to inspect more deeply.',
+      vq3: '9.5 is in the Critical range (9.0–10.0).',
+      vq4: 'Privilege escalation example: exploit SUID binary (attacker wins).',
+      vq5: 'Immutable centralized logging prevents tampering.',
+      vq6: 'Nessus is commercial with paid plugins; OpenVAS is open-source.',
+      vq7: 'Keylogger records keystrokes.',
+      vq8: 'Responsible disclosure coordinates with vendors before public release.',
+      vq9: 'Wireshark inspects packets in detail.',
+      vq10: 'Always get written authorization before scanning client networks.'
+    };
+    const vulnForm = document.getElementById('vulnQuizForm');
+    const vulnSubmit = document.getElementById('submitVuln');
+    const vulnReset = document.getElementById('resetVuln');
+    const vulnResult = document.getElementById('vulnResult');
+    const vulnKey = 'lesson7-vuln-score';
+
+    function gradeVuln() {
+      let score = 0, total = Object.keys(vulnAnswers).length, missed = [];
+      for (const q of Object.keys(vulnAnswers)) {
+        const el = vulnForm.querySelector(`input[name="${q}"]:checked`);
+        if (!el) { missed.push(q); continue; }
+        if (el.value === vulnAnswers[q]) {
+          score++;
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
+        } else {
+          missed.push(q);
+          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
+        }
+      }
+      const pct = Math.round((score/total)*100);
+      vulnResult.textContent = `Score: ${score}/${total} (${pct}%)`;
+      vulnResult.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
+      localStorage.setItem(vulnKey, pct);
+      const existing = document.getElementById('vulnReview');
+      if (existing) existing.remove();
+      const review = document.createElement('div');
+      review.id = 'vulnReview';
+      review.style.marginTop = '12px';
+      review.style.padding = '12px';
+      review.style.borderRadius = '10px';
+      review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.06))';
+      let inner = '<strong>Review</strong><ul>';
+      if (missed.length) {
+        missed.forEach(m => {
+          inner += `<li><strong>${m.toUpperCase()}</strong>: ${vulnExplanations[m] || 'No explanation available.'}</li>`;
+        });
+      } else {
+        inner += '<li>Perfect! You answered all Vulnerability questions correctly.</li>';
+      }
+      inner += '</ul>';
+      review.innerHTML = inner;
+      vulnForm.appendChild(review);
+      vulnSubmit.disabled = true;
+    }
+    vulnSubmit.addEventListener('click', gradeVuln);
+    vulnReset.addEventListener('click', () => {
+      vulnForm.reset();
+      vulnForm.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
+      vulnResult.textContent = ''; vulnSubmit.disabled = false;
+      const existing = document.getElementById('vulnReview'); if (existing) existing.remove();
+      localStorage.removeItem(vulnKey);
+    });
+
+    if (localStorage.getItem(vulnKey)) {
+      const prev = parseInt(localStorage.getItem(vulnKey),10);
+      if (!isNaN(prev)) {
+        document.getElementById('vulnResult').textContent = `Previous Score: ${prev}%`;
+        document.getElementById('vulnResult').className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
+        document.getElementById('submitVuln').disabled = true;
+      }
+    }
+
+    /* TTS module (Web Speech API) */
+    (function () {
+      if (!('speechSynthesis' in window)) { console.warn('TTS not supported'); const b=document.getElementById('ttsBar'); if(b) b.style.display='none'; return; }
+
+      const playBtn = document.getElementById('ttsPlay');
+      const pauseBtn = document.getElementById('ttsPause');
+      const stopBtn = document.getElementById('ttsStop');
+      const voicesSelect = document.getElementById('ttsVoices');
+      const rateInput = document.getElementById('ttsRate');
+      const pitchInput = document.getElementById('ttsPitch');
+      const autoBtn = document.getElementById('ttsToggleAuto');
+      const lesson = document.querySelector('.lesson-content') || document.body;
+      let utterance = null, sentences = [], currentIndex = 0, readyVoices = [];
+
+      const prefs = {
+        voiceURI: localStorage.getItem('tts.voice') || '',
+        rate: parseFloat(localStorage.getItem('tts.rate')) || 1,
+        pitch: parseFloat(localStorage.getItem('tts.pitch')) || 1,
+        auto: localStorage.getItem('tts.auto') === 'true' || false
+      };
+      rateInput.value = prefs.rate; pitchInput.value = prefs.pitch; autoBtn.style.opacity = prefs.auto ? '1' : '0.6';
+
+      function populateVoices() {
+        const voices = speechSynthesis.getVoices();
+        readyVoices = voices;
+        voicesSelect.innerHTML = '';
+        voices.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.voiceURI;
+          opt.textContent = `${v.name} (${v.lang})${v.default ? ' — default' : ''}`;
+          voicesSelect.appendChild(opt);
+        });
+        if (prefs.voiceURI) {
+          const found = [...voices].find(v => v.voiceURI === prefs.voiceURI);
+          if (found) voicesSelect.value = prefs.voiceURI;
+        }
+      }
+      populateVoices();
+      if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
+
+      function getText() {
+        const nodes = lesson.querySelectorAll('h1,h2,h3,p,li');
+        return Array.from(nodes).map(n => n.innerText.trim()).filter(Boolean).join('.\n');
+      }
+      function buildSentences(text) { return text.split(/(?<=[.?!])\s+/); }
+
+      function speakFrom(index = 0) {
+        const text = getText(); sentences = buildSentences(text); currentIndex = index;
+        if (currentIndex >= sentences.length) return; speakSentence(sentences[currentIndex]);
+      }
+      function speakSentence(sentence) {
+        if (!sentence || sentence.trim()==='') { currentIndex++; if (currentIndex<sentences.length) speakSentence(sentences[currentIndex]); return; }
+        cancel();
+        utterance = new SpeechSynthesisUtterance(sentence);
+        const voiceURI = voicesSelect.value || prefs.voiceURI;
+        const selected = readyVoices.find(v => v.voiceURI === voiceURI) || readyVoices.find(v => v.default) || readyVoices[0];
+        if (selected) utterance.voice = selected;
+        utterance.rate = parseFloat(rateInput.value); utterance.pitch = parseFloat(pitchInput.value);
+        utterance.onstart = () => highlightSentence(sentence);
+        utterance.onend = () => { currentIndex++; if (currentIndex < sentences.length) setTimeout(()=>speakSentence(sentences[currentIndex]),120); else clearHighlights(); };
+        speechSynthesis.speak(utterance);
+      }
+      function cancel() { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
+      function pause() { if (speechSynthesis.speaking) speechSynthesis.pause(); }
+      function resume() { if (speechSynthesis.paused) speechSynthesis.resume(); }
+      function highlightSentence(sentence) {
+        clearHighlights(); if (!lesson) return;
+        const text = lesson.innerHTML; const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').trim();
+        if (!safe) return;
+        const regex = new RegExp(safe);
+        const newHtml = text.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
+        if (newHtml !== text) lesson.innerHTML = newHtml;
+      }
+      function clearHighlights() { if (!lesson) return; const highlights = lesson.querySelectorAll('.tts-highlight'); highlights.forEach(el => { const txt = el.textContent; el.outerHTML = txt; }); }
+
+      playBtn.addEventListener('click', ()=>{ if (speechSynthesis.paused) return resume(); if (speechSynthesis.speaking) return; speakFrom(0); savePrefs(); });
+      pauseBtn.addEventListener('click', ()=>{ if (speechSynthesis.speaking) pause(); else if (speechSynthesis.paused) resume(); });
+      stopBtn.addEventListener('click', ()=>{ cancel(); clearHighlights(); });
+      voicesSelect.addEventListener('change', savePrefs);
+      rateInput.addEventListener('change', savePrefs);
+      pitchInput.addEventListener('change', savePrefs);
+      autoBtn.addEventListener('click', ()=>{ prefs.auto = !prefs.auto; localStorage.setItem('tts.auto', prefs.auto); autoBtn.style.opacity = prefs.auto ? '1' : '0.6'; });
+
+      function savePrefs() { localStorage.setItem('tts.voice', voicesSelect.value || ''); localStorage.setItem('tts.rate', rateInput.value); localStorage.setItem('tts.pitch', pitchInput.value); }
+      function applySavedSettings() { rateInput.value = prefs.rate; pitchInput.value = prefs.pitch; if (prefs.voiceURI && voicesSelect.options.length) voicesSelect.value = prefs.voiceURI; }
+
+      let attempts = 0;
+      const interval = setInterval(()=> {
+        if (speechSynthesis.getVoices().length) { populateVoices(); applySavedSettings(); clearInterval(interval); }
+        else if (attempts++ > 20) { applySavedSettings(); clearInterval(interval); }
+      }, 300);
+
+      window.addEventListener('load', ()=> {
+        setTimeout(()=> { if (prefs.auto) { try { speakFrom(0); } catch(e){ console.warn('Auto TTS blocked'); } } }, 700);
+      });
+
+      window.__Lesson7TTS = { speakFrom, cancel, pause, resume, getText };
+    })();
   </script>
 </body>
 </html>

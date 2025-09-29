@@ -1,161 +1,374 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SOC Analyst Course</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SOC Analyst Course — Xecuredly</title>
+
+  <!-- Fonts + GSAP -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Share Tech Mono', monospace;
-      background-color: #000;
-      color: #00ffcc;
-      transition: background-color 0.4s ease;
+    :root{
+      --bg-dark:#020412;
+      --bg-soft:#061528;
+      --card:#071a2b;
+      --muted:#91b4d9;
+      --accent1:#00ffe7;
+      --accent2:#57a7ff;
+      --accent3:#ff7aee;
+      --glass: rgba(255,255,255,0.03);
+      --radius:14px;
+      --focus: 0 0 0 4px rgba(87,167,255,0.10);
+      --max-w:1100px;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: repeating-radial-gradient(circle, #00ffcc11 1px, transparent 3px);
-      z-index: -1;
-      animation: particles 40s linear infinite;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Share Tech Mono",monospace;background:linear-gradient(180deg,var(--bg-dark),var(--bg-soft));color:var(--accent1);-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+
+    .container{max-width:var(--max-w);margin:0 auto;padding:20px}
+
+    /* Header */
+    header.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;position:sticky;top:0;background:linear-gradient(180deg, rgba(0,0,0,0.25), transparent);backdrop-filter:blur(6px);z-index:80}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent3),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:900;color:#021024;font-size:20px;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+    .title{font-weight:800;font-size:18px}
+    .subtitle{font-size:12px;color:var(--muted)}
+
+    .controls{display:flex;gap:12px;align-items:center}
+    .search{display:flex;align-items:center;gap:8px;background:var(--glass);padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.04)}
+    .search input{background:transparent;border:none;color:var(--accent1);outline:none;min-width:180px;font-size:14px}
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.05);background:transparent;color:var(--accent1);cursor:pointer;font-weight:700}
+    .btn.primary{background:linear-gradient(90deg,var(--accent2),var(--accent1));color:#021024;border:none;box-shadow:0 10px 32px rgba(0,160,255,0.08)}
+    .toggle{background:rgba(255,255,255,0.03);border-radius:999px;padding:6px 10px;display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+
+    /* Hero */
+    .hero{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:18px;padding:20px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.03)}
+    .hero-left{max-width:64%}
+    .hero h1{margin:0;font-size:clamp(24px,3.6vw,34px);line-height:1;letter-spacing:-0.01em}
+    .hero p{margin:8px 0 0;color:var(--muted)}
+    .hero-cta{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);font-weight:800;font-size:12px}
+
+    /* Lessons grid */
+    .grid-wrap{margin-top:20px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+      padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+      box-shadow:0 12px 40px rgba(0,0,0,0.5);
+      transition:transform .36s cubic-bezier(.2,.9,.3,1), box-shadow .36s, background .36s;
+      display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;
+    }
+    .card:focus{outline:none;box-shadow:var(--focus)}
+    .card:hover{transform:translateY(-8px);box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+    .card h3{margin:0;font-size:15px}
+    .card p{margin:0;color:var(--muted);font-size:13px}
+    .card .meta{display:flex;justify-content:space-between;align-items:center;margin-top:auto;gap:8px}
+    .tag{background:rgba(255,255,255,0.02);padding:6px 8px;border-radius:8px;font-weight:800;color:var(--muted);font-size:12px}
+    .visited{position:absolute;right:10px;top:8px;background:linear-gradient(90deg,var(--accent2),var(--accent1));color:#021024;padding:6px 8px;border-radius:8px;font-weight:800;font-size:12px;box-shadow:0 8px 18px rgba(0,160,255,0.08)}
+
+    /* Neon accent & particle canvas */
+    .neon { position:absolute;right:-120px;top:-30px;width:280px;height:280px;border-radius:50%;filter:blur(40px);opacity:0.07;background:radial-gradient(circle at 30% 30%, var(--accent2), transparent 35%);pointer-events:none; }
+    canvas#particles{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.9;mix-blend-mode:screen}
+
+    footer{margin-top:26px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.01);display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+
+    @media (max-width:880px){
+      .hero-left{max-width:100%}
+      .controls{flex-direction:column-reverse;align-items:flex-start;gap:10px}
+      .hero{flex-direction:column;align-items:flex-start}
     }
 
-    @keyframes particles {
-      from { background-position: 0 0; }
-      to { background-position: 1000px 1000px; }
+    /* Light theme */
+    .light { --bg-dark:#f7fbff; --bg-soft:#f0f7ff; --card:#ffffff; --muted:#334155; --accent1:#003a7c; --accent2:#0ea5ff; --accent3:#ff66c4; color:var(--accent1); }
+    .light .card { border-color: rgba(2,8,20,0.03); box-shadow: 0 8px 28px rgba(2,8,20,0.06); color:var(--accent1) }
+    .light .search { background: rgba(2,8,20,0.03) }
+    .light .btn { color:var(--accent1) }
+
+    @media (prefers-reduced-motion: reduce){
+      * { transition:none !important; animation:none !important; }
+      canvas#particles { display:none; }
     }
 
-    h1 {
-      text-align: center;
-      margin: 40px 15px 20px;
-      text-shadow: 0 0 15px #00ffc3;
-    }
-  .lesson-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    padding: 20px;
-    max-width: 1000px;
-    margin: auto;
-    min-height: 300px; /* prevents collapse */
-  }
-  .lesson-grid a {
-    opacity: 0; /* start invisible but still in layout */
-  }
+    .card:focus-visible { box-shadow:var(--focus); transform:translateY(-6px) }
 
-    .lesson-grid a {
-      display: block;
-      padding: 15px;
-      text-align: center;
-      text-decoration: none;
-      background: linear-gradient(45deg, #ff0080, #7928ca);
-      color: #fff;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 1rem;
-      box-shadow: 0 0 15px #ff0080;
-      transition: all 0.4s ease;
-    }
-
-    .lesson-grid a:hover {
-      background: linear-gradient(45deg, #00ffe7, #0099ff);
-      color: #000;
-      transform: scale(1.05);
-      box-shadow: 0 0 25px #00ffe7;
-    }
-
-    #toggleTheme {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 8px 16px;
-      background: #333;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      z-index: 99;
-    }
-
-    .back-btn {
-      display: inline-block;
-      margin: 30px auto;
-      padding: 10px 20px;
-      background: #111;
-      color: #00ffcc;
-      text-decoration: none;
-      border-radius: 6px;
-      box-shadow: 0 0 10px #00ffc3;
-      transition: 0.3s;
-    }
-    .back-btn:hover {
-      background: #00ffcc;
-      color: #000;
-      box-shadow: 0 0 20px #00ffcc;
-    }
-
-    .text-center {
-      text-align: center;
-    }
   </style>
 </head>
 <body>
-  <button id="toggleTheme">🌙 Toggle Theme</button>
+  <canvas id="particles" aria-hidden="true"></canvas>
 
-  <h1>SOC Analyst Course</h1>
+  <header class="topbar container" role="banner">
+    <div class="brand" aria-hidden="false">
+      <div class="logo" id="logo" aria-hidden="true">S</div>
+      <div>
+        <div class="title">SOC Analyst Course</div>
+        <div class="subtitle">Security Operations Center — lessons, labs & quizzes</div>
+      </div>
+    </div>
 
-  <div class="lesson-grid">
-    <a href="soc1.html">Lesson 1</a>
-    <a href="soc2.html">Lesson 2</a>
-    <a href="soc3.html">Lesson 3</a>
-    <a href="soc4.html">Lesson 4</a>
-    <a href="soc5.html">Lesson 5</a>
-    <a href="soc6.html">Lesson 6</a>
-    <a href="soc7.html">Lesson 7</a>
-    <a href="soc11.html">Lesson 8</a>
-    <a href="soc8.html">Lesson 9</a>
-    <a href="soc9.html">Lesson 10</a>
-    <a href="soc10.html">Lesson 11</a>
-    <a href="soc12.html">Lesson 12</a>
-  </div>
+    <div class="controls" role="search">
+      <div class="search" role="search" aria-label="Search lessons">
+        <svg width="16" height="16" aria-hidden="true" viewBox="0 0 24 24" style="opacity:.8"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5z"/></svg>
+        <input id="q" type="search" placeholder="Search lessons (e.g., 'IDS', 'SIEM')" aria-label="Search lessons">
+      </div>
 
-  <div class="text-center">
-    <a href="index.html" class="back-btn">⬅ Back to Homepage</a>
-  </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="toggle" id="themeToggle" role="button" tabindex="0" aria-pressed="false" title="Toggle theme">🌙 Theme</div>
+        <button class="btn primary" id="openPlaybook">Open Playbook</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-left">
+        <div class="eyebrow badge">SOC TRACK</div>
+        <h1 id="heroTitle">SOC Analyst — Course Lessons</h1>
+        <p>Click a lesson to open the TTS-ready module, run labs, or take a quiz. Your visited lessons are tracked locally.</p>
+
+        <div class="hero-cta" aria-hidden="false">
+          <a class="btn" id="allBtn" href="#all">All Lessons</a>
+          <a class="btn" id="cyberBtn" href="cyber-index.html">Cyber Track</a>
+        </div>
+      </div>
+
+      <div style="position:relative;min-width:220px">
+        <div class="hero-right" aria-hidden="true" style="padding:14px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border-radius:12px;border:1px solid rgba(255,255,255,0.03)">
+          <div style="font-weight:800">Quick</div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+            <a class="btn" href="#labs">Open Labs</a>
+            <a class="btn" href="#help">Support</a>
+          </div>
+        </div>
+        <div class="neon" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="grid-wrap" id="all">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+        <h2 style="margin:0">Lessons</h2>
+        <div style="color:var(--muted);font-size:13px">Click a lesson to open • visited lessons are tracked</div>
+      </div>
+
+      <div class="grid" id="lessonGrid" aria-live="polite" style="margin-top:12px">
+        <!-- cards injected by JS -->
+      </div>
+    </section>
+
+    <footer>
+      <div>© Xecuredly · SOC Analyst Course</div>
+      <div style="display:flex;gap:12px">
+        <a href="index.html" class="btn">Homepage</a>
+        <a href="#contact" class="btn">Contact</a>
+      </div>
+    </footer>
+  </main>
 
   <script>
-    // Animate lesson buttons
-    gsap.from(".lesson-grid a", {
-      opacity: 0,
-      y: 30,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: "back.out(1.7)"
+    // Lesson data — update file paths / names as needed
+    const lessons = [
+      { id:'soc1', title:'SOC Lesson 1 — Introduction to SOC', file:'soc1.html', tags:['intro','soc'] },
+      { id:'soc2', title:'SOC Lesson 2 — SIEM Basics', file:'soc2.html', tags:['siem'] },
+      { id:'soc3', title:'SOC Lesson 3 — Threat Detection', file:'soc3.html', tags:['detection'] },
+      { id:'soc4', title:'SOC Lesson 4 — Incident Response', file:'soc4.html', tags:['ir','response'] },
+      { id:'soc5', title:'SOC Lesson 5 — IDS/IPS & Network Monitoring', file:'soc5.html', tags:['ids','nids'] },
+      { id:'soc6', title:'SOC Lesson 6 — Endpoint Detection', file:'soc6.html', tags:['edr','endpoint'] },
+      { id:'soc7', title:'SOC Lesson 7 — Threat Hunting', file:'soc7.html', tags:['hunting'] },
+      { id:'soc8', title:'SOC Lesson 8 — Forensics & Logs', file:'soc8.html', tags:['forensics','logs'] },
+      { id:'soc9', title:'SOC Lesson 9 — Playbooks & Automation', file:'soc9.html', tags:['playbook','automation'] },
+      { id:'soc10', title:'SOC Lesson 10 — Threat Intelligence', file:'soc10.html', tags:['threat-intel'] },
+      { id:'soc11', title:'SOC Lesson 11 — Triage & Prioritization', file:'soc11.html', tags:['triage'] },
+      { id:'soc12', title:'SOC Lesson 12 — Blue Team Ops', file:'soc12.html', tags:['blue','ops'] }
+    ];
+
+    const grid = document.getElementById('lessonGrid');
+    const visited = JSON.parse(localStorage.getItem('visitedSOC') || '{}');
+
+    function render(filter='') {
+      grid.innerHTML = '';
+      const q = filter.trim().toLowerCase();
+      const filtered = lessons.filter(l => !q || (l.title + ' ' + (l.tags||[]).join(' ')).toLowerCase().includes(q));
+      if (filtered.length === 0) {
+        const none = document.createElement('div');
+        none.style.gridColumn = '1/-1';
+        none.style.padding = '20px';
+        none.style.color = 'var(--muted)';
+        none.textContent = 'No lessons match your search.';
+        grid.appendChild(none);
+        return;
+      }
+
+      filtered.forEach((l, idx) => {
+        const el = document.createElement('a');
+        el.className = 'card';
+        el.href = l.file;
+        el.setAttribute('role','link');
+        el.setAttribute('aria-label', l.title + ' — open lesson');
+        el.innerHTML = `
+          ${visited[l.id] ? '<div class="visited">Visited</div>' : ''}
+          <h3>${l.title}</h3>
+          <p class="desc">Open module: <code>${l.file}</code></p>
+          <div class="meta">
+            <div class="tag">${l.tags ? l.tags.slice(0,2).join(' • ') : 'Lesson'}</div>
+            <div style="font-size:13px;color:var(--muted)">${String(idx+1).padStart(2,'0')}</div>
+          </div>
+        `;
+        el.addEventListener('click', (ev) => {
+          if (ev.metaKey || ev.ctrlKey) return; // allow opening in new tab
+          ev.preventDefault();
+          visited[l.id] = true;
+          localStorage.setItem('visitedSOC', JSON.stringify(visited));
+          burstEffect(el);
+          setTimeout(()=> location.href = l.file, 260);
+        });
+
+        el.setAttribute('tabindex','0');
+        el.addEventListener('keypress', (e) => { if (e.key === 'Enter' || e.key === ' ') el.click(); });
+
+        grid.appendChild(el);
+      });
+
+      // animate cards (GSAP)
+      if (window.gsap) {
+        gsap.fromTo('.card', {y:15, opacity:0}, {y:0, opacity:1, stagger:0.06, duration:0.6, ease:'power2.out'});
+      } else {
+        document.querySelectorAll('.card').forEach(c => c.style.opacity = '1');
+      }
+    }
+
+    render();
+
+    // search/filter
+    const qInput = document.getElementById('q');
+    qInput.addEventListener('input', (e) => render(e.target.value));
+
+    // micro burst effect when clicking a card
+    function burstEffect(target) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const rect = target.getBoundingClientRect();
+      const root = document.createElement('div');
+      root.style.position = 'fixed';
+      root.style.left = rect.left + rect.width/2 + 'px';
+      root.style.top = rect.top + rect.height/2 + 'px';
+      root.style.pointerEvents = 'none';
+      root.style.zIndex = 9999;
+      document.body.appendChild(root);
+
+      const count = 12;
+      for (let i=0;i<count;i++){
+        const d = document.createElement('div');
+        const size = 6 + Math.random()*8;
+        d.style.width = d.style.height = size + 'px';
+        d.style.borderRadius = '50%';
+        d.style.position = 'absolute';
+        d.style.left = '0px';
+        d.style.top = '0px';
+        d.style.background = Math.random()>0.5 ? 'linear-gradient(90deg,var(--accent2),var(--accent1))' : 'linear-gradient(90deg,var(--accent3),var(--accent2))';
+        d.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
+        root.appendChild(d);
+        const angle = Math.random()*Math.PI*2;
+        const dist = 40 + Math.random()*90;
+        const tx = Math.cos(angle)*dist;
+        const ty = Math.sin(angle)*dist;
+        if (window.gsap) {
+          gsap.to(d, { x: tx, y: ty, opacity:0, scale:0.4, duration:0.9 + Math.random()*0.6, ease:'power3.out', onComplete: ()=> d.remove() });
+        } else {
+          d.remove();
+        }
+      }
+      setTimeout(()=> root.remove(), 1200);
+    }
+
+    // subtle particle canvas
+    (function(){
+      const canvas = document.getElementById('particles');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let DPR = window.devicePixelRatio || 1;
+      let W = innerWidth, H = innerHeight;
+      canvas.width = W*DPR; canvas.height = H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+      let parts = [];
+      const n = Math.max(20, Math.floor(Math.min(W,1200)/52));
+      function init(){
+        parts = [];
+        for (let i=0;i<n;i++){
+          parts.push({
+            x: Math.random()*W,
+            y: Math.random()*H,
+            r: Math.random()*2+0.6,
+            vx: (Math.random()-0.5)*0.4,
+            vy: -0.12 - Math.random()*0.6,
+            hue: 180 + Math.random()*120,
+            a: 0.06 + Math.random()*0.35
+          });
+        }
+      }
+      function resize(){ DPR = window.devicePixelRatio || 1; W = innerWidth; H = innerHeight; canvas.width = W*DPR; canvas.height = H*DPR; canvas.style.width = W+'px'; canvas.style.height = H+'px'; ctx.setTransform(DPR,0,0,DPR,0,0); init(); }
+      function step(){
+        ctx.clearRect(0,0,W,H);
+        ctx.globalCompositeOperation = 'lighter';
+        for (const p of parts){
+          p.x += p.vx; p.y += p.vy;
+          if (p.y < -20) p.y = H + 20;
+          if (p.x < -40) p.x = W + 40;
+          if (p.x > W + 40) p.x = -40;
+          const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*10);
+          g.addColorStop(0, `hsla(${p.hue},100%,62%,${p.a})`);
+          g.addColorStop(0.5, `hsla(${p.hue+20},100%,55%,${p.a*0.3})`);
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(p.x,p.y,p.r*6,0,Math.PI*2);
+          ctx.fill();
+        }
+        requestAnimationFrame(step);
+      }
+      window.addEventListener('resize', resize);
+      resize(); step();
+    })();
+
+    // theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    function applyTheme(t){
+      if (t === 'light') document.documentElement.classList.add('light');
+      else document.documentElement.classList.remove('light');
+      localStorage.setItem('soc-theme', t);
+      themeToggle.setAttribute('aria-pressed', String(t==='light'));
+      themeToggle.textContent = t === 'light' ? '☀️ Light' : '🌙 Dark';
+    }
+    const saved = localStorage.getItem('soc-theme') || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    applyTheme(saved);
+    themeToggle.addEventListener('click', () => {
+      const cur = document.documentElement.classList.contains('light') ? 'light' : 'dark';
+      applyTheme(cur === 'light' ? 'dark' : 'light');
+    });
+    themeToggle.addEventListener('keypress', (e)=> { if (e.key==='Enter' || e.key===' ') themeToggle.click(); });
+
+    // quick button (stub)
+    document.getElementById('openPlaybook').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Playbook: This would open the SOC playbook viewer (UI stub).');
     });
 
-    // Theme toggle
-    document.getElementById("toggleTheme").onclick = () => {
-      document.body.classList.toggle("light-mode");
-      document.body.classList.toggle("dark-mode");
-      localStorage.setItem("theme", document.body.classList.contains("light-mode") ? "light" : "dark");
-    };
+    // keyboard "/" focuses search
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== qInput) {
+        e.preventDefault();
+        qInput.focus();
+        qInput.select();
+      }
+    });
 
-    const theme = localStorage.getItem("theme") || "dark";
-    document.body.classList.add(theme + "-mode");
-      // Safe GSAP animation — fade & slide but keep layout intact
-  gsap.to(".lesson-grid a", {
-    opacity: 1,
-    y: 0,
-    duration: 0.8,
-    stagger: 0.15,
-    ease: "power2.out"
-  });
+    // small initial animations
+    if (window.gsap) {
+      gsap.from('.logo', {scale:0.6, rotation:-8, duration:0.8, ease:'back.out(1.4)'});
+      gsap.from('h1', {y:12, opacity:0, duration:0.7, delay:0.1});
+      gsap.from('.hero p', {y:8, opacity:0, duration:0.6, delay:0.18});
+    }
+
   </script>
 </body>
 </html>
