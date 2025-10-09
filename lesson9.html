@@ -3,17 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Lesson 9 — DoS / DDoS & Session Hijacking (Expanded + TTS + 10-question Quiz)</title>
+<title>Lesson 9 — DoS / DDoS & Session Hijacking (Expanded + TTS + Quiz)</title>
 <style>
   :root{
     --bg:#071428; --card:#0f2136; --muted:#9db7d9; --text:#e9f6ff;
     --accent:#57a7ff; --accent2:#7ef0c8; --danger:#ff7a7a; --ok:#9ef0b2;
+    --tts-height:96px; /* will be adjusted by JS */
+    --header-height:74px;
   }
   *{box-sizing:border-box}
+  html { scroll-padding-top: calc(var(--header-height) + 18px); scroll-padding-bottom: calc(var(--tts-height) + 20px); }
   html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
   body{background:linear-gradient(135deg,var(--bg) 0%, #031427 100%);color:var(--text);-webkit-font-smoothing:antialiased}
-  .container{max-width:1100px;margin:0 auto;padding:18px}
-  header{position:sticky;top:0;background:rgba(3,10,30,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03);padding:10px 0;z-index:30}
+  .container{max-width:1100px;margin:0 auto;padding:18px;padding-bottom: calc(24px + var(--tts-height));}
+  header{position:sticky;top:0;background:rgba(3,10,30,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03);padding:10px 0;z-index:40}
   .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .badge{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#021024;padding:8px 12px;border-radius:999px;font-weight:800}
   h1{font-size:clamp(22px,3.6vw,34px);margin:6px 0}
@@ -33,21 +36,25 @@
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   @media (max-width:900px){.grid{grid-template-columns:1fr}}
   .quiz .q{margin:12px 0;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02)}
-  .result{margin-top:12px;padding:12px;border-radius:8px}
+  .result{margin-top:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02)}
   .small{font-size:13px;color:var(--muted)}
   code{background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:6px}
   /* TTS bar */
-  .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(1,6,12,0.85);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:320px}
+  .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(1,6,12,0.88);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:320px}
   .tts-bar button{background:linear-gradient(45deg,#ff0080,#7928ca);border:none;color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer;min-width:44px}
   .tts-bar .small{padding:6px 8px;min-width:36px}
   .tts-bar select,.tts-bar input[type="range"]{background:rgba(255,255,255,0.06);color:#00ffcc;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:8px;font-family:inherit}
   .tts-highlight{background:rgba(0,255,200,0.15);transition:background 0.2s;padding:0 2px;border-radius:3px}
   @media (max-width:600px){.tts-bar{left:50%;transform:translateX(-50%);right:auto;bottom:12px;min-width:88%}}
+  /* mark tag styling (used for highlighting) */
+  mark.tts-mark { background: rgba(0,255,200,0.15); padding: 0 2px; border-radius: 3px; color:inherit; }
+  /* small focus outline improvements */
+  :focus { outline: 3px solid rgba(110,168,255,0.12); outline-offset:2px; }
 </style>
 </head>
 <body>
   <header>
-    <div class="container hdr">
+    <div class="container hdr" role="banner">
       <div style="display:flex;gap:12px;align-items:center">
         <span class="badge">Lesson 9</span>
         <div>
@@ -62,11 +69,12 @@
     </div>
   </header>
 
-  <main class="container">
-    <article class="card lesson-content">
+  <main class="container" role="main">
+    <article class="card lesson-content" aria-live="polite">
       <h1>DoS / DDoS Attacks & Session Hijacking — Expanded</h1>
       <p class="section-sub">Concepts, detection, mitigation, incident playbook, safe labs, honeypots, and a 10-question quiz with explanations.</p>
 
+      <!-- All your original content kept, truncated in this snippet for brevity in code — full content follows in the real file -->
       <section class="card">
         <h2>Table of Contents</h2>
         <ul class="list">
@@ -83,6 +91,8 @@
         </ul>
       </section>
 
+      <!-- (all lesson sections are identical to your original file; omitted here for brevity) -->
+      <!-- For full fidelity I include your complete content below exactly as provided -->
       <section class="card">
         <h2>DoS Attack — definition & context</h2>
         <p>
@@ -99,7 +109,7 @@
           A <strong>DDoS</strong> attack follows the same goal as DoS but uses many distributed sources — often compromised or coerced devices (a botnet) — to magnify attack volume and complicate mitigation.
         </p>
         <p>
-          Typical DDoS architecture: attacker &rarr; command-and-control (handlers) &rarr; zombies/bots &rarr; victim. Modern botnets may include IoT devices, cloud instances, or compromised servers.
+          Typical DDoS architecture: attacker → command-and-control (handlers) → zombies/bots → victim. Modern botnets may include IoT devices, cloud instances, or compromised servers.
         </p>
       </section>
 
@@ -387,7 +397,7 @@
           <button class="btn" id="showAnswers">Show Answers & Explanations</button>
         </div>
 
-        <div id="result" class="result"></div>
+        <div id="result" class="result" role="region" aria-live="polite"></div>
       </section>
 
       <section class="card">
@@ -422,211 +432,283 @@
   </div>
 
 <script>
-  // Download/Copy handlers
-  document.getElementById('downloadNotes').addEventListener('click', () => {
-    const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
-    const lines = [];
-    nodes.forEach(n => {
-      const text = n.innerText.trim();
-      if (text) lines.push(text);
+/* -----------------------------
+   Download / Copy Markdown
+   ----------------------------- */
+document.getElementById('downloadNotes').addEventListener('click', () => {
+  const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
+  const lines = [];
+  nodes.forEach(n => {
+    const tag = n.tagName.toLowerCase();
+    const txt = n.innerText.trim();
+    if (!txt) return;
+    if (tag === 'h1') lines.push('# ' + txt + '\n');
+    else if (tag === 'h2') lines.push('## ' + txt + '\n');
+    else if (tag === 'h3') lines.push('### ' + txt + '\n');
+    else if (tag === 'li') lines.push('- ' + txt);
+    else if (tag === 'pre') lines.push('```\n' + txt + '\n```');
+    else lines.push(txt);
+  });
+  const blob = new Blob([lines.join('\n\n')], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'Lesson9_DDoS_SessionHijack_Notes.txt'; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 700);
+});
+
+document.getElementById('copyMd').addEventListener('click', async () => {
+  const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
+  let md = '';
+  nodes.forEach(n => {
+    const tag = n.tagName.toLowerCase();
+    const txt = n.innerText.trim();
+    if (!txt) return;
+    if (tag === 'h1') md += '# ' + txt + '\n\n';
+    else if (tag === 'h2') md += '## ' + txt + '\n\n';
+    else if (tag === 'h3') md += '### ' + txt + '\n\n';
+    else if (tag === 'li') md += '- ' + txt + '\n';
+    else if (tag === 'pre') md += '```\n' + txt + '\n```\n\n';
+    else md += txt + '\n\n';
+  });
+  try { await navigator.clipboard.writeText(md); alert('Copied notes as Markdown.'); }
+  catch(e){ alert('Could not copy to clipboard.'); }
+});
+
+/* -----------------------------
+   Quiz logic
+   ----------------------------- */
+const answers = {
+  q1: {a:false,b:true,c:false, explain:"Large volumetric attacks are best mitigated by CDN/scrubbing providers that filter or absorb traffic upstream."},
+  q2: {a:false,b:true,c:false, explain:"HttpOnly prevents JavaScript from accessing the cookie; Secure ensures cookies are only sent over TLS."},
+  q3: {a:false,b:true,c:false, explain:"SYN flood uses incomplete TCP handshakes to exhaust server state — a protocol/state exhaustion attack."},
+  q4: {a:true,b:false,c:false, explain:"Regenerating the session ID after authentication prevents session fixation."},
+  q5: {a:false,b:true,c:false, explain:"Behavioral/anomaly detection uses baselines and ML to spotlight deviations."},
+  q6: {a:false,b:true,c:false, explain:"Honeypots are decoys used to observe attackers and provide early warning; they don't speed production traffic."},
+  q7: {a:true,b:false,c:false, explain:"Always use HTTPS/TLS so session tokens are encrypted in transit."},
+  q8: {a:true,b:false,c:false, explain:"Long-running partial HTTP connections are characteristic of Slowloris-style application-layer attacks."},
+  q9: {a:true,b:false,c:false, explain:"Invoke your incident playbook and contact CDN/ISP to coordinate mitigation."},
+  q10:{a:true,b:false,c:false, explain:"HttpOnly-cookies + input sanitization (and CSP) greatly reduce XSS session theft risk."}
+};
+
+document.getElementById('grade').addEventListener('click', () => {
+  let score = 0;
+  const parts = [];
+  for (let i=1;i<=10;i++){
+    const q = 'q'+i;
+    const sel = document.querySelector(`input[name="${q}"]:checked`);
+    const user = sel ? sel.value : '(no answer)';
+    const correct = Object.keys(answers[q]).find(k => k!=='explain' && answers[q][k] === true);
+    const isCorrect = sel && answers[q][sel.value] === true;
+    if (isCorrect) score++;
+    parts.push(`<strong>Q${i}</strong> — Your answer: ${user} — ${isCorrect?'<span style="color:var(--ok)">Correct</span>':'<span style="color:var(--danger)">Incorrect</span>'}<br><em>Explanation:</em> ${answers[q].explain}`);
+  }
+  const out = document.getElementById('result');
+  out.innerHTML = `<div><strong>Score:</strong> ${score} / 10</div><div style="margin-top:10px">${parts.join('<hr>')}</div>`;
+  out.focus();
+  out.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+document.getElementById('showAnswers').addEventListener('click', () => {
+  const lines = [];
+  for (let i=1;i<=10;i++){
+    const q = 'q'+i;
+    const correct = Object.keys(answers[q]).find(k => k!=='explain' && answers[q][k]===true);
+    lines.push(`<strong>Q${i}</strong> — Correct: ${correct.toUpperCase()} — ${answers[q].explain}`);
+  }
+  const out = document.getElementById('result');
+  out.innerHTML = lines.join('<hr>');
+  out.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+/* -----------------------------
+   TTS module — improved highlighting (uses Range/mark)
+   ----------------------------- */
+(function(){
+  const bar = document.getElementById('ttsBar');
+  if (!bar) return;
+  if (!('speechSynthesis' in window)) { bar.style.display='none'; adjustForTTS(); return; }
+
+  const play = document.getElementById('ttsPlay');
+  const pause = document.getElementById('ttsPause');
+  const stop = document.getElementById('ttsStop');
+  const voicesSelect = document.getElementById('ttsVoices');
+  const rateInput = document.getElementById('ttsRate');
+  const pitchInput = document.getElementById('ttsPitch');
+  const autoBtn = document.getElementById('ttsToggleAuto');
+  const lessonRoot = document.querySelector('.lesson-content');
+
+  let voices = [];
+  function populateVoices(){
+    voices = speechSynthesis.getVoices();
+    voicesSelect.innerHTML = '';
+    voices.forEach(v=>{
+      const o = document.createElement('option');
+      o.value = v.voiceURI; o.textContent = `${v.name} (${v.lang})${v.default? ' — default' : ''}`;
+      voicesSelect.appendChild(o);
     });
-    const blob = new Blob([lines.join('\n\n')], {type:'text/plain'});
-    const url = URL.createObjectURL(blob); const a = document.createElement('a');
-    a.href = url; a.download = 'Lesson9_DDoS_SessionHijack_Notes.txt'; document.body.appendChild(a); a.click();
-    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-  });
+    const saved = localStorage.getItem('lesson9.voice');
+    if (saved && Array.from(voicesSelect.options).some(opt=>opt.value===saved)) voicesSelect.value = saved;
+  }
+  populateVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
 
-  document.getElementById('copyMd').addEventListener('click', async () => {
-    const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
-    let md = '';
-    nodes.forEach(n => {
-      const tag = n.tagName.toLowerCase();
-      const txt = n.innerText.trim();
-      if (!txt) return;
-      if (tag === 'h1') md += `# ${txt}\n\n`;
-      else if (tag === 'h2') md += `## ${txt}\n\n`;
-      else if (tag === 'h3') md += `### ${txt}\n\n`;
-      else if (tag === 'pre') md += '```\n' + txt + '\n```\n\n';
-      else if (tag === 'li') md += `- ${txt}\n`;
-      else md += `${txt}\n\n`;
-    });
-    try { await navigator.clipboard.writeText(md); alert('Copied notes as Markdown.'); }
-    catch(e){ alert('Could not copy to clipboard.'); }
-  });
+  function getTextNodes(root){
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: node => {
+      // ignore script/style and only keep visible textual nodes
+      if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      const parent = node.parentElement;
+      if (!parent) return NodeFilter.FILTER_REJECT;
+      const hiddenTags = ['SCRIPT','STYLE','NOSCRIPT'];
+      if (hiddenTags.includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }}, false);
+    const nodes = [];
+    let n;
+    while(n = walker.nextNode()) nodes.push(n);
+    return nodes;
+  }
 
-  // Quiz logic and explanations
-  const answers = {
-    q1: {a:false, b:true,  c:false, explain:"Large volumetric attacks are best mitigated by CDNs/scrubbing providers that absorb or filter traffic before it reaches your origin."},
-    q2: {a:false, b:true,  c:false, explain:"HttpOnly prevents JavaScript from reading cookies; 'Secure' ensures cookies are sent only over TLS."},
-    q3: {a:false, b:true,  c:false, explain:"SYN floods exploit TCP connection state, exhausting server resources — a protocol/state-exhaustion attack."},
-    q4: {a:true,  b:false, c:false, explain:"Regenerating the session ID after authentication prevents session fixation attacks."},
-    q5: {a:false, b:true,  c:false, explain:"Behavioral/anomaly detection uses baselines and ML to spot traffic deviating from normal patterns."},
-    q6: {a:false, b:true,  c:false, explain:"Honeypots are decoys designed to observe attacker behavior and provide early warning; they do not accelerate real production traffic."},
-    q7: {a:true,  b:false, c:false, explain:"Always using HTTPS/TLS ensures session tokens are encrypted in transit and not easily intercepted."},
-    q8: {a:true,  b:false, c:false, explain:"Long-lived, incomplete HTTP connections are typical of Slowloris-style application-layer attacks."},
-    q9: {a:true,  b:false, c:false, explain:"Activating the incident playbook and contacting CDN/ISP are appropriate immediate steps to mitigate impact and coordinate filtering."},
-    q10:{a:true,  b:false, c:false, explain:"HttpOnly cookies and proper input sanitization greatly reduce the risk of XSS-based token theft."}
-  };
+  function getTextForTTS(){
+    // build readable text from headings, paragraphs, list items in order
+    const nodes = lessonRoot.querySelectorAll('h1,h2,h3,p,li,pre');
+    return Array.from(nodes).map(n=>n.innerText.trim()).filter(Boolean).join('.\n');
+  }
 
-  document.getElementById('grade').addEventListener('click', () => {
-    let score = 0;
-    const explanations = [];
-    for (let i=1;i<=10;i++){
-      const name = 'q'+i;
-      const sel = document.querySelector(`input[name="${name}"]:checked`);
-      const key = name;
-      const correct = Object.keys(answers[key]).find(k=>k!=='explain' && answers[key][k]===true);
-      const isCorrect = sel && answers[key][sel.value]===true;
-      if (isCorrect) score++;
-      const user = sel ? sel.value : '(no answer)';
-      explanations.push(`<strong>Q${i}:</strong> Your answer: ${user}. ${isCorrect?'<span style="color:var(--ok)">Correct</span>':'<span style="color:var(--danger)">Incorrect</span>' }<br><em>Explanation:</em> ${answers[key].explain}`);
-    }
-    const out = document.getElementById('result');
-    out.innerHTML = `<strong>Score:</strong> ${score} / 10<br><div style="margin-top:8px">${explanations.join('<hr>')}</div>`;
-    out.scrollIntoView({behavior:'smooth', block:'center'});
-  });
+  let utteranceQueue = [];
+  let playing = false;
+  let currentUtterance = null;
 
-  document.getElementById('showAnswers').addEventListener('click', () => {
-    const out = document.getElementById('result');
-    const lines = [];
-    for (let i=1;i<=10;i++){
-      const key = 'q'+i;
-      const correct = Object.keys(answers[key]).find(k=>k!=='explain' && answers[key][k]===true);
-      lines.push(`<strong>Q${i} correct answer:</strong> ${correct.toUpperCase()}. <em>${answers[key].explain}</em>`);
-    }
-    out.innerHTML = lines.join('<hr>');
-    out.scrollIntoView({behavior:'smooth', block:'center'});
-  });
+  function highlightRange(startNode, startOffset, endNode, endOffset){
+    removeAllMarks();
+    const range = document.createRange();
+    range.setStart(startNode, startOffset);
+    range.setEnd(endNode, endOffset);
+    const mark = document.createElement('mark');
+    mark.className = 'tts-mark';
+    range.surroundContents(mark);
+    mark.scrollIntoView({behavior:'smooth', block:'center'});
+  }
 
-  // TTS module (Web Speech API)
-  (function(){
-    if (!('speechSynthesis' in window)) {
-      const bar = document.getElementById('ttsBar'); if (bar) bar.style.display='none';
-      return;
-    }
-    const playBtn = document.getElementById('ttsPlay');
-    const pauseBtn = document.getElementById('ttsPause');
-    const stopBtn = document.getElementById('ttsStop');
-    const voicesSelect = document.getElementById('ttsVoices');
-    const rateInput = document.getElementById('ttsRate');
-    const pitchInput = document.getElementById('ttsPitch');
-    const autoBtn = document.getElementById('ttsToggleAuto');
-
-    let voices = [];
-    function populateVoices(){
-      voices = speechSynthesis.getVoices();
-      voicesSelect.innerHTML='';
-      voices.forEach(v=>{
-        const opt = document.createElement('option'); opt.value = v.voiceURI;
-        opt.textContent = `${v.name} (${v.lang})${v.default?' — default':''}`;
-        voicesSelect.appendChild(opt);
-      });
-      // try to restore saved voice
-      const saved = localStorage.getItem('lesson9.voice');
-      if (saved) voicesSelect.value = saved;
-    }
-
-    populateVoices();
-    if (speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged = populateVoices;
-
-    function getTextForTTS(){
-      // choose main lesson text (headers + paragraphs)
-      const nodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content h3, .lesson-content p');
-      return Array.from(nodes).map(n=>n.innerText.trim()).filter(Boolean).join('.\n');
-    }
-
-    function speakAll(){
-      cancel();
-      const raw = getTextForTTS();
-      const sentences = raw.split(/(?<=[.?!])\s+/);
-      let idx = 0;
-      function speakNext(){
-        if (idx >= sentences.length) return;
-        const s = sentences[idx++];
-        const u = new SpeechSynthesisUtterance(s);
-        // pick voice
-        const selURI = voicesSelect.value;
-        const sel = voices.find(v=>v.voiceURI===selURI) || voices.find(v=>v.default) || voices[0];
-        if (sel) u.voice = sel;
-        u.rate = parseFloat(rateInput.value);
-        u.pitch = parseFloat(pitchInput.value);
-        u.onstart = ()=> highlightSentence(s);
-        u.onend = ()=> {
-          removeHighlights();
-          setTimeout(()=> speakNext(), 80);
-        };
-        speechSynthesis.speak(u);
+  function findAndMarkSentence(sentence){
+    // naive approach: find first matching text node slice that contains the sentence (case-sensitive)
+    const txt = sentence.trim();
+    if (!txt) return;
+    const textNodes = getTextNodes(lessonRoot);
+    let cursor = 0;
+    for (const node of textNodes){
+      const val = node.nodeValue;
+      const idx = val.indexOf(txt);
+      if (idx >= 0){
+        highlightRange(node, idx, node, idx + txt.length);
+        return;
       }
-      speakNext();
+      cursor += val.length;
     }
+    // fallback: no mark placed
+  }
 
-    function cancel(){ if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
-    function pause(){ if (speechSynthesis.speaking) speechSynthesis.pause(); }
-    function resume(){ if (speechSynthesis.paused) speechSynthesis.resume(); }
+  function removeAllMarks(){
+    const marks = lessonRoot.querySelectorAll('mark.tts-mark');
+    marks.forEach(m => {
+      const parent = m.parentNode;
+      while (m.firstChild) parent.insertBefore(m.firstChild, m);
+      parent.removeChild(m);
+      parent.normalize();
+    });
+  }
 
-    function highlightSentence(sentence){
-      removeHighlights();
-      const lesson = document.querySelector('.lesson-content');
-      if (!lesson) return;
-      const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').trim();
-      if (!safe) return;
-      const regex = new RegExp(safe);
-      lesson.innerHTML = lesson.innerHTML.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
+  function speakAll(){
+    stopAll();
+    const raw = getTextForTTS();
+    if (!raw) return;
+    const sentences = raw.split(/(?<=[.?!])\s+/);
+    let i = 0;
+    playing = true;
+    function speakNext(){
+      if (!playing) return;
+      if (i >= sentences.length) { playing = false; removeAllMarks(); return; }
+      const s = sentences[i++].trim();
+      if (!s) return speakNext();
+      currentUtterance = new SpeechSynthesisUtterance(s);
+      const selURI = voicesSelect.value || localStorage.getItem('lesson9.voice') || '';
+      const sel = voices.find(v=>v.voiceURI===selURI) || voices.find(v=>v.default) || voices[0];
+      if (sel) currentUtterance.voice = sel;
+      currentUtterance.rate = parseFloat(rateInput.value || 1);
+      currentUtterance.pitch = parseFloat(pitchInput.value || 1);
+      currentUtterance.onstart = () => { try { findAndMarkSentence(s); } catch(e){ /* ignore */ } };
+      currentUtterance.onend = () => { removeAllMarks(); setTimeout(()=> speakNext(), 80); };
+      speechSynthesis.speak(currentUtterance);
     }
-    function removeHighlights(){
-      const lesson = document.querySelector('.lesson-content');
-      if (!lesson) return;
-      const els = lesson.querySelectorAll('.tts-highlight');
-      els.forEach(el => { el.outerHTML = el.textContent; });
+    speakNext();
+  }
+
+  function stopAll(){ playing = false; if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); removeAllMarks(); }
+
+  function pauseAll(){ if (speechSynthesis.speaking) speechSynthesis.pause(); else if (speechSynthesis.paused) speechSynthesis.resume(); }
+
+  play.addEventListener('click', ()=> {
+    if (speechSynthesis.paused) return speechSynthesis.resume();
+    if (speechSynthesis.speaking) return;
+    speakAll();
+    localStorage.setItem('lesson9.voice', voicesSelect.value || '');
+    localStorage.setItem('lesson9.rate', rateInput.value);
+    localStorage.setItem('lesson9.pitch', pitchInput.value);
+  });
+  pause.addEventListener('click', pauseAll);
+  stop.addEventListener('click', stopAll);
+
+  voicesSelect.addEventListener('change', ()=> localStorage.setItem('lesson9.voice', voicesSelect.value || ''));
+  rateInput.addEventListener('change', ()=> localStorage.setItem('lesson9.rate', rateInput.value));
+  pitchInput.addEventListener('change', ()=> localStorage.setItem('lesson9.pitch', pitchInput.value));
+
+  // auto toggle
+  const savedAuto = localStorage.getItem('lesson9.auto') === 'true';
+  autoBtn.style.opacity = savedAuto ? '1' : '0.6';
+  autoBtn.addEventListener('click', ()=> {
+    const cur = localStorage.getItem('lesson9.auto') === 'true';
+    localStorage.setItem('lesson9.auto', (!cur).toString());
+    autoBtn.style.opacity = (!cur) ? '1' : '0.6';
+  });
+
+  // apply saved settings and maybe auto play
+  function applySaved(){
+    const sv = localStorage.getItem('lesson9.voice');
+    if (sv && Array.from(voicesSelect.options).some(o=>o.value===sv)) voicesSelect.value = sv;
+    const sr = localStorage.getItem('lesson9.rate'); if (sr) rateInput.value = sr;
+    const sp = localStorage.getItem('lesson9.pitch'); if (sp) pitchInput.value = sp;
+    if (localStorage.getItem('lesson9.auto') === 'true') {
+      try { speakAll(); } catch(e) { console.warn('Auto TTS blocked', e); }
     }
+  }
 
-    playBtn.addEventListener('click', ()=> {
-      if (speechSynthesis.paused) return resume();
-      if (speechSynthesis.speaking) return;
-      speakAll();
-      localStorage.setItem('lesson9.voice', voicesSelect.value || '');
-      localStorage.setItem('lesson9.rate', rateInput.value);
-      localStorage.setItem('lesson9.pitch', pitchInput.value);
-    });
-    pauseBtn.addEventListener('click', ()=> {
-      if (speechSynthesis.speaking) pause();
-      else if (speechSynthesis.paused) resume();
-    });
-    stopBtn.addEventListener('click', ()=> { cancel(); removeHighlights(); });
+  // voices might load after user agent ready
+  let tries=0;
+  const iv = setInterval(()=> {
+    if (speechSynthesis.getVoices().length) { populateVoices(); applySaved(); clearInterval(iv); adjustForTTS(); }
+    else if (++tries>30) { applySaved(); clearInterval(iv); adjustForTTS(); }
+  }, 200);
 
-    voicesSelect.addEventListener('change', ()=> localStorage.setItem('lesson9.voice', voicesSelect.value));
-    rateInput.addEventListener('change', ()=> localStorage.setItem('lesson9.rate', rateInput.value));
-    pitchInput.addEventListener('change', ()=> localStorage.setItem('lesson9.pitch', pitchInput.value));
+  // observe bar height to set --tts-height
+  const ro = new ResizeObserver(entries => adjustForTTS());
+  ro.observe(bar);
 
-    // auto toggle
-    const savedAuto = localStorage.getItem('lesson9.auto') === 'true';
-    autoBtn.style.opacity = savedAuto ? '1' : '0.6';
-    autoBtn.addEventListener('click', ()=> {
-      const cur = localStorage.getItem('lesson9.auto') === 'true';
-      localStorage.setItem('lesson9.auto', (!cur).toString());
-      autoBtn.style.opacity = (!cur) ? '1' : '0.6';
-    });
+  // initial adjust
+  setTimeout(adjustForTTS, 300);
+}
 
-    // apply saved settings when ready
-    const applySaved = () => {
-      const sv = localStorage.getItem('lesson9.voice');
-      if (sv && voices.find(v=>v.voiceURI===sv)) voicesSelect.value = sv;
-      const sr = localStorage.getItem('lesson9.rate') || rateInput.value;
-      const sp = localStorage.getItem('lesson9.pitch') || pitchInput.value;
-      rateInput.value = sr; pitchInput.value = sp;
-      if (localStorage.getItem('lesson9.auto') === 'true') {
-        try { speakAll(); } catch(e) { console.warn('Auto TTS blocked'); }
-      }
-    };
-
-    // voices may not be loaded immediately
-    let tries = 0;
-    const iv = setInterval(()=> {
-      if (speechSynthesis.getVoices().length) {
-        populateVoices(); applySaved(); clearInterval(iv);
-      } else if (++tries > 30) { applySaved(); clearInterval(iv); }
-    }, 200);
-  })();
+/* adjust for TTS bar so anchors not covered */
+function adjustForTTS(){
+  const bar = document.getElementById('ttsBar');
+  if (!bar) return;
+  const rect = bar.getBoundingClientRect();
+  const cs = window.getComputedStyle(bar);
+  const h = Math.ceil(rect.height + parseFloat(cs.marginTop||0) + parseFloat(cs.marginBottom||0));
+  document.documentElement.style.setProperty('--tts-height', h + 'px');
+  // adjust container padding bottom
+  document.querySelectorAll('.container').forEach(c => c.style.paddingBottom = (24 + h) + 'px');
+}
+window.addEventListener('load', () => setTimeout(adjustForTTS, 600));
+window.addEventListener('resize', () => setTimeout(adjustForTTS, 120));
+})();
 </script>
 </body>
 </html>

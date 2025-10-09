@@ -8,13 +8,17 @@
     :root{
       --bg:#071226; --card:#0f1b36; --muted:#9fb6d7; --text:#e8f3ff;
       --accent:#63a6ff; --accent-2:#76f0c4; --warn:#ffd66e; --danger:#ff758f;
+      --tts-height: 96px; /* default until measured by JS */
+      --header-height: 84px;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-height) + 12px); scroll-padding-bottom: calc(var(--tts-height) + 18px); }
     body{color:var(--text); background:linear-gradient(135deg,#071226 0%,#0a1b36 100%); -webkit-font-smoothing:antialiased}
-    .container{max-width:1200px;margin:0 auto;padding:18px}
+    .container{max-width:1200px;margin:0 auto;padding:18px; padding-bottom: calc(var(--tts-height) + 28px);}
     header{position:sticky;top:0;z-index:20;background:rgba(7,18,38,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.04)}
     .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px}
+    .left{display:flex;align-items:center;gap:12px}
     .badge{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:#071226;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase}
     .title{font-size:clamp(24px,3.8vw,36px);margin:6px 0}
     .subtitle{color:var(--muted);font-size:14px}
@@ -40,25 +44,52 @@
     .danger{color:var(--danger);font-weight:700}
     .warn-box{background:linear-gradient(180deg, rgba(255,215,110,0.03), rgba(255,215,110,0.01));border-left:4px solid rgba(255,215,110,0.18);padding:10px;border-radius:8px}
     .kbd{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);}
+    /* TTS bar */
+    .tts-bar {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.65);
+      color: #00ffcc;
+      padding: 10px 12px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      font-family: 'Share Tech Mono', monospace;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      backdrop-filter: blur(6px);
+      min-width: 300px;
+    }
+    .tts-bar button { background: linear-gradient(45deg,#ff0080,#7928ca); border: none; color: #fff; padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-width: 44px; }
+    .tts-bar select, .tts-bar input[type="range"] { background: rgba(255,255,255,0.06); color: #00ffcc; border: 1px solid rgba(255,255,255,0.06); padding: 6px; border-radius: 8px; font-family: inherit; }
+    .tts-highlight { background: rgba(0,255,200,0.12); padding:0 2px; border-radius:3px }
+    @media (max-width:600px){ .tts-bar{ left:50%; transform:translateX(-50%); right:auto; bottom:12px; min-width:88% } }
+    /* anchor spacing */
+    .section-title { scroll-margin-top: calc(var(--header-height) + 18px); }
   </style>
 </head>
 <body>
   <header>
     <div class="container header-row">
-      <div style="display:flex;align-items:center;gap:12px">
+      <div class="left">
         <span class="badge">Lesson 8</span>
         <div>
           <div class="title">Malware & Sniffing — Comprehensive Expansion</div>
-          <div class="subtitle">Detailed behaviors, detection recipes, hands-on lab starters, SIEM/YARA examples, and an extended quiz.</div>
+          <div class="subtitle">Behaviors, detection recipes, SIEM/YARA, safe labs, and quiz</div>
         </div>
       </div>
-      <div>
+
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn" id="downloadNotes">📥 Download Notes</button>
+        <button class="btn" id="copyMarkdown">📋 Copy Markdown</button>
         <button class="btn" id="toggleTheme">🌗 Theme</button>
       </div>
     </div>
   </header>
 
-  <main class="container grid">
+  <main class="container grid" role="main" aria-live="polite">
     <article>
       <section class="card">
         <h2>Overview — what this lesson adds</h2>
@@ -70,8 +101,9 @@
         </div>
       </section>
 
+      <!-- (all your original sections preserved) -->
       <section class="card long-read" id="what-malware">
-        <h2>What is Malware? — purpose & lifecycle (expanded)</h2>
+        <h2 class="section-title">What is Malware? — purpose & lifecycle (expanded)</h2>
         <p>
           Malware is best understood via its lifecycle: <strong>initial access → execution → persistence → privilege escalation → defense evasion → lateral movement → C2 & exfiltration → action on objectives (data theft, destruction, ransom)</strong>. Each phase provides defenders with collection and detection opportunities.
         </p>
@@ -91,7 +123,7 @@
       </section>
 
       <section class="card long-read" id="types">
-        <h2>Malware taxonomy — behaviors and real-world signs</h2>
+        <h2 class="section-title">Malware taxonomy — behaviors and real-world signs</h2>
 
         <h3>Virus — indicators</h3>
         <p class="small muted">Signs: identical file hashes across endpoints, new macros in Office templates, modified executable timestamps.</p>
@@ -118,7 +150,7 @@
       </section>
 
       <section class="card long-read" id="vectors">
-        <h2>Propagation & infection vectors — deeper</h2>
+        <h2 class="section-title">Propagation & infection vectors — deeper</h2>
         <p>Attackers chain vectors—social engineering to drop a Trojan, then exploit to move laterally. Common vector combos:</p>
         <ul class="list">
           <li>Phishing → Credential theft → RDP access → ransomware</li>
@@ -135,13 +167,13 @@
       </section>
 
       <section class="card long-read" id="detection">
-        <h2>Detection recipes — SIEM correlation & YARA examples</h2>
+        <h2 class="section-title">Detection recipes — SIEM correlation & YARA examples</h2>
         <p class="small muted">Below are defensible starting points you can adapt to your environment. Tune thresholds to avoid excessive false positives.</p>
 
         <h3>SIEM correlation idea — Ransomware early warning</h3>
         <pre>
 Rule: ALERT when any host shows:
- - > 100 file write events to dissimilar volumes within 5 minutes AND
+ - &gt; 100 file write events to dissimilar volumes within 5 minutes AND
  - creation of newly-named ransom file patterns (*.locked, *_README.txt) OR simultaneous creation of many .encrypted files
 Action: isolate host VLAN, block host at NAC, notify IR, take EDR snapshot
         </pre>
@@ -173,7 +205,7 @@ rule Suspicious_Installer_Strings {
       </section>
 
       <section class="card long-read" id="net-detect">
-        <h2>Network detection — Indicators & heuristics</h2>
+        <h2 class="section-title">Network detection — Indicators & heuristics</h2>
         <p>Network telemetry can reveal C2, exfil, and lateral movements. Common heuristics:</p>
         <ul class="list">
           <li><strong>DNS:</strong> fast-flux domains, many small queries to dynamic domains, long domain name entropy, use of uncommon TLDs used by malware.</li>
@@ -185,7 +217,7 @@ rule Suspicious_Installer_Strings {
       </section>
 
       <section class="card long-read" id="cases">
-        <h2>Detailed case studies & lessons</h2>
+        <h2 class="section-title">Detailed case studies & lessons</h2>
 
         <h3>WannaCry — what defenders can learn</h3>
         <p>
@@ -204,7 +236,7 @@ rule Suspicious_Installer_Strings {
       </section>
 
       <section class="card long-read" id="sniffing">
-        <h2>Sniffing — fundamentals, attack modes & detection</h2>
+        <h2 class="section-title">Sniffing — fundamentals, attack modes & detection</h2>
         <p>
           Packet sniffing captures network traffic for analysis. Attackers sniff to steal credentials and tokens over unencrypted channels. Defenders can also capture packets to troubleshoot or investigate incidents.
         </p>
@@ -224,7 +256,7 @@ rule Suspicious_Installer_Strings {
       </section>
 
       <section class="card long-read" id="sniff-tools">
-        <h2>Tools & safe lab commands (defensive focus)</h2>
+        <h2 class="section-title">Tools & safe lab commands (defensive focus)</h2>
         <p class="small muted">Use in isolated labs only. Commands illustrate capture and analysis techniques for investigators.</p>
 
         <h3>Capture tips</h3>
@@ -260,7 +292,7 @@ sudo arping -c 3 -I eth0 10.0.0.1
       </section>
 
       <section class="card long-read" id="ir">
-        <h2>Incident Response — ransomware & sniffing incidents (step-by-step)</h2>
+        <h2 class="section-title">Incident Response — ransomware & sniffing incidents (step-by-step)</h2>
         <ol class="list">
           <li><strong>Identification:</strong> collect alerts (EDR/SIEM), isolate affected hosts from the network (quarantine), preserve evidence (memory & disk images), and record timestamps & scope.</li>
           <li><strong>Containment:</strong> block C2 domains/ips at firewall, rotate credentials, revoke sessions for compromised accounts.</li>
@@ -271,17 +303,18 @@ sudo arping -c 3 -I eth0 10.0.0.1
       </section>
 
       <section class="card long-read" id="ethics">
-        <h2>Legal & ethical considerations (expanded)</h2>
+        <h2 class="section-title">Legal & ethical considerations (expanded)</h2>
         <p class="small muted">
           Many commands/tools are dual-use. Only perform offensive or intrusive actions with explicit written authorization. In regulated industries, coordinate with legal/compliance teams before investigation or notification. Maintain chain-of-custody for evidence if law enforcement becomes involved.
         </p>
       </section>
 
       <section class="card" id="quiz">
-        <h2>Quiz — Malware & Sniffing (12 questions)</h2>
+        <h2 class="section-title">Quiz — Malware & Sniffing (12 questions)</h2>
         <p class="small muted">This quiz reinforces detection and response concepts. Use the explanations after submission to learn.</p>
 
         <form id="msQuiz">
+          <!-- Q1..Q12: identical to your original content -->
           <!-- Q1 -->
           <div class="q-card">
             <h4>1) Which indicator is most associated with fileless malware?</h4>
@@ -291,7 +324,7 @@ sudo arping -c 3 -I eth0 10.0.0.1
               <label><input type="radio" name="q1" value="c"> Presence of ransom note files</label>
             </div>
           </div>
-
+          <!-- ... (rest of the quiz Q2..Q12 kept identical) -->
           <!-- Q2 -->
           <div class="q-card">
             <h4>2) A sudden spike of small DNS queries to many random hostnames likely indicates:</h4>
@@ -424,7 +457,7 @@ sudo arping -c 3 -I eth0 10.0.0.1
       </footer>
     </article>
 
-    <aside class="sidebar">
+    <aside class="sidebar" aria-label="Sidebar">
       <div class="card">
         <h3>Quick Links</h3>
         <ul class="list">
@@ -448,6 +481,24 @@ sudo arping -c 3 -I eth0 10.0.0.1
       </div>
     </aside>
   </main>
+
+  <!-- TTS Control Bar -->
+  <div id="ttsBar" class="tts-bar" aria-hidden="false" role="region" aria-label="Text to speech controls">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" title="Pause">⏸</button>
+    <button id="ttsStop" title="Stop">⏹</button>
+
+    <span class="label">Voice</span>
+    <select id="ttsVoices" aria-label="Select voice"></select>
+
+    <span class="label">Rate</span>
+    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <span class="label">Pitch</span>
+    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <button id="ttsToggleAuto" class="btn" title="Auto-read on load">A</button>
+  </div>
 
   <script>
     /* Theme toggle */
@@ -481,22 +532,39 @@ sudo arping -c 3 -I eth0 10.0.0.1
     });
 
     /* Download notes (text) */
-    document.getElementById('downloadNotes')?.addEventListener('click', () => {
-      const nodes = document.querySelectorAll('article h2, article h3, article p, article li');
+    document.getElementById('downloadNotes').addEventListener('click', () => {
+      const nodes = document.querySelectorAll('article h2, article h3, article p, article li, article pre');
       const lines = [];
       nodes.forEach(n => {
         const t = n.tagName.toLowerCase();
         if (t === 'h2') lines.push('\n' + n.innerText + '\n' + '-'.repeat(60));
         else if (t === 'h3') lines.push('\n' + n.innerText + '\n');
+        else if (t === 'pre') lines.push('```\n' + n.innerText + '\n```\n');
         else lines.push(n.innerText);
       });
       const blob = new Blob([lines.join('\n')], {type:'text/plain'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'Lesson8_Malware_Sniffing_Expanded.txt'; document.body.appendChild(a); a.click();
+      const a = document.createElement('a'); a.href = url; a.download = 'Lesson8_Malware_Sniffing_Notes.txt'; document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 800);
     });
 
-    /* Quiz logic */
+    /* Copy Markdown */
+    document.getElementById('copyMarkdown').addEventListener('click', async () => {
+      const nodes = document.querySelectorAll('article h2, article h3, article p, article li, article pre');
+      let md = '';
+      nodes.forEach(n => {
+        const tag = n.tagName.toLowerCase();
+        if (tag === 'h2') md += `## ${n.innerText}\n\n`;
+        else if (tag === 'h3') md += `### ${n.innerText}\n\n`;
+        else if (tag === 'li') md += `- ${n.innerText}\n`;
+        else if (tag === 'pre') md += '```\n' + n.innerText + '\n```\n\n';
+        else md += `${n.innerText}\n\n`;
+      });
+      try { await navigator.clipboard.writeText(md); alert('Copied lesson content as Markdown to clipboard.'); }
+      catch(e){ alert('Could not copy to clipboard.'); }
+    });
+
+    /* Quiz logic (keeps your original logic) */
     const answers = {
       q1: 'b', q2: 'b', q3: 'b', q4: 'b', q5: 'a', q6: 'b',
       q7: 'b', q8: 'b', q9: 'a', q10: 'b', q11: 'a', q12: 'b'
@@ -585,7 +653,127 @@ sudo arping -c 3 -I eth0 10.0.0.1
       } catch (e) {}
     })();
 
-    /* Safety: print a reminder */
+    /* --- TTS module (Web Speech API) --- */
+    (function () {
+      const ttsBar = document.getElementById('ttsBar');
+      const playBtn = document.getElementById('ttsPlay');
+      const pauseBtn = document.getElementById('ttsPause');
+      const stopBtn = document.getElementById('ttsStop');
+      const voicesSelect = document.getElementById('ttsVoices');
+      const rateInput = document.getElementById('ttsRate');
+      const pitchInput = document.getElementById('ttsPitch');
+      const autoBtn = document.getElementById('ttsToggleAuto');
+      const lesson = document.querySelector('article') || document.body;
+      let utterance = null, sentences = [], currentIndex = 0, readyVoices = [];
+
+      if (!('speechSynthesis' in window)) {
+        // hide TTS UI and adjust spacing
+        if (ttsBar) ttsBar.style.display = 'none';
+        adjustForTTS();
+        return;
+      }
+
+      const prefs = {
+        voiceURI: localStorage.getItem('tts.voice') || '',
+        rate: parseFloat(localStorage.getItem('tts.rate')) || 1,
+        pitch: parseFloat(localStorage.getItem('tts.pitch')) || 1,
+        auto: localStorage.getItem('tts.auto') === 'true' || false
+      };
+      rateInput.value = prefs.rate; pitchInput.value = prefs.pitch; autoBtn.style.opacity = prefs.auto ? '1' : '0.6';
+
+      function populateVoices() {
+        const voices = speechSynthesis.getVoices();
+        readyVoices = voices;
+        voicesSelect.innerHTML = '';
+        voices.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.voiceURI;
+          opt.textContent = `${v.name} (${v.lang})${v.default ? ' — default' : ''}`;
+          voicesSelect.appendChild(opt);
+        });
+        if (prefs.voiceURI) {
+          const found = [...voices].find(v => v.voiceURI === prefs.voiceURI);
+          if (found) voicesSelect.value = prefs.voiceURI;
+        }
+        setTimeout(adjustForTTS, 120);
+      }
+      populateVoices();
+      if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
+
+      function getText() {
+        const nodes = lesson.querySelectorAll('h1,h2,h3,p,li,pre');
+        return Array.from(nodes).map(n => n.innerText.trim()).filter(Boolean).join('.\n');
+      }
+      function buildSentences(text) { return text.split(/(?<=[.?!])\s+/); }
+
+      function speakFrom(index = 0) {
+        const text = getText(); sentences = buildSentences(text); currentIndex = index;
+        if (currentIndex >= sentences.length) return; speakSentence(sentences[currentIndex]);
+      }
+      function speakSentence(sentence) {
+        if (!sentence || sentence.trim()==='') { currentIndex++; if (currentIndex<sentences.length) speakSentence(sentences[currentIndex]); return; }
+        cancel();
+        utterance = new SpeechSynthesisUtterance(sentence);
+        const voiceURI = voicesSelect.value || prefs.voiceURI;
+        const selected = readyVoices.find(v => v.voiceURI === voiceURI) || readyVoices.find(v => v.default) || readyVoices[0];
+        if (selected) utterance.voice = selected;
+        utterance.rate = parseFloat(rateInput.value); utterance.pitch = parseFloat(pitchInput.value);
+        utterance.onstart = () => highlightSentence(sentence);
+        utterance.onend = () => { currentIndex++; if (currentIndex < sentences.length) setTimeout(()=>speakSentence(sentences[currentIndex]),120); else clearHighlights(); };
+        speechSynthesis.speak(utterance);
+      }
+      function cancel() { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
+      function pause() { if (speechSynthesis.speaking) speechSynthesis.pause(); }
+      function resume() { if (speechSynthesis.paused) speechSynthesis.resume(); }
+      function highlightSentence(sentence) {
+        clearHighlights(); if (!lesson) return;
+        const text = lesson.innerHTML; const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').trim();
+        if (!safe) return;
+        const regex = new RegExp(safe);
+        const newHtml = text.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
+        if (newHtml !== text) lesson.innerHTML = newHtml;
+      }
+      function clearHighlights() { if (!lesson) return; const highlights = lesson.querySelectorAll('.tts-highlight'); highlights.forEach(el => { const txt = el.textContent; el.outerHTML = txt; }); }
+
+      playBtn.addEventListener('click', ()=>{ if (speechSynthesis.paused) return resume(); if (speechSynthesis.speaking) return; speakFrom(0); savePrefs(); });
+      pauseBtn.addEventListener('click', ()=>{ if (speechSynthesis.speaking) pause(); else if (speechSynthesis.paused) resume(); });
+      stopBtn.addEventListener('click', ()=>{ cancel(); clearHighlights(); });
+      voicesSelect.addEventListener('change', savePrefs);
+      rateInput.addEventListener('change', savePrefs);
+      pitchInput.addEventListener('change', savePrefs);
+      autoBtn.addEventListener('click', ()=>{ prefs.auto = !prefs.auto; localStorage.setItem('tts.auto', prefs.auto); autoBtn.style.opacity = prefs.auto ? '1' : '0.6'; });
+
+      function savePrefs() { localStorage.setItem('tts.voice', voicesSelect.value || ''); localStorage.setItem('tts.rate', rateInput.value); localStorage.setItem('tts.pitch', pitchInput.value); }
+
+      // auto-read if allowed
+      window.addEventListener('load', ()=> {
+        setTimeout(()=> { if (prefs.auto) { try { speakFrom(0); } catch(e){ console.warn('Auto TTS blocked'); } } }, 700);
+      });
+
+      // ensure TTS bar sizing is handled
+      const mo = new MutationObserver(() => adjustForTTS());
+      mo.observe(ttsBar, { attributes: true, childList: true, subtree: true });
+    })();
+
+    /* adjust layout for TTS bar so links / anchors are not covered */
+    function adjustForTTS() {
+      const bar = document.getElementById('ttsBar');
+      if (!bar) return;
+      const rect = bar.getBoundingClientRect();
+      const computedStyle = window.getComputedStyle(bar);
+      const marginBottom = parseFloat(computedStyle.marginBottom || 0);
+      const marginTop = parseFloat(computedStyle.marginTop || 0);
+      const totalHeight = Math.ceil(rect.height + marginTop + marginBottom);
+      document.documentElement.style.setProperty('--tts-height', totalHeight + 'px');
+      document.querySelectorAll('.container').forEach(el => {
+        const base = 18;
+        el.style.paddingBottom = (base + totalHeight + 10) + 'px';
+      });
+    }
+    window.addEventListener('load', ()=> { setTimeout(adjustForTTS, 200); setTimeout(adjustForTTS, 900); });
+    window.addEventListener('resize', ()=> { setTimeout(adjustForTTS, 120); });
+
+    // small safety reminder in console
     console.warn("SAFETY: Examples and commands are for authorized lab use only. Do not run offensive tools on networks or systems you do not have permission to test.");
   </script>
 </body>

@@ -41,11 +41,76 @@
     .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
     pre{white-space:pre-wrap;background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
     footer{opacity:.7;font-size:13px;padding:30px 0 60px}
-    .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(0,0,0,0.65);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:260px}
+
+    /* TTS bar styles (responsive + compact support) */
+    .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(0,0,0,0.65);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:260px;transition:all .16s ease}
     .tts-bar button{background:linear-gradient(45deg,#ff0080,#7928ca);border:none;color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer}
     .tts-bar select,.tts-bar input[type="range"]{background:rgba(255,255,255,0.06);color:#00ffcc;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:8px;font-family:inherit}
     .tts-highlight{background:rgba(0,255,200,0.12);padding:0 2px;border-radius:3px}
     @media (max-width:600px){.tts-bar{left:50%;transform:translateX(-50%);right:auto;bottom:12px;min-width:88%}}
+
+    /* Mobile-only fixed "Back to lessons" button (avoids overlapping TTS) */
+    .mobile-back-btn { display: none; }
+    @media (max-width: 1024px) {
+      .mobile-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        position: fixed;
+        left: 16px;
+        bottom: calc(14px + env(safe-area-inset-bottom));
+        z-index: 9998; /* below TTS (tts-bar uses 9999) so TTS remains on top */
+        text-decoration: none;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.98);
+        color: #0b1220;
+        font-weight: 700;
+        box-shadow: 0 8px 28px rgba(2,6,23,0.36);
+        -webkit-tap-highlight-color: transparent;
+        transition: transform .12s ease, box-shadow .12s ease;
+        pointer-events: auto;
+        border: 1px solid rgba(0,0,0,0.06);
+        backdrop-filter: blur(6px);
+      }
+      .mobile-back-btn:active { transform: translateY(1px); }
+      .mobile-back-btn:focus { outline: 3px solid rgba(21,156,228,0.18); outline-offset: 2px; }
+      .mobile-back-icon { font-size: 16px; line-height: 1; }
+      .mobile-back-text { font-size: 14px; letter-spacing: .01em; }
+
+      /* For narrow devices lift the back button above the TTS so there's no overlap */
+      @media (max-width: 820px) {
+        .mobile-back-btn {
+          bottom: calc(14px + env(safe-area-inset-bottom) + 70px);
+          left: 12px;
+          padding: 9px 12px;
+        }
+      }
+      @media (max-width: 420px) {
+        .mobile-back-btn { left: 10px; padding: 9px 12px; bottom: calc(8px + env(safe-area-inset-bottom) + 70px); }
+      }
+    }
+
+    /* Collapse control for TTS (compact mode) */
+    #ttsCollapse {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:38px;
+      height:38px;
+      padding:6px 8px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      background:linear-gradient(45deg,#ff0080,#7928ca);
+      color:#fff;
+    }
+    .tts-controls{display:flex;gap:8px;align-items:center;flex-wrap:nowrap}
+    .tts-bar[data-compact="true"]{min-width:58px;max-width:58px;padding:6px;border-radius:999px;gap:0}
+    .tts-bar[data-compact="true"] .tts-controls{display:none}
+    .tts-bar[data-compact="true"] #ttsCollapse{border-radius:999px;padding:8px;width:38px;height:38px}
+    .tts-bar:focus-within{outline:3px solid rgba(21,156,228,0.12);outline-offset:2px}
   </style>
 </head>
 <body>
@@ -303,7 +368,7 @@ groups user2</code></pre>
 
         <h3>4) Create a file as user1 and change group</h3>
         <pre><code class="kbd">sudo -i -u user1 bash
-echo "This is the file created by user1" > /home/user1/user1file.txt
+echo "This is the file created by user1" &gt; /home/user1/user1file.txt
 ls -l /home/user1/user1file.txt
 # change file group to securityTeam
 chgrp securityTeam /home/user1/user1file.txt
@@ -409,22 +474,32 @@ sudo groupdel securityAdmin</code></pre>
     </footer>
   </main>
 
-  <!-- TTS Bar -->
-  <div id="ttsBar" class="tts-bar" aria-hidden="false">
-    <button id="ttsPlay" title="Play">▶</button>
-    <button id="ttsPause" class="small" title="Pause">⏸</button>
-    <button id="ttsStop" class="small" title="Stop">⏹</button>
+  <!-- Mobile Back button (mobile & tablet only) -->
+  <a href="cyber-index.html" class="mobile-back-btn" aria-label="Back to lessons (mobile)">
+    <span class="mobile-back-icon" aria-hidden="true">◀</span>
+    <span class="mobile-back-text">Lessons</span>
+  </a>
 
-    <span class="label">Voice</span>
-    <select id="ttsVoices" aria-label="Select voice"></select>
+  <!-- TTS Bar (responsive + collapsible) -->
+  <div id="ttsBar" class="tts-bar" aria-hidden="false" data-compact="false" role="region" aria-label="Text to Speech Controls">
+    <button id="ttsCollapse" title="Collapse/Expand TTS">≡</button>
 
-    <span class="label">Rate</span>
-    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+    <div class="tts-controls" aria-hidden="false">
+      <button id="ttsPlay" title="Play">▶</button>
+      <button id="ttsPause" class="small" title="Pause">⏸</button>
+      <button id="ttsStop" class="small" title="Stop">⏹</button>
 
-    <span class="label">Pitch</span>
-    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+      <span class="label">Voice</span>
+      <select id="ttsVoices" aria-label="Select voice"></select>
 
-    <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+      <span class="label">Rate</span>
+      <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+      <span class="label">Pitch</span>
+      <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+      <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+    </div>
   </div>
 
   <script>
@@ -487,7 +562,7 @@ sudo groupdel securityAdmin</code></pre>
       catch(e){ alert('Could not copy to clipboard.'); }
     });
 
-    /* TTS module using Web Speech API */
+    /* TTS module using Web Speech API (preserves your original behaviour) */
     (function () {
       if (!('speechSynthesis' in window)) {
         console.warn('TTS not supported in this browser.');
@@ -611,6 +686,40 @@ sudo groupdel securityAdmin</code></pre>
       });
 
       window.__Lesson6TTS = { speakFrom, cancel, pause, resume, getText };
+    })();
+
+    /* Responsive TTS: compact/expand toggle (keeps TTS IDs intact) */
+    (function () {
+      const BAR_KEY = 'lesson6.ttsCompact';
+      const ttsBar = document.getElementById('ttsBar');
+      const collapseBtn = document.getElementById('ttsCollapse');
+
+      if (!ttsBar || !collapseBtn) return;
+
+      // Initialize from saved preference or default for small screens
+      const saved = localStorage.getItem(BAR_KEY);
+      const shouldCompactDefault = window.matchMedia('(max-width:820px)').matches;
+      const compact = (saved === null) ? shouldCompactDefault : (saved === 'true');
+
+      ttsBar.setAttribute('data-compact', compact ? 'true' : 'false');
+
+      function setCompact(flag) {
+        ttsBar.setAttribute('data-compact', flag ? 'true' : 'false');
+        localStorage.setItem(BAR_KEY, flag ? 'true' : 'false');
+      }
+
+      collapseBtn.addEventListener('click', (e) => {
+        const cur = ttsBar.getAttribute('data-compact') === 'true';
+        setCompact(!cur);
+      });
+
+      // If user hasn't chosen preference, auto-adjust on resize
+      let userOverrode = saved !== null;
+      window.addEventListener('resize', () => {
+        if (userOverrode) return;
+        const narrow = window.matchMedia('(max-width:820px)').matches;
+        setCompact(narrow);
+      });
     })();
   </script>
 </body>
