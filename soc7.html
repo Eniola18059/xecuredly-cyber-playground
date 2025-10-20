@@ -652,6 +652,689 @@
     <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
   </div>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lesson 7 – IdAM & Vulnerability Assessment (Expanded)</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#111a2e; --muted:#8aa0c3; --text:#e7eefc;
+      --accent:#6ea8ff; --accent-2:#7ef0c1; --warning:#ffdf6e; --danger:#ff7e93;
+      --tts-height: 96px; /* default: used until JS measures actual bar */
+      --header-height: 84px; /* approximate header/sticky top height used for scroll-padding-top */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
+    /* Important: use scroll-padding so anchor jumps avoid header and TTS bar */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--header-height) + 12px);
+      scroll-padding-bottom: calc(var(--tts-height) + 18px);
+    }
+    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
+    .container{max-width:1100px;margin:0 auto;padding:18px; padding-bottom: calc(var(--tts-height) + 28px);} /* reserve bottom space for TTS */
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
+    .subtitle{color:var(--muted);font-size:15px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
+    .long-read{line-height:1.7;font-size:15px}
+    .list{margin:0;padding-left:20px}
+    .list li{margin:8px 0}
+    .small{font-size:13px;color:var(--muted)}
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    .muted{color:var(--muted)}
+    footer{opacity:.8;font-size:13px;padding:30px 0 60px}
+    pre{white-space:pre-wrap}
+    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .q-options{display:grid;gap:8px;margin-top:8px}
+    .result{font-size:18px;font-weight:700}
+    .good{color:var(--accent-2)}
+    .mid{color:var(--warning)}
+    .bad{color:var(--danger)}
+    /* TTS control bar */
+    .tts-bar {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      background: rgba(0,0,0,0.65);
+      color: #00ffcc;
+      padding: 10px 12px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      font-family: 'Share Tech Mono', monospace;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      backdrop-filter: blur(6px);
+      min-width: 280px;
+    }
+    .tts-bar button { background: linear-gradient(45deg,#ff0080,#7928ca); border: none; color: #fff; padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-width: 44px; }
+    .tts-bar select, .tts-bar input[type="range"] { background: rgba(255,255,255,0.06); color: #00ffcc; border: 1px solid rgba(255,255,255,0.06); padding: 6px; border-radius: 8px; font-family: inherit; }
+    .tts-highlight { background: rgba(0,255,200,0.15); transition: background 0.2s; padding:0 2px; border-radius:3px }
+    @media (max-width:600px){ .tts-bar{ left:50%; transform:translateX(-50%); right:auto; bottom:12px; min-width:88% } }
+    .grid-2{display:grid;gap:16px;grid-template-columns:1fr}
+    @media(min-width:900px){ .grid-2{grid-template-columns:1fr 420px} }
+    .sidebar-card{position:sticky;top:84px}
+    /* make sure headings act as anchor targets with extra margin so they're not hidden under the header */
+    .section-title { scroll-margin-top: calc(var(--header-height) + 18px); }
+    /* Ensure anchor links in sidebar are clearly clickable and not overlapped visually */
+    aside a { color: var(--accent-2); text-decoration: none; }
+    aside a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-row">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="badge">Lesson 7</span>
+        <div>
+          <strong>IdAM & Vulnerability Assessment — Expanded</strong>
+          <div class="small muted">Identity, Access Management • Vulnerability Assessment • System Hacking Labs • Quizzes</div>
+        </div>
+      </div>
+      <div>
+        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container grid-2">
+    <article class="lesson-content">
+
+      <section class="hero card">
+        <h1 class="title">Identity & Access Management (IdAM) + Vulnerability Assessment</h1>
+        <p class="subtitle">Comprehensive, expanded coverage of Identity lifecycle, authentication & authorization, policy models, password best practices, Linux hands-on IdAM labs, vulnerability assessment lifecycle and system hacking techniques.</p>
+        <div class="chips">
+          <span class="chip">IAM</span><span class="chip">MFA</span><span class="chip">RBAC</span><span class="chip">Vulnerability</span><span class="chip">Nessus</span><span class="chip">System Hacking</span>
+        </div>
+      </section>
+
+      <!-- Table of contents -->
+      <section class="card long-read" aria-labelledby="toc">
+        <h2 id="toc" class="section-title">Table of Contents</h2>
+        <ol class="list">
+          <li>What is an IAM?</li>
+          <li>What is an Identity?</li>
+          <li>Authentication & Authorization</li>
+          <li>How IAM works / provisioning / sessions</li>
+          <li>Access regulation: RBAC, ABAC, PoLP</li>
+          <li>Password protection & MFA</li>
+          <li>Identity theft & defenses</li>
+          <li>Hands-on: Linux user/group permissions</li>
+          <li>Vulnerability Assessment: lifecycle & tools</li>
+          <li>System hacking basics: scanning, enumeration, privilege escalation</li>
+          <li>Password cracking & keyloggers</li>
+          <li>Quizzes (IAM + Vulnerability)</li>
+        </ol>
+      </section>
+
+      <!-- IAM definition -->
+      <section class="card long-read" aria-labelledby="what-iam">
+        <h2 id="what-iam" class="section-title">1. What is an IAM?</h2>
+        <p>
+          Identity and Access Management (IAM) is the set of policies, processes, and technologies that ensure the right people and machines (identities)
+          have the right access to the right resources at the right time — and that unauthorized access is prevented. IAM supports onboarding, offboarding,
+          authorization changes, and auditing across many systems.
+        </p>
+        <div class="explain">
+          <p class="small muted"><strong>Why it matters:</strong> without a consolidated IAM approach organizations face excessive privileged accounts, orphaned access, compliance gaps, and increased risk of data breaches.</p>
+          <p><strong>Modern IAM capabilities</strong> include single sign-on (SSO), federated identity (OAuth/OIDC/SAML), multi-factor authentication (MFA), privileged access management (PAM), automated provisioning, identity governance, and analytics-driven anomaly detection.</p>
+        </div>
+      </section>
+
+      <!-- Identity -->
+      <section class="card long-read" aria-labelledby="what-identity">
+        <h2 id="what-identity" class="section-title">2. What is an Identity?</h2>
+        <p>
+          A digital identity is a collection of attributes that uniquely identify a person, machine, or thing in a computing environment: usernames, email, employee ID,
+          device MAC addresses, X.509 certificates, API keys, service principals, etc.
+        </p>
+        <div class="explain">
+          <p><strong>Identity types:</strong></p>
+          <ul class="list">
+            <li><strong>Human identities:</strong> employees, contractors, customers (login credentials, MFA devices)</li>
+            <li><strong>Machine/service identities:</strong> application service accounts, Kubernetes service accounts, API keys</li>
+            <li><strong>Device identities:</strong> IoT devices with certificates or unique hardware IDs</li>
+          </ul>
+          <p class="small muted">Strong identity hygiene includes canonical identifiers, lifecycle management, ownership, and deprovisioning when roles change.</p>
+        </div>
+      </section>
+
+      <!-- Authentication -->
+      <section class="card long-read" aria-labelledby="authn">
+        <h2 id="authn" class="section-title">3. Authentication — proving who you are</h2>
+        <p>
+          Authentication is the mechanism of verifying identity. It's the gateway to authorization; if authentication is weak, everything else fails.
+        </p>
+
+        <h3>Authentication factors (expanded)</h3>
+        <ul class="list">
+          <li><strong>Something you know:</strong> passwords, PINs, knowledge-based answers. Easy to implement but vulnerable to phishing, reuse and leaks.</li>
+          <li><strong>Something you have:</strong> OTP tokens (hardware or app), FIDO2/WebAuthn security keys, smartcards. Good protection against remote credential theft.</li>
+          <li><strong>Something you are:</strong> biometrics like fingerprint, face, voice. Convenient but requires privacy and fallback considerations (you can't change your fingerprint).</li>
+          <li><strong>Adaptive / risk-based:</strong> uses context (location, device posture, time of day) to step up authentication or block access.</li>
+        </ul>
+
+        <div class="explain">
+          <p class="small muted">MFA recommendations: prefer phishing-resistant factors (security keys, platform authenticators) over SMS OTP. Use adaptive policies to reduce friction while maximizing security.</p>
+        </div>
+
+        <h3>Quiz — Authentication (quick)</h3>
+        <div class="q-card" id="authQuizCard">
+          <h4>1) Which factor is phishing-resistant?</h4>
+          <div class="q-options">
+            <label><input type="radio" name="a1" value="a"/> SMS OTP</label>
+            <label><input type="radio" name="a1" value="b"/> Security key (FIDO2/WebAuthn)</label>
+            <label><input type="radio" name="a1" value="c"/> Password</label>
+          </div>
+          <div style="margin-top:10px"><button class="btn primary" id="gradeAuth">Grade</button> <span id="authResult" class="small"></span></div>
+        </div>
+      </section>
+
+      <!-- Authorization -->
+      <section class="card long-read" aria-labelledby="authz">
+        <h2 id="authz" class="section-title">4. Authorization — what you're allowed to do</h2>
+        <p>
+          Authorization determines actions and data a verified identity may perform or access. Implementing good authorization models reduces blast radius and enforces compliance.
+        </p>
+
+        <h3>Access models</h3>
+        <ul class="list">
+          <li><strong>Role-Based Access Control (RBAC):</strong> assign permissions to roles, assign users to roles. Great for predictable org structures.</li>
+          <li><strong>Attribute-Based Access Control (ABAC):</strong> policies evaluate attributes (user role, resource sensitivity, time, location). Powerful for dynamic policies.</li>
+          <li><strong>Policy-Based Access Control / PBAC:</strong> centralized policies evaluate requests (useful when combining context and attributes).</li>
+          <li><strong>Least Privilege (PoLP):</strong> grant only the minimal access to perform tasks and revoke when no longer needed.</li>
+        </ul>
+
+        <div class="explain">
+          <p class="small muted">Practical guidance: use RBAC for coarse-grained role assignment and ABAC for fine-grained, context-aware decisions. Combine with periodic access reviews and automated provisioning to avoid entitlement creep.</p>
+        </div>
+      </section>
+
+      <!-- IAM Operations -->
+      <section class="card long-read" aria-labelledby="how-iam-works">
+        <h2 id="how-iam-works" class="section-title">5. How IAM Works — lifecycle & operations</h2>
+        <p>
+          IAM systems connect identity stores (HR systems, AD, cloud IAM) to applications via connectors, SAML/OIDC, SCIM provisioning, and enforce authentication & authorization policies.
+        </p>
+
+        <h3>Core operations</h3>
+        <ul class="list">
+          <li><strong>Provisioning:</strong> create accounts, assign roles automatically when HR record indicates hire/role change.</li>
+          <li><strong>Deprovisioning:</strong> promptly revoke access at offboarding to avoid orphaned credentials.</li>
+          <li><strong>Just-in-time access & approval flows:</strong> temporary elevation with audit trail and expiry.</li>
+          <li><strong>Audit & certification:</strong> scheduled reviews where managers certify who should keep access.</li>
+          <li><strong>Federation:</strong> SSO between organizations (SAML/OIDC) to avoid sharing passwords across domains.</li>
+        </ul>
+
+        <div class="explain">
+          <p class="small muted">Automation is key: automate provisioning/deprovisioning, entitlement reviews, and password rotation to reduce human error and reaction time.</p>
+        </div>
+      </section>
+
+      <!-- Password protection -->
+      <section class="card long-read" aria-labelledby="passwords">
+        <h2 id="passwords" class="section-title">6. Password Protection & MFA</h2>
+        <p>
+          Passwords remain ubiquitous. Improve safety by enforcing complexity, uniqueness, storage best practices, and combining with MFA.
+        </p>
+
+        <h3>Storage & hashing</h3>
+        <ul class="list">
+          <li>Never store plaintext. Store salted, slow hashes (Argon2, bcrypt, scrypt, PBKDF2).</li>
+          <li>Use per-user salt (random) and a work factor appropriate for current hardware.</li>
+          <li>Use password breach checks (e.g., k-Anonymity HIBP API or internal breach datasets) on password set/change.</li>
+        </ul>
+
+        <h3>Password policies & user experience</h3>
+        <p class="small muted">Avoid overly punitive complexity that leads to reuse — favor passphrases + MFA + breach detection. Encourage password managers for secure unique passwords.</p>
+
+        <div class="explain">
+          <p><strong>Multi-Factor Advice:</strong> prefer app-based TOTP & hardware/WebAuthn keys for high-value accounts. Regularly review recovery flows — account recovery is a common attack vector.</p>
+        </div>
+      </section>
+
+      <!-- Identity theft -->
+      <section class="card long-read" aria-labelledby="identity-theft">
+        <h2 id="identity-theft" class="section-title">7. Identity Theft — risks & protections</h2>
+        <p>
+          Identity theft arises when attackers successfully impersonate users. This leads to fraud, data breaches, and lateral movement in corporate environments.
+        </p>
+        <div class="explain">
+          <ul class="list">
+            <li>Protect PII with encryption, data minimization, and strict access controls.</li>
+            <li>Monitor for abnormal usage patterns (new devices, impossible travel, high-risk actions).</li>
+            <li>Train users to spot phishing and use phishing-resistant MFA to raise attack cost.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Hands-on Linux IdAM -->
+      <section class="card long-read" aria-labelledby="linux-labs">
+        <h2 id="linux-labs" class="section-title">8. Hands-on: Linux users, groups & permissions (IdAM lab)</h2>
+        <p class="small muted">Commands assume sudo privileges and a Debian/Ubuntu-style environment. Be careful and use a disposable VM for practice.</p>
+
+        <h3>Step-by-step (expanded)</h3>
+        <ol class="list">
+          <li><strong>Create groups</strong>: <code>sudo groupadd securityTeam</code> and <code>sudo groupadd softwareTeam</code>. Groups centralize permissions.</li>
+          <li><strong>Verify group file tail</strong>: <code>tail -n 6 /etc/group</code> to inspect the end of group definitions after creation.</li>
+          <li><strong>Create users</strong>: create 4 users with home directories: <code>sudo useradd -m user1</code> ... <code>user4</code>. Add comment: <code>-c "Security team member"</code> if desired.</li>
+          <li><strong>Set passwords</strong>: <code>sudo passwd user1</code> ... ensure secure test passwords in labs (never use real passwords).</li>
+          <li><strong>Add users to groups</strong>: <code>sudo usermod -aG securityTeam user1</code> and <code>user2</code>; <code>sudo usermod -aG softwareTeam user3</code> and <code>user4</code>. Note: prefer usermod -aG over adduser for scripts.</li>
+          <li><strong>Validate /etc/passwd & /etc/group</strong>: <code>tail -n 6 /etc/passwd</code> and <code>tail -n 6 /etc/group</code>.</li>
+          <li><strong>Create a file as user1</strong>: <code>su - user1</code>, then <code>echo "This is the file created by user1" > user1file.txt</code>.</li>
+          <li><strong>Check permissions</strong>: <code>ls -l user1file.txt</code> — expected <code>-rw-r--r-- user1 user1group</code> initially.</li>
+          <li><strong>Change group</strong>: <code>chgrp securityTeam user1file.txt</code>. Now group is <code>securityTeam</code>.</li>
+          <li><strong>Grant write to group</strong>: <code>chmod g+w user1file.txt</code>. Now group members (user2) can edit file.</li>
+          <li><strong>Test edit</strong>: <code>su - user2</code> and try <code>echo "user2 edited" >> ~/user1file.txt</code> (assuming paths), or use an editor.</li>
+          <li><strong>Advanced ACLs</strong>: if you need per-user fine-grained control, use POSIX ACLs: <code>sudo setfacl -m u:user2:rw user1file.txt</code> and view with <code>getfacl user1file.txt</code>.</li>
+        </ol>
+
+        <div class="explain">
+          <p class="small muted">Notes: file ownership (user:group) plus permission bits (owner/group/other) create the basic impermeable lines. Use ACLs where Unix perms are insufficient. For sudo rules use <code>/etc/sudoers</code> and <code>visudo</code> to avoid syntactic mistakes.</p>
+        </div>
+
+        <h3>Linux lab pitfalls & hardening</h3>
+        <ul class="list">
+          <li>Limit sudoers to required commands using command restrictions.</li>
+          <li>Disable direct root login and use sudo with auditable logs.</li>
+          <li>Use centralized identity (LDAP/AD) for larger orgs to simplify provisioning.</li>
+        </ul>
+      </section>
+
+      <!-- IAM Quiz -->
+      <section class="card" aria-labelledby="iam-quiz">
+        <h2 id="iam-quiz" class="section-title">Quiz A — Identity & Access Management</h2>
+        <p class="muted">10 questions. Grade shows explanations for missed items.</p>
+
+        <form id="iamQuizForm">
+          <!-- Q1 -->
+          <div class="q-card">
+            <h4>1) Which of these best describes ABAC?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq1" value="a"/> Access based only on assigned role</label>
+              <label><input type="radio" name="iq1" value="b"/> Access decisions based on attributes like user role, resource sensitivity and environment</label>
+              <label><input type="radio" name="iq1" value="c"/> Manual approval only</label>
+            </div>
+          </div>
+          <!-- Q2 -->
+          <div class="q-card">
+            <h4>2) Best storage for passwords?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq2" value="a"/> Plaintext in DB</label>
+              <label><input type="radio" name="iq2" value="b"/> Salted, slow hash (Argon2/bcrypt)</label>
+              <label><input type="radio" name="iq2" value="c"/> Encrypted with reversible symmetric key stored next to DB</label>
+            </div>
+          </div>
+          <!-- Q3 -->
+          <div class="q-card">
+            <h4>3) Which is phishing-resistant?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq3" value="a"/> SMS OTP</label>
+              <label><input type="radio" name="iq3" value="b"/> TOTP mobile app (authenticator)</label>
+              <label><input type="radio" name="iq3" value="c"/> FIDO2/WebAuthn security key</label>
+            </div>
+          </div>
+          <!-- Q4 -->
+          <div class="q-card">
+            <h4>4) Principle of Least Privilege means:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq4" value="a"/> Grant admin rights to all users</label>
+              <label><input type="radio" name="iq4" value="b"/> Grant only the minimal permissions required for a task</label>
+              <label><input type="radio" name="iq4" value="c"/> Remove all auditing</label>
+            </div>
+          </div>
+          <!-- Q5 -->
+          <div class="q-card">
+            <h4>5) SCIM is used for:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq5" value="a"/> Provisioning users between identity and apps</label>
+              <label><input type="radio" name="iq5" value="b"/> Encrypting data at rest</label>
+              <label><input type="radio" name="iq5" value="c"/> Monitoring network traffic</label>
+            </div>
+          </div>
+
+          <!-- Q6 -->
+          <div class="q-card">
+            <h4>6) Deprovisioning should occur:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq6" value="a"/> When an employee changes job roles and no longer needs previous access</label>
+              <label><input type="radio" name="iq6" value="b"/> Only at end of year</label>
+              <label><input type="radio" name="iq6" value="c"/> Never</label>
+            </div>
+          </div>
+
+          <!-- Q7 -->
+          <div class="q-card">
+            <h4>7) A machine identity might be:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq7" value="a"/> API key or service principal</label>
+              <label><input type="radio" name="iq7" value="b"/> Employee phone number only</label>
+              <label><input type="radio" name="iq7" value="c"/> Physical office keycard only</label>
+            </div>
+          </div>
+
+          <!-- Q8 -->
+          <div class="q-card">
+            <h4>8) Auditing access should include:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq8" value="a"/> Who accessed what, when, and from where</label>
+              <label><input type="radio" name="iq8" value="b"/> Only action names without user IDs</label>
+              <label><input type="radio" name="iq8" value="c"/> No logs to avoid storage costs</label>
+            </div>
+          </div>
+
+          <!-- Q9 -->
+          <div class="q-card">
+            <h4>9) Federation protocols include:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq9" value="a"/> SAML & OIDC</label>
+              <label><input type="radio" name="iq9" value="b"/> FTP & SMTP</label>
+              <label><input type="radio" name="iq9" value="c"/> SNMP & ICMP</label>
+            </div>
+          </div>
+
+          <!-- Q10 -->
+          <div class="q-card">
+            <h4>10) Which is a good recovery control?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="iq10" value="a"/> Weak security questions only</label>
+              <label><input type="radio" name="iq10" value="b"/> Multi-factor recovery with verification and human review</label>
+              <label><input type="radio" name="iq10" value="c"/> Publicly posted reset tokens</label>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+            <button type="button" class="btn primary" id="submitIam">Submit IAM Quiz</button>
+            <button type="button" class="btn" id="resetIam">Reset</button>
+            <span id="iamResult" class="result" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Vulnerability Assessment -->
+      <section class="card long-read" aria-labelledby="vuln-what">
+        <h2 id="vuln-what" class="section-title">9. Vulnerability — definition & assessment overview</h2>
+        <p>
+          A vulnerability is a weakness (software bug, misconfiguration, design flaw, or missing control) that an attacker can exploit to perform unauthorized actions.
+        </p>
+        <div class="explain">
+          <p class="small muted">Assessments identify, quantify and prioritize vulnerabilities to enable risk-based remediation.</p>
+          <p><strong>Level of risk formula (practical perspective):</strong></p>
+          <pre>LevelOfRisk = (ThreatLikelihood * VulnerabilitySeverity) / CountermeasureStrength * BusinessImpact</pre>
+        </div>
+
+        <h3>Assessment process (expanded)</h3>
+        <ol class="list">
+          <li><strong>Asset discovery:</strong> inventory everything — endpoints, cloud assets, databases, containers, IAM identities.</li>
+          <li><strong>Vulnerability scanning:</strong> automated scans using Nessus/OpenVAS/Nmap for known CVEs and weak configs.</li>
+          <li><strong>Analysis & prioritization:</strong> map CVSS, asset criticality, exploitability, and business impact to create remediation priority.</li>
+          <li><strong>Remediation & verification:</strong> patch, mitigate, or accept risk; then verify with follow-up scans.</li>
+        </ol>
+      </section>
+
+      <!-- Tools -->
+      <section class="card long-read" aria-labelledby="vuln-tools">
+        <h2 id="vuln-tools" class="section-title">10. Vulnerability Assessment Tools & Scoring</h2>
+        <p>
+          Common tools: Nessus (commercial/edu), OpenVAS (open), Nmap (discovery/port & OS fingerprinting), Burp Suite (web app testing), Metasploit (exploit validation), Wireshark (packet analysis).
+        </p>
+
+        <h3>CVSS scoring</h3>
+        <p class="small muted">CVSS measures base, temporal and environmental scores. Treat CVSS as an input into risk-based prioritization — pair it with asset value and threat intelligence.</p>
+      </section>
+
+      <!-- System Hacking -->
+      <section class="card long-read" aria-labelledby="sys-hack">
+        <h2 id="sys-hack" class="section-title">11. System Hacking — stages & techniques</h2>
+        <p>
+          System hacking is the lifecycle of exploiting a target: footprinting → scanning → enumeration → vulnerability analysis → gaining access → maintaining access → covering tracks.
+        </p>
+
+        <h3>Gaining access techniques</h3>
+        <ul class="list">
+          <li>Brute-force & credential stuffing (leaked credentials)</li>
+          <li>Exploiting unpatched software (CVE-based)</li>
+          <li>Social engineering (phishing, vishing)</li>
+          <li>Web application attacks (SQLi, RCE)</li>
+        </ul>
+
+        <h3>Privilege escalation</h3>
+        <p class="small muted">After initial access, attackers often seek higher privileges via misconfigurations (SUID files, weak sudoers entries), unpatched kernel bugs, or credential harvesting.</p>
+
+        <h3>Hiding files & persistence</h3>
+        <p>Techniques include creating hidden files, cron jobs, registry autoruns (Windows), kernel rootkits, or scheduled tasks.</p>
+
+        <h3>Clearing logs</h3>
+        <p class="small muted">Attackers may remove evidence from logs to avoid detection; defenders should use centralized immutable logs and integrity checks to prevent tampering.</p>
+      </section>
+
+      <!-- Tools & Nessus -->
+      <section class="card long-read" aria-labelledby="nessus">
+        <h2 id="nessus" class="section-title">12. Scan & Find Vulnerabilities (Nessus example)</h2>
+        <p>
+          Nessus is commonly used to run authenticated and unauthenticated scans to find CVEs, weak configs, missing patches, and policy violations.
+        </p>
+        <ol class="list">
+          <li>Install Nessus (download package for your distro), install and start service.</li>
+          <li>Create scans: discovery, credentialed host audit, web application checks.</li>
+          <li>Run scans, triage findings by CVSS + asset criticality, and create remediation tickets.</li>
+        </ol>
+        <div class="explain">
+          <p class="small muted">Credentialed scans yield better results (can check registry, file versions, installed packages). Always get written permission to scan networks you do not own.</p>
+        </div>
+      </section>
+
+      <!-- Password Breaking -->
+      <section class="card long-read" aria-labelledby="pwd-break">
+        <h2 id="pwd-break" class="section-title">13. Password Breaking & Recovery tools</h2>
+        <p>
+          Common password cracking workflows include hash collection, identifying hash type, and running tools like Hashcat with rockyou or custom wordlists and rules.
+        </p>
+        <div class="explain">
+          <ul class="list">
+            <li><strong>Hash collection:</strong> obtain /etc/shadow, NTLM hashes, or DB leaks.</li>
+            <li><strong>Hash type identification:</strong> use hash-identifier or online tools.</li>
+            <li><strong>Cracking:</strong> dictionary, rule-based, mask, or brute-force attacks. GPUs accelerate cracking dramatically.</li>
+          </ul>
+          <p class="small muted">Always use cracking tools responsibly and only in authorized labs or with client permission.</p>
+        </div>
+      </section>
+
+      <!-- Keyloggers -->
+      <section class="card long-read" aria-labelledby="keyloggers">
+        <h2 id="keyloggers" class="section-title">14. Keyloggers — risks & detection</h2>
+        <p>
+          Keyloggers capture keystrokes. They can be hardware (USB devices) or software (kernel/user-space). They are used by attackers to harvest credentials.
+        </p>
+        <div class="explain">
+          <ul class="list">
+            <li>Detect via EDR/anti-malware, unusual processes, or kernel module anomalies.</li>
+            <li>Mitigate with MFA, regular endpoint scans, and restricting use of removable devices.</li>
+            <li>For demo code: only use well-audited training examples in an isolated environment (never on production systems or third-party machines).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Vulnerability Quiz -->
+      <section class="card" aria-labelledby="vuln-quiz">
+        <h2 id="vuln-quiz" class="section-title">Quiz B — Vulnerability Assessment & System Hacking</h2>
+        <p class="muted">10 questions covering lifecycle, tools, and basic attack/defense concepts.</p>
+
+        <form id="vulnQuizForm">
+          <!-- VQ1 -->
+          <div class="q-card">
+            <h4>1) Which tool is primarily used for port scanning and host discovery?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq1" value="a"/> Nessus</label>
+              <label><input type="radio" name="vq1" value="b"/> Nmap</label>
+              <label><input type="radio" name="vq1" value="c"/> Wireshark</label>
+            </div>
+          </div>
+          <!-- VQ2 -->
+          <div class="q-card">
+            <h4>2) A credentialed vulnerability scan is:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq2" value="a"/> A scan performed using valid credentials to access deeper host info</label>
+              <label><input type="radio" name="vq2" value="b"/> A scan without credentials only checking open ports</label>
+              <label><input type="radio" name="vq2" value="c"/> A manual code review</label>
+            </div>
+          </div>
+          <!-- VQ3 -->
+          <div class="q-card">
+            <h4>3) CVSS score 9.5 is:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq3" value="a"/> Low</label>
+              <label><input type="radio" name="vq3" value="b"/> High</label>
+              <label><input type="radio" name="vq3" value="c"/> Critical</label>
+            </div>
+          </div>
+          <!-- VQ4 -->
+          <div class="q-card">
+            <h4>4) Which is an example of privilege escalation?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq4" value="a"/> A user runs sudo to perform admin tasks when allowed</label>
+              <label><input type="radio" name="vq4" value="b"/> An attacker exploits SUID binary to gain root</label>
+              <label><input type="radio" name="vq4" value="c"/> Both</label>
+            </div>
+          </div>
+          <!-- VQ5 -->
+          <div class="q-card">
+            <h4>5) Good mitigation against log tampering is:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq5" value="a"/> Centralized, write-once (immutable) logs</label>
+              <label><input type="radio" name="vq5" value="b"/> Disabling logging</label>
+              <label><input type="radio" name="vq5" value="c"/> Local-only logs</label>
+            </div>
+          </div>
+
+          <!-- VQ6 -->
+          <div class="q-card">
+            <h4>6) Nessus vs OpenVAS: which statement is right?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq6" value="a"/> Nessus is commercial; OpenVAS is open-source</label>
+              <label><input type="radio" name="vq6" value="b"/> Both are identical in licensing</label>
+              <label><input type="radio" name="vq6" value="c"/> Neither can scan web apps</label>
+            </div>
+          </div>
+
+          <!-- VQ7 -->
+          <div class="q-card">
+            <h4>7) Which attack captures keystrokes?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq7" value="a"/> Phishing</label>
+              <label><input type="radio" name="vq7" value="b"/> Keylogger</label>
+              <label><input type="radio" name="vq7" value="c"/> DDoS</label>
+            </div>
+          </div>
+
+          <!-- VQ8 -->
+          <div class="q-card">
+            <h4>8) Responsible disclosure means:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq8" value="a"/> Publicly reveal exploit immediately</label>
+              <label><input type="radio" name="vq8" value="b"/> Notify vendor and coordinate a fix before public release</label>
+              <label><input type="radio" name="vq8" value="c"/> Sell exploit on darknet</label>
+            </div>
+          </div>
+
+          <!-- VQ9 -->
+          <div class="q-card">
+            <h4>9) Which is used to inspect packets in detail?</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq9" value="a"/> Wireshark</label>
+              <label><input type="radio" name="vq9" value="b"/> Metasploit</label>
+              <label><input type="radio" name="vq9" value="c"/> Nessus</label>
+            </div>
+          </div>
+
+          <!-- VQ10 -->
+          <div class="q-card">
+            <h4>10) Before performing scans on a client network you must:</h4>
+            <div class="q-options">
+              <label><input type="radio" name="vq10" value="a"/> Get written authorization/permission</label>
+              <label><input type="radio" name="vq10" value="b"/> Start scanning immediately to find issues</label>
+              <label><input type="radio" name="vq10" value="c"/> Post results publicly</label>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;margin-top:12px;">
+            <button type="button" class="btn primary" id="submitVuln">Submit Vulnerability Quiz</button>
+            <button type="button" class="btn" id="resetVuln">Reset</button>
+            <span id="vulnResult" class="result" aria-live="polite"></span>
+          </div>
+        </form>
+      </section>
+
+      <!-- Download / Copy -->
+      <section class="card" aria-labelledby="download">
+        <h2 id="download" class="section-title">Download / Copy</h2>
+        <p class="small muted">Download lesson notes or copy as Markdown for an LMS or handouts.</p>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <button class="btn primary" id="downloadNotes">📥 Download Notes (Text)</button>
+          <button class="btn" id="copyMarkdown">📋 Copy Markdown</button>
+        </div>
+      </section>
+
+      <footer class="container">
+        <p>© Learning Playground – IdAM & Vulnerability Assessment • Lesson 7 (Expanded)</p>
+      </footer>
+    </article>
+
+    <!-- Sidebar -->
+    <aside class="sidebar-card">
+      <div class="card">
+        <h3 class="section-title">Quick Links</h3>
+        <ul class="list">
+          <li><a href="#what-iam">What is IAM?</a></li>
+          <li><a href="#authn">Authentication</a></li>
+          <li><a href="#linux-labs">Linux Hands-on</a></li>
+          <li><a href="#iam-quiz">IAM Quiz</a></li>
+          <li><a href="#vuln-what">Vulnerability Overview</a></li>
+          <li><a href="#vuln-quiz">Vulnerability Quiz</a></li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3 class="section-title">Cheat sheet</h3>
+        <ul class="list">
+          <li><strong>RBAC</strong>: Roles → Permissions → Users</li>
+          <li><strong>ABAC</strong>: Policies evaluate attributes</li>
+          <li><strong>MFA</strong>: Use phishing-resistant keys</li>
+          <li><strong>Vulnerability cycle</strong>: Discover → Assess → Remediate → Verify</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <!-- TTS Control Bar -->
+  <div id="ttsBar" class="tts-bar" aria-hidden="false">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" class="small" title="Pause">⏸</button>
+    <button id="ttsStop" class="small" title="Stop">⏹</button>
+
+    <span class="label">Voice</span>
+    <select id="ttsVoices" aria-label="Select voice"></select>
+
+    <span class="label">Rate</span>
+    <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <span class="label">Pitch</span>
+    <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
+
+    <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
+  </div>
+
   <script>
     /* Theme toggle (persist) */
     const themeBtn = document.getElementById('toggleTheme');
@@ -873,9 +1556,32 @@
       }
     }
 
+    /* Helper: adjust document spacing to avoid TTS covering content/anchors */
+    function adjustForTTS() {
+      const bar = document.getElementById('ttsBar');
+      if (!bar) return;
+      // Measure computed height including margins
+      const rect = bar.getBoundingClientRect();
+      const computedStyle = window.getComputedStyle(bar);
+      const marginBottom = parseFloat(computedStyle.marginBottom || 0);
+      const marginTop = parseFloat(computedStyle.marginTop || 0);
+      const totalHeight = Math.ceil(rect.height + marginTop + marginBottom);
+      // Update CSS variable used for scroll-padding and container bottom padding
+      document.documentElement.style.setProperty('--tts-height', totalHeight + 'px');
+      // Also set container padding-bottom explicitly (keeps layout safe)
+      document.querySelectorAll('.container').forEach(el => {
+        const base = 18; // original padding
+        el.style.paddingBottom = (base + totalHeight + 10) + 'px';
+      });
+    }
+
+    // call on load and resize; also after a short delay when voices populate / TTS UI might change size
+    window.addEventListener('load', () => { setTimeout(adjustForTTS, 250); setTimeout(adjustForTTS, 900); });
+    window.addEventListener('resize', () => { setTimeout(adjustForTTS, 120); });
+
     /* TTS module (Web Speech API) */
     (function () {
-      if (!('speechSynthesis' in window)) { console.warn('TTS not supported'); const b=document.getElementById('ttsBar'); if(b) b.style.display='none'; return; }
+      if (!('speechSynthesis' in window)) { console.warn('TTS not supported'); const b=document.getElementById('ttsBar'); if(b) b.style.display='none'; adjustForTTS(); return; }
 
       const playBtn = document.getElementById('ttsPlay');
       const pauseBtn = document.getElementById('ttsPause');
@@ -909,6 +1615,8 @@
           const found = [...voices].find(v => v.voiceURI === prefs.voiceURI);
           if (found) voicesSelect.value = prefs.voiceURI;
         }
+        // adjust in case the voices dropdown changed the TTS bar size
+        setTimeout(adjustForTTS, 120);
       }
       populateVoices();
       if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
@@ -961,16 +1669,29 @@
 
       let attempts = 0;
       const interval = setInterval(()=> {
-        if (speechSynthesis.getVoices().length) { populateVoices(); applySavedSettings(); clearInterval(interval); }
-        else if (attempts++ > 20) { applySavedSettings(); clearInterval(interval); }
+        if (speechSynthesis.getVoices().length) { populateVoices(); applySavedSettings(); clearInterval(interval); adjustForTTS(); }
+        else if (attempts++ > 20) { applySavedSettings(); clearInterval(interval); adjustForTTS(); }
       }, 300);
 
       window.addEventListener('load', ()=> {
         setTimeout(()=> { if (prefs.auto) { try { speakFrom(0); } catch(e){ console.warn('Auto TTS blocked'); } } }, 700);
+        // make sure tty adjustment runs after load
+        setTimeout(adjustForTTS, 300);
       });
 
+      // ensure any UI changes update spacing (e.g., toggling display)
+      const ttsBar = document.getElementById('ttsBar');
+      if (ttsBar) {
+        const mo = new MutationObserver(() => adjustForTTS());
+        mo.observe(ttsBar, { attributes: true, childList: true, subtree: true });
+      }
+
+      // expose for debug
       window.__Lesson7TTS = { speakFrom, cancel, pause, resume, getText };
     })();
+
+    // initial adjust just in case
+    setTimeout(adjustForTTS, 150);
   </script>
 </body>
 </html>

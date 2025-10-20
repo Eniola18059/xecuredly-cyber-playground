@@ -1,156 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Lesson 1 – Introduction to Cybersecurity (Expanded)</title>
-
-  <style>
-    :root {
-      --bg: #0b1220;
-      --card: #111a2e;
-      --muted: #8aa0c3;
-      --text: #e7eefc;
-      --accent: #6ea8ff;
-      --accent-2: #7ef0c1;
-      --warning: #ffdf6e;
-      --danger: #ff7e93;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
-    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
-    .container{max-width:1100px;margin:0 auto;padding:18px}
-    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.7);border-bottom:1px solid rgba(255,255,255,0.06)}
-    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-    .hero{padding:28px 20px 8px}
-    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
-    .subtitle{color:var(--muted);font-size:15px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
-    .grid-2{display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:900px){.grid-2{grid-template-columns:1fr 1fr}}
-    .list{margin:0;padding-left:18px}
-    .list li{margin:8px 0}
-    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.14);padding:12px 14px;border-radius:12px;margin-top:10px}
-    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.14)}
-    .video-wrap{position:relative;overflow:hidden;border-radius:16px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.06)}
-    .subtitle small{display:block;color:var(--muted);margin-top:6px}
-    .q-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
-    .q-options{display:grid;gap:8px;margin-top:8px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.05);cursor:pointer;font-weight:600}
-    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn.ghost{background:transparent}
-    .result{font-size:18px;font-weight:700}
-    .good{color:var(--accent-2)}
-    .mid{color:var(--warning)}
-    .bad{color:var(--danger)}
-    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
-    .section-title{margin:0 0 8px}
-    .muted{color:var(--muted)}
-    pre{white-space:pre-wrap}
-    .meta{display:flex;gap:8px;flex-wrap:wrap}
-    .attempt-btn{margin-top:12px}
-    /* responsive spacing for long lesson */
-    .long-read{line-height:1.65;font-size:15px}
-    .small{font-size:13px;color:var(--muted)}
-    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    /* TTS control bar */
-    .tts-bar {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 9999;
-      background: rgba(0,0,0,0.65);
-      color: #00ffcc;
-      padding: 10px 12px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-      font-family: 'Share Tech Mono', monospace;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      backdrop-filter: blur(6px);
-      min-width: 260px;
-    }
-
-    /* Buttons */
-    .tts-bar button {
-      background: linear-gradient(45deg,#ff0080,#7928ca);
-      border: none;
-      color: #fff;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      min-width: 44px;
-    }
-    .tts-bar button.small {
-      padding: 6px 8px;
-      min-width: 36px;
-      font-size: 0.95rem;
-    }
-
-    /* Select and sliders */
-    .tts-bar select, .tts-bar input[type="range"] {
-      background: rgba(255,255,255,0.06);
-      color: #00ffcc;
-      border: 1px solid rgba(255,255,255,0.06);
-      padding: 6px;
-      border-radius: 8px;
-      font-family: inherit;
-    }
-
-    /* Small labels */
-    .tts-bar .label {
-      font-size: 0.8rem;
-      opacity: 0.9;
-      margin-right: 6px;
-      white-space: nowrap;
-    }
-
-    /* hidden accessibility only text highlight */
-    .tts-highlight {
-      background: rgba(0,255,200,0.15);
-      transition: background 0.2s;
-    }
-    @media (max-width:600px) {
-      .tts-bar {
-        left: 50%;
-        transform: translateX(-50%);
-        right: auto;
-        bottom: 12px;
-        min-width: 88%;
-      }
-    }
-
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lesson 1 — Introduction to Cybersecurity (Expanded)</title>
+<style>
+  :root{
+    --bg:#071428; --card:#0f2136; --muted:#9db7d9; --text:#e9f6ff;
+    --accent:#57a7ff; --accent2:#7ef0c8; --danger:#ff7a7a; --ok:#9ef0b2;
+    --tts-height:96px; --header-height:74px; --container-pad:20px;
+  }
+  *{box-sizing:border-box}
+  html { scroll-padding-top: calc(var(--header-height) + 18px); scroll-padding-bottom: calc(var(--tts-height) + 20px); }
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+  body{background:linear-gradient(135deg,var(--bg) 0%, #031427 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+  .container{max-width:1100px;margin:0 auto;padding:var(--container-pad);padding-bottom: calc(28px + var(--tts-height));}
+  header{position:sticky;top:0;background:rgba(3,10,30,0.6);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,0.03);padding:10px 0;z-index:40}
+  .hdr{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .badge{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#021024;padding:8px 12px;border-radius:999px;font-weight:800}
+  h1.title{font-size:clamp(20px,3.6vw,34px);margin:6px 0}
+  .subtitle{color:var(--muted);font-size:14px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:16px;border-radius:12px;margin-top:16px;box-shadow:0 10px 30px rgba(0,0,0,0.45)}
+  .hero{padding:18px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .chip{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px}
+  .list{padding-left:18px}
+  .list li{margin:8px 0}
+  .muted{color:var(--muted)}
+  .small{font-size:13px;color:var(--muted)}
+  .callout{background:linear-gradient(180deg,rgba(126,240,193,0.04),rgba(126,240,193,0.02));border:1px solid rgba(126,240,193,0.08);padding:10px;border-radius:8px;margin-top:12px}
+  .explain{margin-top:12px;padding:10px;background:rgba(255,255,255,0.01);border-radius:8px}
+  .long-read p{line-height:1.5}
+  .section-title{margin:0 0 8px 0}
+  .q-card{margin:12px 0;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02)}
+  .q-options label{display:block;margin:6px 0;cursor:pointer}
+  .controls{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;color:var(--text);cursor:pointer;font-weight:700;text-decoration:none}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#021024;border:none}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04)}
+  .result{margin-top:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02)}
+  pre{background:rgba(0,0,0,0.15);padding:12px;border-radius:8px;overflow:auto}
+  footer{opacity:.9;padding:30px 0 60px;font-size:13px;color:var(--muted)}
+  .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(1,6,12,0.88);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:320px}
+  .tts-bar button{background:linear-gradient(45deg,#ff0080,#7928ca);border:none;color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer;min-width:40px}
+  .tts-bar select,.tts-bar input[type="range"]{background:rgba(255,255,255,0.06);color:#00ffcc;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:8px;font-family:inherit}
+  .tts-highlight{background:rgba(0,255,200,0.15);transition:background 0.2s;padding:0 2px;border-radius:3px}
+  mark.tts-mark{background:rgba(0,255,200,0.15);padding:0 2px;border-radius:3px;color:inherit}
+  @media (max-width:900px){ .hdr{flex-wrap:wrap} .container{padding:14px} .hero{padding:14px} }
+  @media (max-width:600px){
+    .tts-bar{left:50%;transform:translateX(-50%);right:auto;bottom:12px;min-width:88%}
+    .container{padding:12px}
+    .desktop-back{display:none}
+    .mobile-back{display:inline-flex}
+  }
+  .desktop-back{display:inline-flex;align-items:center;gap:8px}
+  .mobile-back{display:none}
+  :focus{outline:3px solid rgba(110,168,255,0.12);outline-offset:2px}
+  .killchain-table{width:100%;border-collapse:collapse;margin-top:8px}
+  .killchain-table th,.killchain-table td{padding:10px;border:1px solid rgba(255,255,255,0.04);vertical-align:top}
+</style>
 </head>
 <body>
   <header>
-    <div class="container header-row">
-      <div style="display:flex;align-items:center;gap:12px">
+    <div class="container hdr" role="banner" aria-label="Lesson header">
+      <div style="display:flex;gap:12px;align-items:center;min-width:0">
         <span class="badge">Lesson 1</span>
-        <div>
+        <div style="min-width:0">
           <strong>Introduction to Cybersecurity — Full Module (Expanded)</strong>
           <div class="small muted">Basics • Governance • Auditing • Ethical Hacking • Kill Chain • Malware</div>
         </div>
       </div>
-      <div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <a href="cyber-index.html" class="btn desktop-back" id="backLink" title="Back to Lesson">← Lesson</a>
         <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
       </div>
     </div>
   </header>
 
-  <main class="container">
+  <main class="container" role="main">
     <!-- WRAP ALL LESSON SECTIONS INSIDE THIS ARTICLE FOR TTS -->
-    <article class="lesson-content">
-      <section class="hero card">
+    <article class="card lesson-content" aria-live="polite">
+      <section class="hero card" aria-labelledby="hero">
         <h1 class="title">Introduction to Cybersecurity</h1>
         <p class="subtitle">This lesson combines foundational concepts, governance and auditing, ethical hacking phases, the cyber kill chain, and a survey of malicious code — now fully expanded with historical notes, practical controls, examples and labs.</p>
 
-        <div class="chips">
+        <div class="chips" aria-hidden="false">
           <span class="chip">Confidentiality</span>
           <span class="chip">Integrity</span>
           <span class="chip">Availability</span>
@@ -319,7 +254,7 @@
           <li><strong>Identify Vulnerabilities:</strong> triage and prioritise fixes by business impact (use CVSS + business context).</li>
           <li><strong>Develop Standards:</strong> policies, technical standards and runbooks for common operations.
           </li>
-          <li><strong>Implement Policies:</strong> assign owners, automate enforcement where possible, and train staff.\li>
+          <li><strong>Implement Policies:</strong> assign owners, automate enforcement where possible, and train staff.</li>
           <li><strong>Enterprise-wide Approach:</strong> align security with procurement, legal and business units; include third-party risk management.</li>
         </ol>
       </section>
@@ -489,28 +424,156 @@
       <section class="card long-read" aria-labelledby="mitre">
         <h2 id="mitre" class="section-title">20. MITRE ATT&CK</h2>
         <p>
-          MITRE ATT&CK is a knowledge base of adversary tactics and techniques used to model threats and improve detection. Map your telemetry to ATT&CK to find coverage gaps.
+          MITRE ATT&CK is a knowledge base of adversary tactics and techniques used to model threats and improve detection. Map your telemetry to ATT&CK to find coverage gaps and prioritise detections.
         </p>
+
+        <h3>MITRE ATT&CK Enterprise — High-level Tactics</h3>
+        <ol class="list">
+          <li>Reconnaissance — Gathering information about the target.</li>
+          <li>Resource Development — Establishing infrastructure/tools for attack.</li>
+          <li>Initial Access — Gaining entry into the environment.</li>
+          <li>Execution — Running malicious code.</li>
+          <li>Persistence — Maintaining access after reboot or reset.</li>
+          <li>Privilege Escalation — Gaining higher permissions.</li>
+          <li>Defense Evasion — Avoiding detection and security controls.</li>
+          <li>Credential Access — Stealing usernames, passwords, and tokens.</li>
+          <li>Discovery — Learning about the network, users, and systems.</li>
+          <li>Lateral Movement — Moving through the environment to other systems.</li>
+          <li>Collection — Gathering data of interest.</li>
+          <li>Command and Control (C2) — Communicating with attacker-controlled systems.</li>
+          <li>Exfiltration — Stealing and moving data out of the environment.</li>
+          <li>Impact — Achieving the end goal (disruption, destruction, or data manipulation).</li>
+        </ol>
+
+        <p class="small muted">For deeper study, consult the official MITRE ATT&CK site: <a href="https://attack.mitre.org/" target="_blank" rel="noopener noreferrer">attack.mitre.org</a></p>
       </section>
 
       <!-- KILL CHAIN -->
       <section class="card long-read" aria-labelledby="killchain">
-        <h2 id="killchain" class="section-title">21. The Cyber Kill Chain</h2>
+        <h2 id="killchain" class="section-title">21. The Cyber Kill Chain (Lockheed Martin) — Practical Walkthrough</h2>
         <p>
-          The Cyber Kill Chain describes stages of an attack from reconnaissance to exfiltration. Understanding these stages helps defenders place controls to detect or disrupt attacks early.
+          The Kill Chain describes phases of an attack from initial reconnaissance to the attacker's objectives. Below is a step-by-step practical explanation grounded in SOC and fraud examples — with defender actions you can take to detect and break the chain early.
         </p>
-        <h3>Phases (typical)</h3>
+
+        <!-- Practical stages -->
         <ol class="list">
-          <li>Reconnaissance</li>
-          <li>Intrusion (initial access)</li>
-          <li>Exploitation</li>
-          <li>Privilege Escalation</li>
-          <li>Lateral Movement</li>
-          <li>Obfuscation / Anti-forensics</li>
-          <li>Denial of Service (if used)</li>
-          <li>Exfiltration</li>
+          <li>
+            <strong>1. Reconnaissance (Planning & Target Research)</strong>
+            <div class="explain">
+              <strong>What happens:</strong> Attackers gather publicly available and leaked information to plan their approach.<br/>
+              <strong>Practical examples:</strong> scanning company IP ranges for open ports (SSH/RDP), scraping LinkedIn to identify high-value employees, using Shodan or certificate transparency to find exposed services.<br/>
+              <strong>Defender's role:</strong> monitor firewall/SIEM logs for suspicious scanning, restrict public exposure and train staff on oversharing, subscribe to threat intelligence and monitor for your domains/assets.
+            </div>
+          </li>
+
+          <li>
+            <strong>2. Weaponization (Building the Attack Payload)</strong>
+            <div class="explain">
+              <strong>What happens:</strong> The attacker crafts a payload or exploit tailored to the target.<br/>
+              <strong>Practical examples:</strong> preparing a malicious Excel macro or PDF that downloads a backdoor; cloning a banking login page for credential harvesting; packaging an exploit for an unpatched service (e.g., Log4j-style exploit).<br/>
+              <strong>Defender's role:</strong> patch management, sandbox attachments, create YARA rules and detection signatures for known malicious payloads, and block executable downloads from untrusted sources.
+            </div>
+          </li>
+
+          <li>
+            <strong>3. Delivery (Sending the Attack to the Target)</strong>
+            <div class="explain">
+              <strong>What happens:</strong> The attacker transmits the weaponized item to the victim.<br/>
+              <strong>Practical examples:</strong> phishing emails with infected attachments or links, dropping a USB stick in a parking lot (baiting), watering-hole compromises of frequently visited sites.<br/>
+              <strong>Defender's role:</strong> secure email gateways and URL scanning, endpoint protections to block malicious payloads, user awareness training and simulated phishing campaigns.
+            </div>
+          </li>
+
+          <li>
+            <strong>4. Exploitation (Triggering the Payload)</strong>
+            <div class="explain">
+              <strong>What happens:</strong> The malicious code executes, exploiting a vulnerability or tricking a user to run it.<br/>
+              <strong>Practical examples:</strong> a user opens a document that spawns PowerShell to download a backdoor; a browser exploit that gives remote code execution; an unpatched server exploited remotely.<br/>
+              <strong>Defender's role:</strong> monitor EDR for suspicious child processes (e.g., PowerShell spawned by Word), harden systems (disable macros, enforce least privilege), and hunt for exploit indicators in logs.
+            </div>
+          </li>
+
+          <li>
+            <strong>5. Installation (Persistence & Foothold)</strong>
+            <div class="explain">
+              <strong>What happens:</strong> The attacker installs software or implants persistence mechanisms to maintain access.<br/>
+              <strong>Practical examples:</strong> installing a RAT, creating scheduled tasks or service entries, creating stealthy user accounts, or dropping credential harvesters.<br/>
+              <strong>Defender's role:</strong> file integrity monitoring, detect unusual registry edits or new services, limit admin rights, and use EDR to detect persistence primitives.
+            </div>
+          </li>
+
+          <li>
+            <strong>6. Command & Control (C2)</strong>
+            <div class="explain">
+              <strong>What happens:</strong> The compromised host communicates with attacker infrastructure for commands and data exfiltration.<br/>
+              <strong>Practical examples:</strong> periodic beaconing to a C2 server, DNS tunnelling, or hiding C2 in HTTPS or legitimate cloud APIs (Slack/Telegram).<br/>
+              <strong>Defender's role:</strong> monitor outbound traffic and DNS for anomalies, use proxies and egress filtering, block known malicious domains/IPs, and inspect unusual encrypted traffic patterns.
+            </div>
+          </li>
+
+          <li>
+            <strong>7. Actions on Objectives (Exfiltration, Impact)</strong>
+            <div class="explain">
+              <strong>What happens:</strong> The attacker performs their goal: steal data, disrupt operations, or commit fraud.<br/>
+              <strong>Practical examples:</strong> exfiltrating customer data, encrypting systems for ransomware, creating fraudulent transactions, or destroying backups.<br/>
+              <strong>Defender's role:</strong> DLP to detect sensitive data movement, incident response playbooks (ransomware, data breach), rapid containment and forensics, and notification procedures.
+            </div>
+          </li>
         </ol>
-        <p class="small muted">Controls can be mapped to these stages: e.g., patching and email filtering to stop exploitation; EDR to detect lateral movement; DLP to prevent exfiltration.</p>
+
+        <p class="small muted">Key takeaway: break the chain as early as possible (reconnaissance or delivery) to prevent later stages from occurring.</p>
+
+        <p class="small muted">More context & discussion on Lockheed Martin's Kill Chain: <a href="https://darkmarc.substack.com/p/the-cyber-kill-chain-lockheed-martins" target="_blank" rel="noopener noreferrer">darkmarc: The Cyber Kill Chain — Lockheed Martin's model</a></p>
+
+        <!-- Side-by-side visual table: stage | attacker action | defender countermeasure -->
+        <div style="overflow:auto;margin-top:12px">
+          <table class="killchain-table" aria-label="Cyber Kill Chain stages and defenses">
+            <thead>
+              <tr>
+                <th style="width:20%">Stage</th>
+                <th style="width:40%">Attacker action (example)</th>
+                <th style="width:40%">Defender countermeasure (practical)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="killchain-stage">Reconnaissance</span></td>
+                <td>Scanning IP ranges, OSINT (LinkedIn, Shodan), mapping org structure.</td>
+                <td>Monitor logs for scans, limit public exposure, use threat feeds and staff training.</td>
+              </tr>
+              <tr>
+                <td><span class="killchain-stage">Weaponization</span></td>
+                <td>Crafting malicious macro/PDF, building phishing landing pages, exploit dev.</td>
+                <td>Patch management, sandbox attachments, create detection rules (YARA).</td>
+              </tr>
+              <tr>
+                <td><span class="killchain-stage">Delivery</span></td>
+                <td>Phishing email with link/attachment, physical baiting (USB), watering-hole.</td>
+                <td>Secure email gateway, URL scanning, EDR to block downloads, phishing training.</td>
+              </tr>
+              <tr>
+                <td><span class="killchain-stage">Exploitation</span></td>
+                <td>Macro executes, browser exploit runs, remote exploit on unpatched service.</td>
+                <td>Harden hosts (disable macros), monitor EDR for process anomalies, patching.</td>
+              </tr>
+              <tr>
+                <td><span class="killchain-stage">Installation</span></td>
+                <td>Install RAT, create scheduled tasks, drop persistence artifacts.</td>
+                <td>File integrity monitoring, limit admin rights, EDR detection/playbooks.</td>
+              </tr>
+              <tr>
+                <td><span class="killchain-stage">Command & Control</span></td>
+                <td>Beaconing to C2, DNS tunnelling, use of cloud APIs for communications.</td>
+                <td>Egress filtering, DNS monitoring, block/inspect unusual encrypted traffic.</td>
+              </tr>
+              <tr>
+                <td><span class="killchain-stage">Actions on Objectives</span></td>
+                <td>Data exfiltration, ransomware encryption, fraud operations.</td>
+                <td>DLP, backups/immutable storage, incident response and fast containment.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <!-- MALICIOUS CODE -->
@@ -565,15 +628,15 @@
         <h2 id="quiz" class="section-title">Lesson 1 Quiz</h2>
         <p class="muted">Click <strong>Attempt Quiz</strong> when ready — the quiz is gated so you can finish reading first. The quiz has 10 questions; incorrect answers will be highlighted with explanations.</p>
 
-        <div style="display:flex;gap:12px;align-items:center;margin-top:12px;">
+        <div style="display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap;">
           <button class="btn primary attempt-btn" id="attemptBtn">🧪 Attempt Quiz</button>
           <button class="btn ghost" id="downloadNotes">📥 Download Notes (Text)</button>
+          <button class="btn" id="copyMd">📋 Copy as Markdown</button>
           <div class="meta small"><span>Estimated read time: ~30–45 mins (expanded)</span></div>
         </div>
 
         <!-- quiz form hidden until attempt -->
-        <form id="quizForm" style="display:none;margin-top:14px;">
-          <!-- (questions here - unchanged) -->
+        <form id="quizForm" style="display:none;margin-top:14px;" aria-live="polite">
           <!-- Q1 -->
           <div class="q-card">
             <h4>1) What is the primary goal of cybersecurity?</h4>
@@ -594,7 +657,6 @@
             </div>
           </div>
 
-          <!-- ... rest of questions (kept identical) ... -->
           <!-- Q3 -->
           <div class="q-card">
             <h4>3) Which statement best describes 'accountability' in security?</h4>
@@ -690,427 +752,323 @@
     </footer>
   </main>
 
-  <!-- TTS Control Bar (paste once) -->
-  <div id="ttsBar" class="tts-bar" aria-hidden="false">
-    <button id="ttsPlay" title="Play">▶</button>
-    <button id="ttsPause" class="small" title="Pause">⏸</button>
-    <button id="ttsStop" class="small" title="Stop">⏹</button>
+  <!-- Mobile floating "Lesson" button -->
+  <a href="cyber-index.html" id="mobileBack" class="mobile-back" aria-label="Back to Lesson"
+     style="position:fixed;left:12px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:9998;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#021024;padding:8px 12px;border-radius:999px;font-weight:800;text-decoration:none;display:none">
+    ◀ Lesson
+  </a>
 
-    <span class="label">Voice</span>
+  <!-- TTS Control Bar -->
+  <div id="ttsBar" class="tts-bar" role="region" aria-label="Text to Speech Controls">
+    <button id="ttsPlay" title="Play">▶</button>
+    <button id="ttsPause" title="Pause">⏸</button>
+    <button id="ttsStop" title="Stop">⏹</button>
+
+    <span class="small">Voice</span>
     <select id="ttsVoices" aria-label="Select voice"></select>
 
-    <span class="label">Rate</span>
+    <span class="small">Rate</span>
     <input id="ttsRate" type="range" min="0.6" max="2" step="0.1" value="1" />
 
-    <span class="label">Pitch</span>
+    <span class="small">Pitch</span>
     <input id="ttsPitch" type="range" min="0.6" max="2" step="0.1" value="1" />
 
     <button id="ttsToggleAuto" class="small" title="Auto-read on load">A</button>
   </div>
 
-  <script>
-    /* Theme toggle (persist) */
-    const themeBtn = document.getElementById('toggleTheme');
-    const keyTheme = 'lesson1-theme';
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const applyTheme = (mode) => {
-      if (mode === 'light') {
-        document.documentElement.style.setProperty('--bg','#f7f9ff');
-        document.documentElement.style.setProperty('--card','#ffffff');
-        document.documentElement.style.setProperty('--text','#0b1220');
-        document.documentElement.style.setProperty('--muted','#4a5875');
-      } else {
-        document.documentElement.style.setProperty('--bg','#0b1220');
-        document.documentElement.style.setProperty('--card','#111a2e');
-        document.documentElement.style.setProperty('--text','#e7eefc');
-        document.documentElement.style.setProperty('--muted','#8aa0c3');
-      }
-    };
-    const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
-    applyTheme(storedTheme);
-    themeBtn.addEventListener('click', () => {
-      const cur = localStorage.getItem(keyTheme) || storedTheme;
-      const next = cur === 'dark' ? 'light' : 'dark';
-      localStorage.setItem(keyTheme, next);
-      applyTheme(next);
+<script>
+/* ---------- tiny selectors ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ---------- theme toggle (persist) ---------- */
+(function(){
+  const key='lesson1.theme';
+  const btn = $('#toggleTheme');
+  function apply(mode){
+    if(mode==='light'){
+      document.documentElement.style.setProperty('--bg','#f3f6fb');
+      document.documentElement.style.setProperty('--card','#ffffff');
+      document.documentElement.style.setProperty('--text','#062033');
+      document.documentElement.style.setProperty('--muted','#55667a');
+      document.documentElement.style.setProperty('--accent','#3b82f6');
+      document.documentElement.style.setProperty('--accent2','#34d399');
+    } else {
+      document.documentElement.style.setProperty('--bg','#071428');
+      document.documentElement.style.setProperty('--card','#0f2136');
+      document.documentElement.style.setProperty('--text','#e9f6ff');
+      document.documentElement.style.setProperty('--muted','#9db7d9');
+      document.documentElement.style.setProperty('--accent','#57a7ff');
+      document.documentElement.style.setProperty('--accent2','#7ef0c8');
+    }
+  }
+  const saved = localStorage.getItem(key) || 'dark';
+  apply(saved);
+  btn.addEventListener('click', ()=>{
+    const cur = localStorage.getItem(key) || 'dark';
+    const next = cur==='dark' ? 'light' : 'dark';
+    localStorage.setItem(key,next);
+    apply(next);
+  });
+})();
+
+/* ---------- Download / Copy ---------- */
+$('#downloadNotes').addEventListener('click', () => {
+  const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
+  const lines = [];
+  nodes.forEach(n => {
+    const t = n.innerText.trim();
+    if (t) lines.push(t);
+  });
+  const blob = new Blob([lines.join('\n\n')], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'Lesson1_Notes.txt'; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 700);
+});
+
+$('#copyMd').addEventListener('click', async () => {
+  const nodes = document.querySelectorAll('main article h1, main article h2, main article h3, main article p, main article li, main article pre');
+  let md = '';
+  nodes.forEach(n => {
+    const tag = n.tagName.toLowerCase();
+    const txt = n.innerText.trim();
+    if (!txt) return;
+    if (tag === 'h1') md += '# ' + txt + '\n\n';
+    else if (tag === 'h2') md += '## ' + txt + '\n\n';
+    else if (tag === 'h3') md += '### ' + txt + '\n\n';
+    else if (tag === 'li') md += '- ' + txt + '\n';
+    else if (tag === 'pre') md += '```\n' + txt + '\n```\n\n';
+    else md += txt + '\n\n';
+  });
+  try { await navigator.clipboard.writeText(md); alert('Copied notes as Markdown.'); }
+  catch(e){ alert('Could not copy to clipboard.'); }
+});
+
+/* ---------- Quiz gating + grading ---------- */
+const attemptBtn = $('#attemptBtn');
+const quizForm = $('#quizForm');
+const submitQuiz = $('#submitQuiz');
+const resetQuiz = $('#resetQuiz');
+const quizResult = $('#quizResult');
+
+const answers = {
+  q1:{a:false,b:true,c:false,explain:'Protect systems, data and services from digital attacks.'},
+  q2:{a:true,b:false,c:false,explain:'Confidentiality, Integrity, Availability.'},
+  q3:{a:false,b:true,c:false,explain:'Link actions to users so they can be evaluated.'},
+  q4:{a:false,b:false,c:true,explain:'Garden landscaping is not part of security architecture.'},
+  q5:{a:false,b:true,c:false,explain:'PCI-DSS focuses on payment card security.'},
+  q6:{a:false,b:true,c:false,explain:'Passive footprinting gathers public info without contacting target.'},
+  q7:{a:false,b:true,c:false,explain:'Gaining Access (Exploitation) is that phase.'},
+  q8:{a:false,b:true,c:false,explain:'Lateral Movement typically follows privilege escalation.'},
+  q9:{a:false,b:true,c:false,explain:'Ransomware encrypts files and demands payment.'},
+  q10:{a:true,b:false,c:false,explain:'Layered defenses are recommended.'}
+};
+
+attemptBtn.addEventListener('click', ()=>{
+  attemptBtn.disabled = true;
+  quizForm.style.display = 'block';
+  quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+submitQuiz.addEventListener('click', ()=>{
+  let score=0; const parts=[];
+  for(let i=1;i<=10;i++){
+    const q='q'+i;
+    const sel = document.querySelector(`input[name="${q}"]:checked`);
+    const user = sel ? sel.value : '(no answer)';
+    const isCorrect = sel && answers[q][sel.value] === true;
+    if(isCorrect) score++;
+    parts.push(`<strong>Q${i}</strong> — Your answer: ${user} — ${isCorrect?'<span style="color:var(--ok)">Correct</span>':'<span style="color:var(--danger)">Incorrect</span>'}<br><em>Explanation:</em> ${answers[q].explain}`);
+  }
+  quizResult.innerHTML = `<div><strong>Score:</strong> ${score} / 10</div><div style="margin-top:10px">${parts.join('<hr>')}</div>`;
+  quizResult.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+resetQuiz.addEventListener('click', ()=>{
+  quizForm.reset(); quizForm.style.display='none'; quizResult.innerHTML=''; attemptBtn.disabled=false; attemptBtn.scrollIntoView({behavior:'smooth'});
+});
+
+/* ---------- mobile back toggle ---------- */
+(function(){
+  const mb = $('#mobileBack'), desktopBack = $('#backLink');
+  function update(){ const small = window.matchMedia('(max-width:600px)').matches; mb.style.display = small ? 'inline-flex' : 'none'; desktopBack.style.display = small ? 'none' : 'inline-flex'; }
+  update(); window.addEventListener('resize', update);
+})();
+
+/* ---------- TTS module (responsive & robust) ---------- */
+(function(){
+  const bar = document.getElementById('ttsBar');
+  if(!bar) return;
+  if(!('speechSynthesis' in window)){ bar.style.display='none'; adjustForTTS(); return; }
+
+  const play = $('#ttsPlay'), pause = $('#ttsPause'), stop = $('#ttsStop');
+  const voicesSelect = $('#ttsVoices'), rateInput = $('#ttsRate'), pitchInput = $('#ttsPitch'), autoBtn = $('#ttsToggleAuto');
+  const lessonRoot = document.querySelector('.lesson-content');
+
+  let voices = [];
+  function populateVoices(){
+    voices = speechSynthesis.getVoices();
+    voicesSelect.innerHTML = '';
+    voices.forEach(v=>{
+      const o = document.createElement('option'); o.value = v.voiceURI || v.name; o.textContent = `${v.name} (${v.lang})${v.default? ' — default':''}`; voicesSelect.appendChild(o);
     });
+    const saved = localStorage.getItem('lesson1.voice');
+    if(saved && Array.from(voicesSelect.options).some(o=>o.value===saved)) voicesSelect.value = saved;
+  }
+  populateVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
 
-    /* Attempt gating for quiz */
-    const attemptBtn = document.getElementById('attemptBtn');
-    const quizForm = document.getElementById('quizForm');
-    attemptBtn.addEventListener('click', () => {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      // store that user attempted
-      localStorage.setItem('lesson1-attempted', '1');
-      // restore previous score if exists
-      const saved = localStorage.getItem('lesson1-score');
-      if (saved) {
-        const display = document.getElementById('quizResult');
-        display.textContent = `Previous Score: ${saved}%`;
-      }
-      // scroll into view
-      quizForm.scrollIntoView({behavior:'smooth', block:'center'});
+  function getTextForTTS(){
+    // gather headings, paragraphs, list items and pre blocks
+    const nodes = lessonRoot.querySelectorAll('h1,h2,h3,p,li,pre');
+    return Array.from(nodes).map(n=>n.innerText.trim()).filter(Boolean).join('.\n');
+  }
+
+  // remove marks cleanly
+  function removeAllMarks(){
+    const marks = lessonRoot.querySelectorAll('mark.tts-mark');
+    marks.forEach(m=>{
+      const parent = m.parentNode;
+      while(m.firstChild) parent.insertBefore(m.firstChild, m);
+      parent.removeChild(m);
+      parent.normalize();
     });
+  }
 
-    /* Download notes as text */
-    document.getElementById('downloadNotes').addEventListener('click', () => {
-      const title = 'Lesson1_Cybersecurity_Notes_Expanded.txt';
-      const content = [
-        'Lesson 1 – Introduction to Cybersecurity (Expanded)',
-        '',
-        '1. What is Cybersecurity?',
-        'Cybersecurity is the discipline and practice of protecting systems, networks, programs, and data from digital attacks.',
-        '',
-        '2. Creeper (historical note)',
-        'The Creeper program was an early self-replicating program that demonstrated code propagation.',
-        '',
-        '3. Why cybersecurity is needed',
-        'Protects data against theft, misuse, and unauthorized disclosure. Examples: identity theft, financial loss, reputational damage.',
-        '',
-        '4. Cyber crime examples',
-        'Illegal interception, piracy, darknet marketplaces, phishing.',
-        '',
-        '5. Principles (CIA + Accountability + Auditability)',
-        'Confidentiality, Integrity, Availability, Accountability, Auditability.',
-        '',
-        '6. Architecture & REACP (suggested expansion)',
-        'R: Risk; E: Endpoints; A: Access; C: Controls/Confidentiality; P: Policies & People',
-        '',
-        '7. Governance steps',
-        'Establish state, assessments, identify vulnerabilities, develop standards, implement policies, enterprise approach.',
-        '',
-        '8. Auditing steps',
-        'Define scope, assess compliance, test controls, identify vulnerabilities, analyze response readiness, recommendations.',
-        '',
-        '9. Frameworks',
-        'SOX, NIST, PCI-DSS, ISO 27001, GDPR (where applicable).',
-        '',
-        '10. Ethical hacking, MITRE ATT&CK, Kill Chain, Malware types (see lesson for full expanded details).',
-        '',
-        '--- End of expanded notes ---'
-      ].join('\n');
-      const blob = new Blob([content], {type:'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = title; document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
-    });
+  // find and mark sentence using text nodes and Range
+  function findAndMarkSentence(sentence){
+    if(!sentence) return;
+    const textNodes = (function getTextNodes(root){
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: node => {
+        if(!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        const p = node.parentElement;
+        if(!p) return NodeFilter.FILTER_REJECT;
+        const hidden = ['SCRIPT','STYLE','NOSCRIPT','SELECT','OPTION','INPUT','BUTTON','TEXTAREA','LABEL'];
+        if(hidden.includes(p.tagName)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }}, false);
+      const arr=[]; let n; while(n = walker.nextNode()) arr.push(n); return arr;
+    })(lessonRoot);
 
-    /* Quiz logic */
-    const answers = { q1:'b', q2:'a', q3:'b', q4:'c', q5:'b', q6:'b', q7:'b', q8:'b', q9:'b', q10:'a' };
-    const explanations = {
-      q1: 'Cybersecurity protects systems, data and services from digital attacks.',
-      q2: 'The CIA triad is Confidentiality, Integrity, Availability.',
-      q3: 'Accountability links actions to users so they can be evaluated.',
-      q4: 'Garden landscaping is not part of security architecture.',
-      q5: 'PCI-DSS is the standard for payment card data security.',
-      q6: 'Passive footprinting collects data without direct contact with the target.',
-      q7: 'Gaining Access (exploitation) is the phase where vulnerabilities are used to enter systems.',
-      q8: 'After privilege escalation attackers typically perform lateral movement to reach other systems.',
-      q9: 'Ransomware encrypts files and demands payment.',
-      q10: 'Layered defenses (patching, backups, least privilege, EDR) are the best defense.'
-    };
-    const form = document.getElementById('quizForm');
-    const submitBtn = document.getElementById('submitQuiz');
-    const resetBtn = document.getElementById('resetQuiz');
-    const resultSpan = document.getElementById('quizResult');
-    const scoreKey = 'lesson1-score';
-
-    function grade() {
-      let score = 0; let total = Object.keys(answers).length;
-      const missed = [];
-      for (const q of Object.keys(answers)) {
-        const el = form.querySelector(`input[name="${q}"]:checked`);
-        // clear previous highlight
-        form.querySelectorAll(`input[name="${q}"]`).forEach(i => { i.parentElement.style.background=''; });
-        if (!el) {
-          missed.push(q);
-          continue;
-        }
-        if (el.value === answers[q]) {
-          score++;
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(110,168,255,0.12), rgba(126,240,193,0.06))';
-        } else {
-          missed.push(q);
-          el.parentElement.style.background = 'linear-gradient(90deg, rgba(255,126,147,0.07), rgba(0,0,0,0.02))';
-        }
-      }
-      const pct = Math.round((score/total)*100);
-      resultSpan.textContent = `Score: ${score}/${total} (${pct}%)`;
-      resultSpan.className = 'result ' + (pct >= 80 ? 'good' : pct >= 60 ? 'mid' : 'bad');
-      localStorage.setItem(scoreKey, pct);
-      // show explanations for missed questions
-      if (missed.length) {
-        let msg = '\n\nReview:';
-        missed.forEach(m => {
-          msg += `\n${m.toUpperCase()}: ${explanations[m]}`;
-        });
-        setTimeout(()=>{ alert('You missed some questions.\n\nOpen the debug console or press OK to see key review notes.\n\nReview in the page footer.'); }, 100);
-        const existing = document.getElementById('reviewBox');
-        if (existing) existing.remove();
-        const review = document.createElement('div');
-        review.id = 'reviewBox';
-        review.style.marginTop = '12px';
-        review.style.padding = '12px';
-        review.style.border = '1px solid rgba(255,255,255,0.06)';
-        review.style.borderRadius = '10px';
-        review.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.12))';
-        let inner = '<strong>Review (missed questions)</strong><ul>';
-        missed.forEach(m => {
-          inner += `<li><strong>${m.toUpperCase()}</strong>: ${explanations[m]}</li>`;
-        });
-        inner += '</ul>';
-        review.innerHTML = inner;
-        form.appendChild(review);
-      } else {
-        const existing = document.getElementById('reviewBox');
-        if (existing) existing.remove();
-        const perfect = document.createElement('div');
-        perfect.id = 'reviewBox';
-        perfect.style.marginTop = '12px';
-        perfect.style.padding = '12px';
-        perfect.style.border = '1px solid rgba(126,240,193,0.12)';
-        perfect.style.borderRadius = '10px';
-        perfect.style.background = 'linear-gradient(180deg, rgba(126,240,193,0.04), rgba(126,240,193,0.02))';
-        perfect.innerHTML = '<strong>Perfect!</strong> You answered all questions correctly. Well done.';
-        form.appendChild(perfect);
-      }
-      submitBtn.disabled = true;
-    }
-
-    function resetQuiz() {
-      form.reset();
-      form.querySelectorAll('input').forEach(i => { if (i.parentElement) i.parentElement.style.background=''; });
-      resultSpan.textContent = '';
-      submitBtn.disabled = false;
-      const existing = document.getElementById('reviewBox'); if (existing) existing.remove();
-      localStorage.removeItem(scoreKey);
-    }
-
-    submitBtn.addEventListener('click', grade);
-    resetBtn.addEventListener('click', resetQuiz);
-
-    // Restore previous attempt if user already attempted
-    const prev = localStorage.getItem(scoreKey);
-    if (localStorage.getItem('lesson1-attempted')) {
-      attemptBtn.style.display = 'none';
-      quizForm.style.display = 'block';
-      if (prev) {
-        resultSpan.textContent = `Previous Score: ${prev}%`;
-        resultSpan.className = 'result ' + (prev >= 80 ? 'good' : prev >= 60 ? 'mid' : 'bad');
-        submitBtn.disabled = true;
-      }
-    }
-  </script>
-
-  <!-- TTS script: placed after DOM, before closing body -->
-  <script>
-  // TTS module (Web Speech API) - unchanged functionality preserved
-  (function () {
-    if (!('speechSynthesis' in window)) {
-      console.warn('TTS not supported in this browser.');
-      const bar = document.getElementById('ttsBar');
-      if (bar) bar.style.display = 'none';
-      return;
-    }
-
-    // DOM
-    const playBtn = document.getElementById('ttsPlay');
-    const pauseBtn = document.getElementById('ttsPause');
-    const stopBtn = document.getElementById('ttsStop');
-    const voicesSelect = document.getElementById('ttsVoices');
-    const rateInput = document.getElementById('ttsRate');
-    const pitchInput = document.getElementById('ttsPitch');
-    const autoBtn = document.getElementById('ttsToggleAuto');
-
-    const lesson = document.querySelector('.lesson-content') || document.querySelector('main') || document.body;
-    let utterance = null;
-    let sentences = [];
-    let currentIndex = 0;
-    let readyVoices = [];
-
-    // load preferences
-    const prefs = {
-      voiceURI: localStorage.getItem('tts.voice') || '',
-      rate: parseFloat(localStorage.getItem('tts.rate')) || 1,
-      pitch: parseFloat(localStorage.getItem('tts.pitch')) || 1,
-      auto: localStorage.getItem('tts.auto') === 'true' || false
-    };
-    rateInput.value = prefs.rate;
-    pitchInput.value = prefs.pitch;
-    autoBtn.style.opacity = prefs.auto ? '1' : '0.6';
-
-    function populateVoices() {
-      const voices = speechSynthesis.getVoices();
-      readyVoices = voices;
-      voicesSelect.innerHTML = '';
-      voices.forEach(v => {
-        const opt = document.createElement('option');
-        opt.value = v.voiceURI;
-        opt.textContent = `${v.name} (${v.lang})${v.default ? ' — default' : ''}`;
-        voicesSelect.appendChild(opt);
-      });
-
-      if (prefs.voiceURI) {
-        const found = [...voices].find(v => v.voiceURI === prefs.voiceURI);
-        if (found) voicesSelect.value = prefs.voiceURI;
-      }
-    }
-
-    populateVoices();
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-      speechSynthesis.onvoiceschanged = populateVoices;
-    }
-
-    function getText() {
-      if (!lesson) return document.body.innerText;
-      const nodes = lesson.querySelectorAll('p, li, h1, h2, h3, .tts-read');
-      if (nodes.length) {
-        return Array.from(nodes).map(n => n.innerText.trim()).filter(Boolean).join('.\n');
-      }
-      return lesson.innerText || document.body.innerText;
-    }
-
-    function buildSentences(text) {
-      return text.split(/(?<=[.?!])\s+/);
-    }
-
-    function speakFrom(index = 0) {
-      const text = getText();
-      sentences = buildSentences(text);
-      currentIndex = index;
-      if (currentIndex >= sentences.length) return;
-      speakSentence(sentences[currentIndex]);
-    }
-
-    function speakSentence(sentence) {
-      if (!sentence || sentence.trim() === '') {
-        currentIndex++;
-        if (currentIndex < sentences.length) speakSentence(sentences[currentIndex]);
+    for(const node of textNodes){
+      const idx = node.nodeValue.indexOf(sentence);
+      if(idx >= 0){
+        try{
+          const range = document.createRange();
+          range.setStart(node, idx);
+          range.setEnd(node, idx + sentence.length);
+          // surroundContents can throw if range splits multiple elements — but we are inside single text node, OK
+          const mark = document.createElement('mark'); mark.className = 'tts-mark';
+          range.surroundContents(mark);
+          mark.scrollIntoView({behavior:'smooth', block:'center'});
+        }catch(e){ /* ignore */ }
         return;
       }
-      cancel();
-
-      utterance = new SpeechSynthesisUtterance(sentence);
-      const voiceURI = voicesSelect.value || prefs.voiceURI;
-      const selected = readyVoices.find(v => v.voiceURI === voiceURI) || readyVoices.find(v => v.default) || readyVoices[0];
-      if (selected) utterance.voice = selected;
-      utterance.rate = parseFloat(rateInput.value);
-      utterance.pitch = parseFloat(pitchInput.value);
-
-      utterance.onstart = () => highlightSentence(sentence);
-      utterance.onend = () => {
-        currentIndex++;
-        if (currentIndex < sentences.length) {
-          setTimeout(() => speakSentence(sentences[currentIndex]), 120);
-        } else {
-          clearHighlights();
-        }
-      };
-
-      speechSynthesis.speak(utterance);
     }
+  }
 
-    function cancel() {
-      if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+  let playing=false, currentUtter=null;
+
+  function speakAll(){
+    stopAll();
+    const raw = getTextForTTS();
+    if(!raw) return;
+    const sentences = raw.split(/(?<=[.?!])\s+/);
+    let i=0; playing=true;
+    function speakNext(){
+      if(!playing) return;
+      if(i >= sentences.length){ playing=false; removeAllMarks(); return; }
+      const s = sentences[i++].trim();
+      if(!s) return speakNext();
+      const u = new SpeechSynthesisUtterance(s);
+      const selURI = voicesSelect.value || localStorage.getItem('lesson1.voice') || '';
+      const sel = voices.find(v=>v.voiceURI===selURI) || voices.find(v=>v.default) || voices[0];
+      if(sel) u.voice = sel;
+      u.rate = parseFloat(rateInput.value || 1);
+      u.pitch = parseFloat(pitchInput.value || 1);
+      u.onstart = ()=> { try { findAndMarkSentence(s); } catch(e){} };
+      u.onend = ()=> { removeAllMarks(); setTimeout(()=> speakNext(), 90); };
+      speechSynthesis.speak(u);
+      currentUtter = u;
     }
+    speakNext();
+  }
 
-    function pause() {
-      if (speechSynthesis.speaking) speechSynthesis.pause();
-    }
+  function stopAll(){ playing=false; if(speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); removeAllMarks(); }
+  function pauseAll(){ if(speechSynthesis.speaking) speechSynthesis.pause(); else if(speechSynthesis.paused) speechSynthesis.resume(); }
 
-    function resume() {
-      if (speechSynthesis.paused) speechSynthesis.resume();
-    }
+  play.addEventListener('click', ()=> {
+    if(speechSynthesis.paused) return speechSynthesis.resume();
+    if(speechSynthesis.speaking) return;
+    speakAll();
+    localStorage.setItem('lesson1.voice', voicesSelect.value || '');
+    localStorage.setItem('lesson1.rate', rateInput.value);
+    localStorage.setItem('lesson1.pitch', pitchInput.value);
+  });
+  pause.addEventListener('click', pauseAll);
+  stop.addEventListener('click', stopAll);
 
-    function highlightSentence(sentence) {
-      clearHighlights();
-      if (!lesson) return;
-      const text = lesson.innerHTML;
-      const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').trim();
-      if (!safe) return;
-      const regex = new RegExp(safe);
-      const newHtml = text.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
-      if (newHtml !== text) lesson.innerHTML = newHtml;
-    }
+  voicesSelect.addEventListener('change', ()=> localStorage.setItem('lesson1.voice', voicesSelect.value || ''));
+  rateInput.addEventListener('change', ()=> localStorage.setItem('lesson1.rate', rateInput.value));
+  pitchInput.addEventListener('change', ()=> localStorage.setItem('lesson1.pitch', pitchInput.value));
 
-    function clearHighlights() {
-      if (!lesson) return;
-      const highlights = lesson.querySelectorAll('.tts-highlight');
-      highlights.forEach(el => {
-        const txt = el.textContent;
-        el.outerHTML = txt;
-      });
-    }
+  // auto toggle
+  const savedAuto = localStorage.getItem('lesson1.auto') === 'true';
+  autoBtn.style.opacity = savedAuto ? '1' : '0.6';
+  autoBtn.addEventListener('click', ()=> {
+    const cur = localStorage.getItem('lesson1.auto') === 'true';
+    localStorage.setItem('lesson1.auto', (!cur).toString());
+    autoBtn.style.opacity = (!cur) ? '1' : '0.6';
+  });
 
-    playBtn.addEventListener('click', () => {
-      if (speechSynthesis.paused) return resume();
-      if (speechSynthesis.speaking) return;
-      speakFrom(0);
-      savePrefs();
-    });
-    pauseBtn.addEventListener('click', () => {
-      if (speechSynthesis.speaking) pause();
-      else if (speechSynthesis.paused) resume();
-    });
-    stopBtn.addEventListener('click', () => {
-      cancel();
-      clearHighlights();
-    });
-    voicesSelect.addEventListener('change', () => {
-      savePrefs();
-    });
-    rateInput.addEventListener('change', () => savePrefs());
-    pitchInput.addEventListener('change', () => savePrefs());
-    autoBtn.addEventListener('click', () => {
-      prefs.auto = !prefs.auto;
-      localStorage.setItem('tts.auto', prefs.auto);
-      autoBtn.style.opacity = prefs.auto ? '1' : '0.6';
-    });
+  // apply saved settings and maybe autoplay
+  function applySaved(){
+    const sv = localStorage.getItem('lesson1.voice');
+    if(sv && Array.from(voicesSelect.options).some(o=>o.value===sv)) voicesSelect.value = sv;
+    const sr = localStorage.getItem('lesson1.rate'); if(sr) rateInput.value = sr;
+    const sp = localStorage.getItem('lesson1.pitch'); if(sp) pitchInput.value = sp;
+    if(localStorage.getItem('lesson1.auto') === 'true'){ try{ speakAll(); } catch(e){ console.warn('Auto TTS blocked',e); } }
+  }
 
-    function savePrefs() {
-      localStorage.setItem('tts.voice', voicesSelect.value || '');
-      localStorage.setItem('tts.rate', rateInput.value);
-      localStorage.setItem('tts.pitch', pitchInput.value);
-    }
+  let tries=0;
+  const iv=setInterval(()=> {
+    if(speechSynthesis.getVoices().length){ populateVoices(); applySaved(); clearInterval(iv); adjustForTTS(); }
+    else if(++tries>30){ applySaved(); clearInterval(iv); adjustForTTS(); }
+  }, 200);
 
-    function applySavedSettings() {
-      rateInput.value = prefs.rate;
-      pitchInput.value = prefs.pitch;
-      if (prefs.voiceURI && voicesSelect.options.length) {
-        voicesSelect.value = prefs.voiceURI;
-      }
-    }
+  // observe and adjust height
+  const ro = new ResizeObserver(entries => adjustForTTS());
+  ro.observe(bar);
+  setTimeout(adjustForTTS, 300);
+})(); // end TTS
 
-    let attempts = 0;
-    const voiceApplyInterval = setInterval(() => {
-      if (speechSynthesis.getVoices().length) {
-        populateVoices();
-        applySavedSettings();
-        clearInterval(voiceApplyInterval);
-      } else if (attempts++ > 20) {
-        applySavedSettings();
-        clearInterval(voiceApplyInterval);
-      }
-    }, 300);
+/* ---------- adjust for TTS bar so anchors not covered ---------- */
+function adjustForTTS(){
+  const bar = document.getElementById('ttsBar');
+  if(!bar) return;
+  const rect = bar.getBoundingClientRect();
+  const cs = window.getComputedStyle(bar);
+  const h = Math.ceil(rect.height + parseFloat(cs.marginTop||0) + parseFloat(cs.marginBottom||0));
+  document.documentElement.style.setProperty('--tts-height', h + 'px');
+  document.querySelectorAll('.container').forEach(c => c.style.paddingBottom = (28 + h) + 'px');
+}
+window.addEventListener('load', ()=> setTimeout(adjustForTTS, 300));
+window.addEventListener('resize', ()=> setTimeout(adjustForTTS, 120));
 
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        if (prefs.auto) {
-          try {
-            speakFrom(0);
-          } catch (e) {
-            console.warn('Auto TTS blocked by browser, user must press Play to start.');
-          }
-        }
-      }, 700);
-    });
+/* ---------- keyboard shortcuts ---------- */
+window.addEventListener('keydown', (e)=>{
+  const tag = (e.target && e.target.tagName || '').toLowerCase();
+  if(tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+  if(e.code === 'Space'){ e.preventDefault(); const synth = window.speechSynthesis; if(synth.speaking && !synth.paused) document.getElementById('ttsPause').click(); else if(synth.paused) document.getElementById('ttsPause').click(); else document.getElementById('ttsPlay').click(); }
+  else if(e.key.toLowerCase() === 's') document.getElementById('ttsStop').click();
+  else if(e.key.toLowerCase() === 'b') window.location.href = 'cyber-index.html';
+  else if(e.key.toLowerCase() === 'a') document.getElementById('ttsToggleAuto').click();
+  else if(e.key === '+' || e.key === '='){ const r = document.getElementById('ttsRate'); r.value = Math.min(parseFloat(r.value)+0.1, parseFloat(r.max)); r.dispatchEvent(new Event('change')); }
+  else if(e.key === '-') { const r = document.getElementById('ttsRate'); r.value = Math.max(parseFloat(r.value)-0.1, parseFloat(r.min)); r.dispatchEvent(new Event('change')); }
+});
 
-    // expose for quick debugging
-    window.__XecuredlyTTS = { speakFrom, cancel, pause, resume, getText };
-
-  })();
-  </script>
+/* ---------- console hint ---------- */
+if(!localStorage.getItem('lesson1.hint')){ console.info('TTS shortcuts: Space play/pause • S stop • B back • A toggle auto • +/- rate'); localStorage.setItem('lesson1.hint','1'); }
+</script>
 </body>
 </html>
