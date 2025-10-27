@@ -1,94 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Lesson 2 – Introduction to Linux (Comprehensive + Labs + TTS)</title>
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SOC 2 – SOC Activities, Tools & Workflow</title>
+  <meta name="description" content="Chapter 2: SOC Activities, Tools, and Workflow — SOC operations cycle, threats, IoCs, threat intelligence, hunting, team tiers and core principles." />
   <style>
-    :root {
-      --bg: #0b1220;
-      --card: #111a2e;
-      --muted: #8aa0c3;
-      --text: #e7eefc;
-      --accent: #6ea8ff;
-      --accent-2: #7ef0c1;
-      --warning: #ffdf6e;
-      --danger: #ff7e93;
-      --glass: rgba(255,255,255,0.03);
+    :root{
+      --bg:#0b1220;
+      --card:#111a2e;
+      --muted:#8aa0c3;
+      --text:#e7eefc;
+      --accent:#6ea8ff;
+      --accent-2:#7ef0c1;
+      --warn:#ffdf6e;
+      --danger:#ff7e93;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Noto Sans,Helvetica,Arial}
-    body{color:var(--text); background:linear-gradient(135deg,#0b1220 0%,#101b34 100%); -webkit-font-smoothing:antialiased;}
-    .container{max-width:1200px;margin:0 auto;padding:18px}
-    header{position:sticky;top:0;z-index:40;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.75);border-bottom:1px solid rgba(255,255,255,0.04)}
-    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px}
-    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-    .hero{padding:22px 20px 12px}
-    .title{font-size:clamp(26px,4vw,44px);line-height:1.08;margin:4px 0 10px}
+    body{background:linear-gradient(135deg,#0b1220 0%,#101b34 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+    .container{max-width:1100px;margin:0 auto;padding:18px}
+    header{position:sticky;top:0;z-index:20;backdrop-filter:saturate(160%) blur(8px);background:rgba(11,18,32,0.75);border-bottom:1px solid rgba(255,255,255,0.06)}
+    .header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:#0b1220;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:8px 12px;border-radius:999px;font-size:12px;text-transform:uppercase}
+    .hero{padding:28px 20px 8px}
+    .title{font-size:clamp(28px,4vw,40px);line-height:1.15;margin:4px 0 10px}
     .subtitle{color:var(--muted);font-size:15px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .chip{padding:6px 10px;background:var(--glass);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
-    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.35);margin-top:16px}
-    .list{margin:0;padding-left:18px}
-    .list li{margin:8px 0}
-    .callout{background:linear-gradient(180deg,rgba(126,240,193,.06),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.12);padding:12px 14px;border-radius:12px;margin-top:10px}
-    .warn{background:linear-gradient(180deg,rgba(255,223,110,.06),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.12)}
-    .video-wrap{position:relative;overflow:hidden;border-radius:12px;aspect-ratio:16/9;background:#0b1220;border:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;color:var(--muted)}
-    .subtitle small{display:block;color:var(--muted);margin-top:6px}
-    .q-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:12px;padding:12px;margin:10px 0}
-    .q-options{display:grid;gap:8px;margin-top:8px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.08);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.03);cursor:pointer;font-weight:700}
-    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
-    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.03)}
-    .result{font-size:18px;font-weight:700}
-    .good{color:var(--accent-2)}
-    .mid{color:var(--warning)}
-    .bad{color:var(--danger)}
-    footer{opacity:.8;font-size:13px;padding:30px 0 60px}
-    .section-title{margin:0 0 8px}
-    .muted{color:var(--muted)}
-    pre{white-space:pre-wrap;background:rgba(0,0,0,0.15);padding:12px;border-radius:8px;overflow:auto}
-    .meta{display:flex;gap:8px;flex-wrap:wrap}
-    .attempt-btn{margin-top:12px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .chip{padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;font-size:12px;color:var(--muted);border:1px solid rgba(255,255,255,0.03)}
+    .card{background:radial-gradient(140% 120% at 100% 0%,#132349 0%,var(--card) 45%);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-top:16px}
     .long-read{line-height:1.75;font-size:15px}
+    .list{padding-left:18px}
+    .list li{margin:8px 0}
     .small{font-size:13px;color:var(--muted)}
-    .explain{margin-top:8px;background:rgba(0,0,0,0.12);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    .kbd{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);font-family:monospace}
-    .two-col{display:grid;grid-template-columns:1fr 420px;gap:18px}
-    @media (max-width:980px){.two-col{grid-template-columns:1fr}}
-    .sidebar .card{position:sticky;top:84px}
-    .faq dt{font-weight:700;margin-top:12px}
-    .glossary dt{font-weight:700;margin-top:8px}
-    /* TTS control bar (base) */
-    .tts-bar {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 9999;
-      background: rgba(0,0,0,0.65);
-      color: #00ffcc;
-      padding: 10px 12px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-      font-family: 'Share Tech Mono', monospace;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      backdrop-filter: blur(6px);
-      min-width: 320px;
-    }
-    .tts-bar button { background: linear-gradient(45deg,#ff0080,#7928ca); border: none; color: #fff; padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-width: 44px; }
-    .tts-bar button.small { padding: 6px 8px; min-width: 36px; font-size: 0.95rem; }
-    .tts-bar select, .tts-bar input[type="range"] { background: rgba(255,255,255,0.06); color: #00ffcc; border: 1px solid rgba(255,255,255,0.06); padding: 6px; border-radius: 8px; font-family: inherit; }
-    .tts-bar .label { font-size: 0.82rem; opacity: 0.95; margin-right: 6px; white-space: nowrap; }
-    .tts-highlight { background: rgba(0,255,200,0.15); transition: background 0.2s; padding: 0 2px; border-radius: 3px; }
-    @media (max-width:600px) { .tts-bar { left: 50%; transform: translateX(-50%); right: auto; bottom: 12px; min-width: 88%; } }
+    .explain{margin-top:8px;background:rgba(0,0,0,0.18);padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+    .callout{background:linear-gradient(180deg,rgba(126,240,193,.04),rgba(126,240,193,.02));border:1px solid rgba(126,240,193,.08);padding:10px;border-radius:10px}
+    .warn{background:linear-gradient(180deg,rgba(255,223,110,.04),rgba(255,223,110,.02));border:1px solid rgba(255,223,110,.08);padding:10px;border-radius:10px}
+    .kbd{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px;border:1px solid rgba(255,255,255,0.02);font-family:monospace}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.03);cursor:pointer;font-weight:700}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#0b1220;border:none}
+    pre{white-space:pre-wrap;background:rgba(255,255,255,0.02);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);overflow:auto}
+    footer{opacity:.7;font-size:13px;padding:30px 0 60px}
 
-    /* === Mobile-only fixed "Back to lessons" button (avoids TTS overlap) === */
+    /* TTS bar styles (responsive + compact support) */
+    .tts-bar{position:fixed;right:18px;bottom:18px;z-index:9999;background:rgba(0,0,0,0.72);color:#00ffcc;padding:10px 12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.6);font-family:'Share Tech Mono',monospace;display:flex;gap:8px;align-items:center;backdrop-filter:blur(6px);min-width:260px;transition:all .16s ease}
+    .tts-bar button{background:linear-gradient(45deg,#ff0080,#7928ca);border:none;color:#fff;padding:8px 10px;border-radius:8px;font-weight:700;cursor:pointer}
+    .tts-bar select,.tts-bar input[type="range"]{background:rgba(255,255,255,0.06);color:#00ffcc;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:8px;font-family:inherit}
+    .tts-highlight{background:rgba(0,255,200,0.12);padding:0 2px;border-radius:3px;transition:background .12s ease}
+    @media (max-width:600px){.tts-bar{left:50%;transform:translateX(-50%);right:auto;bottom:12px;min-width:88%}}
+    /* Mobile-only fixed "Back to lessons" button (avoids overlapping TTS) */
     .mobile-back-btn { display: none; }
-
-    /* Show on tablet & mobile only */
     @media (max-width: 1024px) {
       .mobile-back-btn {
         display: inline-flex;
@@ -96,9 +57,8 @@
         gap: 8px;
         position: fixed;
         left: 16px;
-        /* Default bottom offset (keeps clear of usual UI) */
         bottom: calc(14px + env(safe-area-inset-bottom));
-        z-index: 9998; /* below the TTS (tts-bar uses 9999) so TTS remains fully reachable if they ever overlap */
+        z-index: 9998;
         text-decoration: none;
         padding: 10px 14px;
         border-radius: 999px;
@@ -112,553 +72,245 @@
         border: 1px solid rgba(0,0,0,0.06);
         backdrop-filter: blur(6px);
       }
-
       .mobile-back-btn:active { transform: translateY(1px); }
       .mobile-back-btn:focus { outline: 3px solid rgba(21,156,228,0.18); outline-offset: 2px; }
-
       .mobile-back-icon { font-size: 16px; line-height: 1; }
       .mobile-back-text { font-size: 14px; letter-spacing: .01em; }
-
-      /* Phones & very narrow widths: TTS centers at bottom — lift the back button above the TTS so there's no overlap */
       @media (max-width: 820px) {
-        .mobile-back-btn {
-          /* 70px is a safe vertical gap above the TTS pill — tweak if your TTS height changes */
-          bottom: calc(14px + env(safe-area-inset-bottom) + 70px);
-          left: 12px;
-          padding: 9px 12px;
-        }
+        .mobile-back-btn { bottom: calc(14px + env(safe-area-inset-bottom) + 70px); left: 12px; padding: 9px 12px; }
       }
-
-      /* Extra nudge for extra-small screens */
       @media (max-width: 420px) {
         .mobile-back-btn { left: 10px; padding: 9px 12px; bottom: calc(8px + env(safe-area-inset-bottom) + 70px); }
       }
     }
 
-    /* --- Responsive TTS: compact mode & transitions --- */
-    .tts-bar {
-      transition: all .18s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Collapse button - small & always visible (but unobtrusive) */
+    /* Collapse control for compact mode */
     #ttsCollapse {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 38px;
-      height: 38px;
-      padding: 6px 8px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-weight: 700;
-      background: linear-gradient(45deg,#ff0080,#7928ca);
-      color: #fff;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:38px;
+      height:38px;
+      padding:6px 8px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      background:linear-gradient(45deg,#ff0080,#7928ca);
+      color:#fff;
     }
+    .tts-controls{display:flex;gap:8px;align-items:center;flex-wrap:nowrap}
+    .tts-bar[data-compact="true"]{min-width:58px;max-width:58px;padding:6px;border-radius:999px;gap:0}
+    .tts-bar[data-compact="true"] .tts-controls{display:none}
+    .tts-bar[data-compact="true"] #ttsCollapse{border-radius:999px;padding:8px;width:38px;height:38px}
+    .tts-bar:focus-within{outline:3px solid rgba(21,156,228,0.12);outline-offset:2px}
 
-    /* Wrap to hide/show controls when compact */
-    .tts-controls { display: flex; gap: 8px; align-items: center; flex-wrap: nowrap; }
-
-    /* --- SMALL SCREENS: transform into centered pill with compact option --- */
-    @media (max-width: 820px) {
-      .tts-bar {
-        left: 50%;
-        transform: translateX(-50%);
-        right: auto;
-        bottom: 12px;
-        min-width: 88%;
-        max-width: 92%;
-        padding: 8px 10px;
-        border-radius: 14px;
-      }
-
-      /* By default on small screens, show compact state — user can expand */
-      .tts-bar[data-compact="true"] {
-        min-width: 58px;
-        max-width: 58px;
-        padding: 6px;
-        border-radius: 999px;
-        gap: 0;
-      }
-
-      /* When compact, hide the control group but keep the collapse button visible */
-      .tts-bar[data-compact="true"] .tts-controls {
-        display: none;
-      }
-
-      /* Small screen: make labels smaller and controls tighter when expanded */
-      .tts-bar .label { display:none; } /* hide text labels to save space */
-      .tts-bar select, .tts-bar input[type="range"] { min-width: 36px; padding:4px; }
-      .tts-bar button { min-width: 36px; padding:6px 8px; font-size:0.95rem; }
-    }
-
-    /* Tablet / medium screens (larger than phone) - default expanded but still responsive */
-    @media (min-width: 821px) and (max-width: 1024px) {
-      .tts-bar { left: auto; right: 18px; bottom: 18px; min-width: 320px; transform:none; }
-      .tts-bar[data-compact="true"] { min-width: 58px; max-width: 58px; padding: 6px; }
-      .tts-bar[data-compact="true"] .tts-controls { display: none; }
-    }
-
-    /* Focus styling for keyboard users */
-    .tts-bar:focus-within { outline: 3px solid rgba(21,156,228,0.12); outline-offset: 2px; }
-
-    /* When compact, make collapse button visually center-aligned */
-    .tts-bar[data-compact="true"] #ttsCollapse { border-radius: 999px; padding: 8px; width: 38px; height: 38px; }
-
+    /* small layout tweaks for narrow screens */
+    @media (max-width:420px){ .container{padding:12px} .title{font-size:22px} }
   </style>
 </head>
 <body>
   <header>
     <div class="container header-row">
       <div style="display:flex;align-items:center;gap:12px">
-        <span class="badge">Lesson 2</span>
+        <span class="badge">SOC 2</span>
         <div>
-          <strong>Introduction to Linux — Comprehensive Module</strong>
-          <div class="small muted">Kernel, distributions, CLI, editors, networking, security, labs, cheat-sheets, TTS and quizzes.</div>
+          <strong>Chapter 2 — SOC Activities, Tools & Workflow</strong>
+          <div class="small muted">Operations cycle • Threats • IoCs • TI • Hunting • Team tiers</div>
         </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn ghost" id="toggleTheme" title="Toggle contrast">🌗 Theme</button>
-        <button class="btn" id="downloadNotes">📥 Download Notes</button>
-        <button class="btn primary" id="copyMarkdown">📋 Copy Markdown</button>
+      <div>
+        <button class="btn" id="toggleTheme" title="Toggle theme">🌗 Theme</button>
       </div>
     </div>
   </header>
 
-  <main class="container two-col">
-    <article>
+  <main class="container">
+    <article class="lesson-content">
+
       <section class="hero card">
-        <h1 class="title">Introduction to Linux — Deep Dive</h1>
-        <p class="subtitle">A thorough, practical lesson covering fundamentals, internals, administration tasks, networking, security hardening, and multiple hands-on labs for learners at beginner to intermediate levels.</p>
+        <h1 class="title">Chapter 2: SOC Activities, Tools, and Workflow</h1>
+        <p class="subtitle">Day-to-day SOC work, the cybersecurity operations cycle, IoCs, threat intelligence, hunting, team tiers, and core defensive principles.</p>
         <div class="chips">
-          <span class="chip">Kernel internals</span>
-          <span class="chip">Shell & scripting</span>
-          <span class="chip">Editors</span>
-          <span class="chip">Package management</span>
-          <span class="chip">Networking</span>
+          <span class="chip">SOC</span><span class="chip">Workflow</span><span class="chip">IoC</span><span class="chip">Threat Intel</span><span class="chip">Hunting</span>
         </div>
       </section>
 
-      <!-- Extensive content -->
-      <section class="card long-read" id="overview">
-        <h2 class="section-title">Module overview</h2>
-        <p>This module is intentionally comprehensive. It begins with core concepts (what an OS is, what Linux is), moves into architecture and kernel topics, then covers the command-line and essential tools, finishes with real-world labs and security best-practices, and provides a cheat-sheet plus a glossary for quick reference.</p>
+      <section class="card" aria-labelledby="toc">
+        <h2 id="toc" class="section-title">Table of Content</h2>
+        <ol class="list">
+          <li>The SOC Workflow (Operations Cycle)</li>
+          <li>Phases: Preparation, Detection, Response</li>
+          <li>Post-incident activities & learning</li>
+          <li>Threats, attack layers & IoCs</li>
+          <li>Threat Intelligence & Threat Hunting</li>
+          <li>SOC team tiers and responsibilities</li>
+          <li>Core principles: CIA, PoLP, Defense-in-Depth</li>
+        </ol>
+      </section>
 
-        <h3>Learning goals</h3>
+      <section class="card long-read" aria-labelledby="workflow">
+        <h2 id="workflow" class="section-title">2.1 The Cybersecurity Operations Cycle (The SOC Workflow)</h2>
+        <p>This chapter focuses on the day-to-day work of the Security Operations Center, detailing the cycle of threat management and the essential technology that powers it.</p>
+
+        <p class="small muted">The SOC's work is a continuous cycle designed to improve security over time. The cycle can be broken into three main phases: Preparation & Prevention (Proactive), Detection & Analysis (Monitoring), and Response & Recovery (Reactive).</p>
+
+        <h3>1) Preparation and Prevention (Proactive)</h3>
         <ul class="list">
-          <li>Understand Linux system components and architecture.</li>
-          <li>Use the shell fluently to manage files, processes and services.</li>
-          <li>Configure basic networking and diagnose common issues.</li>
-          <li>Create and run scripts to automate tasks.</li>
-          <li>Harden a basic server and understand detection/response steps for incidents.</li>
-          <li>Build safe lab practices to test tools and scenarios.</li>
+          <li><strong>Vulnerability Management:</strong> Routine scans to identify weaknesses; prioritize patching and remediation.</li>
+          <li><strong>Threat Intelligence (ThreatFeed):</strong> Collect and analyze data on new attack trends, malware signatures, and attacker TTPs to update defenses before attacks occur.</li>
+          <li><strong>Maintenance:</strong> Ensure security tools (firewalls, EDR, SIEM) are updated, configured, and ingesting logs correctly.</li>
+          <li><strong>Policy & Control Review:</strong> Test and verify that security policies (access control, encryption) are enforced.</li>
+        </ul>
+
+        <h3>2) Detection and Analysis (Monitoring)</h3>
+        <ul class="list">
+          <li><strong>Log Aggregation & Correlation:</strong> Collect events in the SIEM and correlate unrelated events to spot attack patterns.</li>
+          <li><strong>Alert Triage & Prioritization:</strong> Tier 1 validates alerts, filters false positives, assigns severity and context.</li>
+          <li><strong>Deep Investigation:</strong> Tier 2/3 analyze confirmed incidents to determine scope, root cause, and attacker objectives.</li>
+        </ul>
+
+        <h3>3) Response and Recovery (Reactive)</h3>
+        <ul class="list">
+          <li><strong>Containment:</strong> Isolate systems, segment networks, revoke credentials to stop spread — time-critical.</li>
+          <li><strong>Eradication:</strong> Remove threats (delete malware, reimage systems, remove persistence).</li>
+          <li><strong>Recovery & Remediation:</strong> Restore operations from clean backups and apply fixes/config changes to close exploited gaps.</li>
+        </ul>
+
+        <h3>4) Post-Incident Activities (Learning)</h3>
+        <p>This reactive phase feeds back into Preparation & Prevention.</p>
+        <ul class="list">
+          <li><strong>Documentation & Reporting:</strong> Record timeline, IoCs, actions taken and evidence.</li>
+          <li><strong>Lessons Learned Review:</strong> Blameless post-mortem to identify detection/process gaps.</li>
+          <li><strong>Security Control Enhancement:</strong> Create new detection rules, recommend patches or architecture changes.</li>
         </ul>
       </section>
 
-      <section class="card long-read" id="osbasics">
-        <h2 class="section-title">1 — Operating system fundamentals (expanded)</h2>
-        <p>An operating system mediates access to hardware and provides essential abstractions: processes, threads, files, and device I/O. Linux follows classical Unix design principles with small composable tools and a strong textual configuration model.</p>
+      <section class="card long-read" aria-labelledby="threats">
+        <h2 id="threats" class="section-title">2.2 Understanding Cyber Threats, IoCs, and Attack Methodology</h2>
+        <p>To execute the workflow, analysts must understand the adversary and the attack lifecycle.</p>
 
-        <h3>Processes and threads</h3>
-        <p>Processes are isolated execution contexts with private virtual memory; threads are execution paths within a process sharing memory. The kernel scheduler assigns CPU time using priorities and fairness heuristics, and modern kernels support multi-core scheduling (SMP).</p>
+        <h3>Define Cyber Threats & Attacks</h3>
+        <p><strong>Cyber Threat:</strong> Potential danger that could exploit a vulnerability. <strong>Cyber Attack:</strong> Deliberate execution of a threat to damage, disrupt, or gain unauthorized access.</p>
 
-        <h3>Memory management details</h3>
-        <p>Linux uses virtual memory with page tables, and employs demand paging. Swap space allows the kernel to offload inactive pages to disk under memory pressure. Techniques like copy-on-write (fork/exec) improve efficiency for duplicated processes.</p>
+        <h3>Network, Host, and Application-Level Attacks</h3>
 
-        <h3>Filesystems and persistence</h3>
-        <p>Linux supports many filesystems: ext4 (stable general-purpose), XFS (large files/throughput), btrfs (copy-on-write snapshots), and ZFS (advanced features). Mount options, fstab, and UUIDs control how volumes attach at boot. Understanding FS mounting, permissions, and journaling properties is essential for admins.</p>
+        <h4>1. Network-Level Attacks 🌐</h4>
+        <p>Targets infrastructure (OSI Layers 3–4):</p>
+        <ul class="list">
+          <li><strong>DDoS:</strong> Overwhelm services (SYN flood, UDP flood, amplification like DNS/NTP).</li>
+          <li><strong>MiTM:</strong> Intercept or alter communications.</li>
+        </ul>
 
-        <div class="explain">
-          <strong>Admin tip:</strong> Always test backups and snapshot restore workflows — backups that haven't been validated can be worthless in a crisis.
+        <h4>2. Host-Level Attacks 💻</h4>
+        <ul class="list">
+          <li><strong>Malware & Ransomware:</strong> Encrypt or control endpoints.</li>
+          <li><strong>Privilege Escalation:</strong> Gain elevated permissions on a host.</li>
+        </ul>
+
+        <h4>3. Application-Level Attacks ⚙️</h4>
+        <ul class="list">
+          <li><strong>SQL Injection (SQLi):</strong> Inject SQL to manipulate databases.</li>
+          <li><strong>XSS:</strong> Inject client-side scripts into pages viewed by users.</li>
+          <li><strong>Zero-Day Exploits:</strong> Use unknown vendor vulnerabilities.</li>
+          <li><strong>App-level DDoS:</strong> HTTP GET/POST floods, Slowloris, recursive request attacks.</li>
+        </ul>
+
+        <h3>Indicators of Compromise (IoCs)</h3>
+        <p>IoCs are forensic artifacts that indicate a breach. They guide containment and detection updates.</p>
+        <table class="list" style="border:none;">
+          <tbody>
+            <tr><td><strong>Category</strong></td><td><strong>Example</strong></td><td><strong>Analyst Action</strong></td></tr>
+            <tr><td>File</td><td>File hash (SHA256)</td><td>Blacklist hash on EDR</td></tr>
+            <tr><td>Network</td><td>Malicious IP</td><td>Block at firewall/proxy</td></tr>
+            <tr><td>Host</td><td>Unusual registry key</td><td>Investigate process & remove persistence</td></tr>
+            <tr><td>Data</td><td>Abnormal outbound traffic</td><td>Review logs & quarantine host</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Attacker’s Methodology (Cyber Kill Chain)</h3>
+        <ul class="list">
+          <li>Reconnaissance</li>
+          <li>Weaponization</li>
+          <li>Delivery</li>
+          <li>Exploitation</li>
+          <li>Installation</li>
+          <li>Command & Control (C2)</li>
+          <li>Actions on Objectives (data theft, destruction, fraud)</li>
+        </ul>
+      </section>
+
+      <section class="card long-read" aria-labelledby="ti">
+        <h2 id="ti" class="section-title">2.4 Threat Intelligence (TI) and Threat Hunting</h2>
+
+        <h3>2.4.1 Defining Threat Intelligence (TI)</h3>
+        <p><strong>Definition:</strong> Context-rich, processed information about adversaries, TTPs and capabilities used to inform decisions.</p>
+        <p><strong>Intelligence Cycle:</strong> Direction → Collection → Processing → Analysis → Dissemination.</p>
+        <p><strong>Types of Intelligence:</strong></p>
+        <ul class="list">
+          <li><strong>Strategic:</strong> Executive-level risks and trends.</li>
+          <li><strong>Tactical:</strong> TTPs and techniques for defenders.</li>
+          <li><strong>Operational:</strong> Imminent or ongoing campaign details.</li>
+          <li><strong>Technical:</strong> Raw IoCs (IPs, hashes, domains).</li>
+        </ul>
+
+        <h3>2.4.2 The Role of Threat Hunting</h3>
+        <p><strong>Definition:</strong> Proactive search for undetected threats assuming a breach may exist.</p>
+        <p><strong>Hunting Methodology:</strong></p>
+        <ul class="list">
+          <li>Hypothesis generation based on TI.</li>
+          <li>Investigation/data mining via SIEM/EDR.</li>
+          <li>Discovery of new IoCs/TTPs.</li>
+          <li>Create new detections and close the loop back to prevention.</li>
+        </ul>
+      </section>
+
+      <section class="card long-read" aria-labelledby="tiers">
+        <h2 id="tiers" class="section-title">2.5 SOC Team Structure and Tiers</h2>
+        <p>An effective SOC separates responsibilities across tiers to manage volume and complexity.</p>
+
+        <h3>Tier 1: Alert Triage & Monitoring</h3>
+        <p><strong>Focus:</strong> Continuous SIEM monitoring. <strong>Tasks:</strong> Validate alerts, gather initial data, escalate. <strong>Skills:</strong> SIEM familiarity, basic incident handling.</p>
+
+        <h3>Tier 2: Incident Response & Deep Investigation</h3>
+        <p><strong>Focus:</strong> Handle escalations. <strong>Tasks:</strong> Full IR procedures, scope compromise, basic forensics. <strong>Skills:</strong> Malware analysis, scripting, networking.</p>
+
+        <h3>Tier 3: Threat Hunting & Engineering</h3>
+        <p><strong>Focus:</strong> Proactive detection and tool engineering. <strong>Tasks:</strong> Hunting, custom correlation rules, tool tuning. <strong>Skills:</strong> Advanced scripting, reverse engineering.</p>
+      </section>
+
+      <section class="card long-read" aria-labelledby="principles">
+        <h2 id="principles" class="section-title">Core Principles: CIA, PoLP, Defense-in-Depth</h2>
+
+        <h3>Confidentiality, Integrity, Availability (CIA)</h3>
+        <p>
+          <strong>Confidentiality:</strong> Prevent unauthorized disclosure (encryption, ACLs, DLP).<br>
+          <strong>Integrity:</strong> Ensure data is accurate and unmodified (hashing, change management).<br>
+          <strong>Availability:</strong> Ensure authorized access (redundancy, patching, failover).
+        </p>
+
+        <h3>Principle of Least Privilege (PoLP)</h3>
+        <p>Grant only the minimum permissions required. PoLP limits lateral movement and reduces impact of credential compromise.</p>
+
+        <h3>Defense-in-Depth</h3>
+        <p>Layer multiple independent controls so that if one fails the others provide detection or prevention. Examples: firewall + EDR + network segmentation + monitoring.</p>
+      </section>
+
+      <section class="card" aria-labelledby="download">
+        <h2 id="download" class="section-title">Download / Export</h2>
+        <p class="small muted">Download chapter notes or copy Markdown for your LMS.</p>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <button class="btn primary" id="downloadNotes">📥 Download Notes (Text)</button>
+          <button class="btn" id="copyMarkdown">📋 Copy Markdown</button>
         </div>
-      </section>
-
-      <section class="card long-read" id="kernelinternals">
-        <h2 class="section-title">2 — Kernel internals & modules</h2>
-        <p>The Linux kernel includes subsystems: process scheduler, VFS (virtual filesystem), network stack, memory manager, and driver framework. Kernel modules allow drivers and features to be loaded/unloaded at runtime.</p>
-
-        <h3>Practical module commands</h3>
-        <pre>
-# List loaded kernel modules
-lsmod
-
-# Get module details
-modinfo <module_name>
-
-# Load and unload
-sudo modprobe <module_name>
-sudo modprobe -r <module_name>
-        </pre>
-
-        <h3>Sysctl tuning</h3>
-        <p>Use <code>sysctl</code> to adjust kernel parameters at runtime (e.g., networking buffers, swappiness).</p>
-        <pre>
-# View a parameter
-sysctl net.ipv4.ip_forward
-
-# Temporarily change
-sudo sysctl -w net.ipv4.ip_forward=1
-
-# Persist in /etc/sysctl.conf
-echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
-        </pre>
-
-        <div class="explain small muted">Careful: kernel tuning affects system stability; test changes in staging first.</div>
-      </section>
-
-      <section class="card long-read" id="userland">
-        <h2 class="section-title">3 — Userland: shells, utilities, init systems</h2>
-        <h3>Shells</h3>
-        <p>Bash is the ubiquitous shell — learn scripting basics: variables, conditionals, loops, functions and I/O redirection. Zsh offers more features and ergonomics; Fish targets a friendlier UX.</p>
-
-        <h3>Init and service managers</h3>
-        <p>Most modern distributions use systemd which manages services, sockets, and mounts. Important systemd commands:</p>
-        <pre>
-# Check status of a service
-sudo systemctl status nginx
-
-# Start/stop/restart
-sudo systemctl start|stop|restart nginx
-
-# Enable at boot
-sudo systemctl enable nginx
-        </pre>
-
-        <h3>System logs</h3>
-        <p>Journalctl reads systemd logs. Traditional logs in /var/log are still used by some services (e.g., Apache).</p>
-        <pre>
-# Show recent system logs
-sudo journalctl -n 200 --no-pager
-
-# Follow logs in real-time
-sudo journalctl -f -u ssh
-        </pre>
-      </section>
-
-      <section class="card long-read" id="fileperm">
-        <h2 class="section-title">4 — Files, permissions and ACLs</h2>
-        <p>Unix permissions are triads: owner, group, others with read/write/execute bits. Use <code>chmod</code>, <code>chown</code>, and <code>chgrp</code> to manage them. For more granular control, use POSIX ACLs via <code>getfacl</code>/<code>setfacl</code>.</p>
-        <pre>
-# Show permissions
-ls -la /etc/passwd
-
-# Change owner
-sudo chown root:root /opt/myapp
-
-# Set ACL for a user
-sudo setfacl -m u:alice:rwx /srv/shared
-        </pre>
-        <div class="explain">Remember: granting write access to unknown users is a common security mistake. Apply least privilege.</div>
-      </section>
-
-      <section class="card long-read" id="processes">
-        <h2 class="section-title">5 — Processes, jobs and scheduling</h2>
-        <p>Use <code>ps</code>, <code>top</code>, <code>htop</code>, and <code>nice</code>/<code>renice</code> to view and manage processes. Background jobs are controlled with <code>&</code>, <code>fg</code>, and <code>bg</code>.</p>
-        <pre>
-# List all processes
-ps aux | less
-
-# Interactive top-like monitor
-htop
-
-# Set scheduler niceness
-sudo nice -n 10 /usr/bin/longtask
-        </pre>
-        <div class="explain">Troubleshoot high CPU or memory by checking process trees and open files (see <code>lsof</code>).</div>
-      </section>
-
-      <section class="card long-read" id="networking">
-        <h2 class="section-title">6 — Networking fundamentals</h2>
-        <p>Key commands: <code>ip</code> replaces older <code>ifconfig</code>. Manage routes, interfaces and examine open sockets.</p>
-        <pre>
-# Show interfaces
-ip a
-
-# Show routing table
-ip route
-
-# Check listening ports
-ss -tuln
-        </pre>
-
-        <h3>DNS & resolution</h3>
-        <p>Check <code>/etc/resolv.conf</code>, use <code>dig</code> or <code>nslookup</code> for diagnostics.</p>
-
-        <h3>Firewall</h3>
-        <p>Use nftables (modern) or iptables. Example nftables snippet:</p>
-        <pre>
-sudo nft add table inet myfilter
-sudo nft add chain inet myfilter input { type filter hook input priority 0 \; }
-sudo nft add rule inet myfilter input tcp dport 22 accept
-        </pre>
-      </section>
-
-      <section class="card long-read" id="package">
-        <h2 class="section-title">7 — Package management</h2>
-        <p>Package managers install, update and remove software. Example commands for apt (Debian/Ubuntu) and dnf (Fedora):</p>
-        <pre>
-# Debian / Ubuntu
-sudo apt update
-sudo apt install nginx
-sudo apt upgrade
-
-# Fedora / RHEL
-sudo dnf update
-sudo dnf install httpd
-        </pre>
-        <div class="explain small muted">Use package signing and official repositories to reduce supply-chain risks. Consider tools like apt pinning or repo proxies for enterprise control.</div>
-      </section>
-
-      <section class="card long-read" id="scripting">
-        <h2 class="section-title">8 — Shell scripting fundamentals</h2>
-        <p>Basic script structure with safety checks and logging:</p>
-        <pre>
-#!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
-
-log() { echo "$(date --iso-8601=seconds) - $*"; }
-
-main() {
-  log "Starting job"
-  # your commands here
-  log "Done"
-}
-
-main "$@"
-        </pre>
-        <div class="explain">Use <code>set -euo pipefail</code> to reduce silent failures and make your scripts robust. For complex automation, consider Python or Ansible.</div>
-      </section>
-
-      <section class="card long-read" id="security">
-        <h2 class="section-title">9 — Basic Linux security & hardening</h2>
-        <p>Security is layered: network controls, host hardening, identity & access management, monitoring and incident response.</p>
-
-        <h3>Quick hardening checklist</h3>
-        <ul class="list">
-          <li>Keep packages updated and enable unattended security updates where appropriate.</li>
-          <li>Use SSH keys and disable password auth for SSH for admin accounts: <code>/etc/ssh/sshd_config</code>.</li>
-          <li>Disable or firewall off unnecessary services.</li>
-          <li>Install and configure auditd and centralized logging/monitoring (ELK/Graylog/Datadog).</li>
-          <li>Enable SELinux or AppArmor where available and enforce policies.</li>
-          <li>Use disk encryption (LUKS) for sensitive hosts and backups.</li>
-        </ul>
-
-        <h3>Detecting compromise</h3>
-        <p>Watch for: unexpected processes, unusual network connections, new user accounts, modified binaries, unexpected scheduled jobs, and changes to firewall rules. EDR/OSQuery/Velociraptor are useful for endpoint detection.</p>
-      </section>
-
-      <section class="card long-read" id="backups">
-        <h2 class="section-title">10 — Backups and recovery</h2>
-        <p>Backups are a core part of reliability and security. Use multiple retention points, test restores regularly, and keep copies offline or immutable to withstand ransomware.</p>
-        <pre>
-# Simple tar-based backup
-tar -czvf /backup/home-$(date +%F).tar.gz /home
-
-# Use rsync for remote backups
-rsync -avz /srv/data backup@backupserver:/backups/
-        </pre>
-        <div class="explain">Consider dedicated backup software (Borg, Restic, Duplicity) which support deduplication and encryption.</div>
-      </section>
-
-      <section class="card long-read" id="labs">
-        <h2 class="section-title">11 — Hands-on labs (step-by-step)</h2>
-
-        <h3>Lab A — Create a VM and install Ubuntu Server</h3>
-        <ol class="list">
-          <li>Download the Ubuntu Server ISO and create a VM (VirtualBox / VMware / QEMU).</li>
-          <li>Allocate at least 2GB RAM and 20GB disk for practice.</li>
-          <li>Install SSH server during setup to enable remote access.</li>
-          <li>After boot, create a non-root user and enable sudo.</li>
-        </ol>
-
-        <h3>Lab B — Build a simple web server</h3>
-        <ol class="list">
-          <li>Install Nginx: <code>sudo apt install nginx</code>.</li>
-          <li>Place a test file in <code>/var/www/html/index.html</code> and reload service.</li>
-          <li>Check with <code>curl http://localhost</code> from the VM and from the host (adjust firewall).</li>
-        </ol>
-
-        <h3>Lab C — Basic monitoring pipeline</h3>
-        <ol class="list">
-          <li>Install Filebeat or collectd to ship logs to an ELK/Opensearch stack (local or cloud trial).</li>
-          <li>Create a small dashboard showing CPU, memory, and nginx access logs.</li>
-        </ol>
-
-        <div class="explain small-muted">All labs should be run in isolated networks or VMs. Take snapshots before trying risky commands and keep notes of steps performed.</div>
-      </section>
-
-      <section class="card long-read" id="troubleshooting">
-        <h2 class="section-title">12 — Troubleshooting recipes</h2>
-        <p>Common problems and how to triage:</p>
-        <ul class="list">
-          <li><strong>High CPU:</strong> use <code>top</code> or <code>htop</code> to find culprit processes; check process tree <code>pstree -p</code>.</li>
-          <li><strong>Disk full:</strong> <code>df -h</code> then <code>du -sh *</code> to find large directories; check <code>/var/log</code>.</li>
-          <li><strong>Service failing to start:</strong> check <code>sudo journalctl -u servicename -b</code> and <code>systemctl status servicename</code>.</li>
-          <li><strong>Network unreachable:</strong> verify <code>ip a</code>, <code>ip route</code>, and test with <code>ping</code> and <code>traceroute</code>.</li>
-        </ul>
-      </section>
-
-      <section class="card long-read" id="faq">
-        <h2 class="section-title">13 — FAQ & common pitfalls</h2>
-        <dl class="faq">
-          <dt>Q: Should I use sudo or su?</dt>
-          <dd>A: Prefer sudo for single commands to limit root shell exposure. Use <code>sudo -i</code> if you need a persistent root environment.</dd>
-
-          <dt>Q: How to safely edit system files?</dt>
-          <dd>A: Use <code>sudo cp /etc/file /etc/file.bak</code> before editing. Use editors like vim or nano and validate syntax (e.g., <code>sshd -t</code> after updating sshd_config).</dd>
-
-          <dt>Q: Is Linux hard to learn?</dt>
-          <dd>A: It has a learning curve, but learning the core commands and patterns unlocks powerful automation and troubleshooting skills. Start with simple tasks and build up.</dd>
-        </dl>
-      </section>
-
-      <section class="card long-read" id="glossary">
-        <h2 class="section-title">14 — Glossary (quick reference)</h2>
-        <dl class="glossary">
-          <dt>Kernel</dt><dd>Core part of the OS that manages hardware and system resources.</dd>
-          <dt>Daemon</dt><dd>Background service process (e.g., sshd, cron).</dd>
-          <dt>Package manager</dt><dd>Tool to install/remove/update software (apt, dnf, pacman).</dd>
-          <dt>Process</dt><dd>Running instance of a program with its own memory space.</dd>
-          <dt>Mount</dt><dd>Attach filesystem to the directory tree (mount point).</dd>
-        </dl>
-      </section>
-
-      <section class="card long-read" id="cheatsheet">
-        <h2 class="section-title">15 — Cheat sheet (quick commands)</h2>
-        <pre>
-# Files & Navigation
-ls -la
-cd /path/to/dir
-pwd
-
-# File ops
-cp src dst
-mv src dst
-rm -i file
-
-# Permissions & ownership
-chmod 644 file
-chown user:group file
-
-# Processes
-ps aux | grep app
-top
-htop
-
-# Networking
-ip a
-ss -tuln
-ping 8.8.8.8
-traceroute example.com
-
-# Systemd & logs
-sudo systemctl status nginx
-sudo journalctl -u nginx -f
-
-# Disk
-df -h
-du -sh /var/log/*
-
-# Archival & backup
-tar -czvf backup.tgz folder/
-rsync -avz /srv/data backup:/backups/
-
-# Scripting
-#!/usr/bin/env bash
-set -euo pipefail
-
-# Package (Debian)
-sudo apt update && sudo apt install <package>
-        </pre>
-      </section>
-
-      <section class="card long-read" id="advanced">
-        <h2 class="section-title">16 — Advanced topics (paths to continue)</h2>
-        <p>Once comfortable with basics, explore:</p>
-        <ul class="list">
-          <li>Containers & orchestration: Docker, Podman, Kubernetes.</li>
-          <li>Infrastructure as Code: Terraform, Ansible.</li>
-          <li>Kernel tuning & eBPF for observability (bcc, bpftrace).</li>
-          <li>Security engineering: SELinux/AppArmor policies, OS hardening guides, threat hunting.</li>
-          <li>Performance: profiling CPU/memory I/O (perf, iostat, pidstat).</li>
-        </ul>
-        <div class="explain">These areas are deep — pick one and build a project (e.g., deploy a containerized web app with CI/CD pipeline) to learn holistically.</div>
-      </section>
-
-      <section class="card long-read" id="closing">
-        <h2 class="section-title">17 — Final notes & next steps</h2>
-        <p>Practice is the fastest path to mastery. Build small projects: host a static site, automate backups, or create monitoring dashboards. Keep notes of commands and failures — they become your personal reference.</p>
-        <div class="explain">If you want, export the markdown copy (button above) and import into your learning notes or LMS.</div>
       </section>
 
     </article>
 
-    <aside class="sidebar">
-      <div class="card">
-        <h3>Quick Links</h3>
-        <ul class="list">
-          <li><a href="#overview">Module overview</a></li>
-          <li><a href="#osbasics">OS fundamentals</a></li>
-          <li><a href="#kernelinternals">Kernel internals</a></li>
-          <li><a href="#userland">Shell & systemd</a></li>
-          <li><a href="#networking">Networking</a></li>
-          <li><a href="#labs">Hands-on labs</a></li>
-          <li><a href="#cheatsheet">Cheat sheet</a></li>
-          <li><a href="#advanced">Advanced topics</a></li>
-        </ul>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>Mini Quiz (self-check — 10 Q)</h3>
-        <div class="q-card">
-          <h4>1) Which command shows currently listening TCP ports?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="mq1" value="a"> ss -tuln</label>
-            <label><input type="radio" name="mq1" value="b"> ls -la</label>
-            <label><input type="radio" name="mq1" value="c"> top</label>
-          </div>
-        </div>
-
-        <div class="q-card">
-          <h4>2) Which file controls systemd units autostart at boot?</h4>
-          <div class="q-options">
-            <label><input type="radio" name="mq2" value="a"> /etc/fstab</label>
-            <label><input type="radio" name="mq2" value="b"> /etc/systemd/system</label>
-            <label><input type="radio" name="mq2" value="c"> /var/log</label>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:8px">
-          <button class="btn primary" id="gradeMini">Grade Mini Quiz</button>
-          <button class="btn" id="resetMini">Reset</button>
-        </div>
-
-        <div id="miniResult" style="margin-top:12px" class="small muted"></div>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>Lab safety reminder</h3>
-        <p class="small muted">Always run experiments on non-production systems with snapshots enabled. Never test malware or intrusive network scans on networks you do not own or have written permission to test.</p>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h3>Glossary (mini)</h3>
-        <ul class="list">
-          <li><strong>SSH:</strong> Secure Shell, remote command execution protocol.</li>
-          <li><strong>MFA:</strong> Multi-factor authentication — strongly recommended for admin accounts.</li>
-          <li><strong>EDR:</strong> Endpoint detection and response tools for threat detection.</li>
-        </ul>
-      </div>
-    </aside>
+    <footer class="container">
+      <p>© Learning Playground – SOC 2 • Chapter 2: SOC Activities, Tools & Workflow</p>
+    </footer>
   </main>
-
-  <footer class="container">
-    <p class="small muted">© Learning Playground — Linux Module • Use for training and authorized labs only</p>
-  </footer>
 
   <!-- Mobile Back button (mobile & tablet only) -->
   <a href="cyber-index.html" class="mobile-back-btn" aria-label="Back to lessons (mobile)">
@@ -666,11 +318,11 @@ sudo apt update && sudo apt install <package>
     <span class="mobile-back-text">Lessons</span>
   </a>
 
-  <!-- TTS Control Bar (responsive: collapses on small screens) -->
-  <div id="ttsBar" class="tts-bar" role="region" aria-label="Text to Speech Controls" data-compact="false">
-    <button id="ttsCollapse" class="btn small" aria-label="Collapse TTS" title="Collapse">≡</button>
+  <!-- TTS Bar (responsive + collapsible) -->
+  <div id="ttsBar" class="tts-bar" aria-hidden="false" data-compact="false" role="region" aria-label="Text to Speech Controls">
+    <button id="ttsCollapse" title="Collapse/Expand TTS">≡</button>
 
-    <div class="tts-controls">
+    <div class="tts-controls" aria-hidden="false">
       <button id="ttsPlay" title="Play">▶</button>
       <button id="ttsPause" class="small" title="Pause">⏸</button>
       <button id="ttsStop" class="small" title="Stop">⏹</button>
@@ -690,98 +342,77 @@ sudo apt update && sudo apt install <package>
 
   <script>
     /* Theme toggle */
-    const themeBtn = document.getElementById('toggleTheme');
-    const themeKey = 'lesson2-theme';
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const applyTheme = (mode) => {
-      if (mode === 'light') {
-        document.documentElement.style.setProperty('--bg','#f7f9ff');
-        document.documentElement.style.setProperty('--card','#ffffff');
-        document.documentElement.style.setProperty('--text','#0b1220');
-        document.documentElement.style.setProperty('--muted','#4a5875');
-        document.documentElement.style.setProperty('--glass','rgba(0,0,0,0.03)');
-      } else {
-        document.documentElement.style.setProperty('--bg','#0b1220');
-        document.documentElement.style.setProperty('--card','#111a2e');
-        document.documentElement.style.setProperty('--text','#e7eefc');
-        document.documentElement.style.setProperty('--muted','#8aa0c3');
-        document.documentElement.style.setProperty('--glass','rgba(255,255,255,0.03)');
-      }
-    };
-    const stored = localStorage.getItem(themeKey) || (prefersDark ? 'dark' : 'dark');
-    applyTheme(stored);
-    themeBtn.addEventListener('click', () => {
-      const cur = localStorage.getItem(themeKey) || stored;
-      const next = cur === 'dark' ? 'light' : 'dark';
-      localStorage.setItem(themeKey, next);
-      applyTheme(next);
-    });
+    (function () {
+      const themeBtn = document.getElementById('toggleTheme');
+      const keyTheme = 'soc2-theme';
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const applyTheme = (mode) => {
+        if (mode === 'light') {
+          document.documentElement.style.setProperty('--bg','#f7f9ff');
+          document.documentElement.style.setProperty('--card','#ffffff');
+          document.documentElement.style.setProperty('--text','#0b1220');
+          document.documentElement.style.setProperty('--muted','#4a5875');
+        } else {
+          document.documentElement.style.setProperty('--bg','#0b1220');
+          document.documentElement.style.setProperty('--card','#111a2e');
+          document.documentElement.style.setProperty('--text','#e7eefc');
+          document.documentElement.style.setProperty('--muted','#8aa0c3');
+        }
+      };
+      const storedTheme = localStorage.getItem(keyTheme) || (prefersDark ? 'dark' : 'light');
+      applyTheme(storedTheme);
+      themeBtn.addEventListener('click', () => {
+        const cur = localStorage.getItem(keyTheme) || storedTheme;
+        const next = cur === 'dark' ? 'light' : 'dark';
+        localStorage.setItem(keyTheme, next);
+        applyTheme(next);
+      });
+    })();
 
-    /* Download notes as text */
+    /* Download notes */
     document.getElementById('downloadNotes').addEventListener('click', () => {
-      const nodes = document.querySelectorAll('article h1, article h2, article h3, article p, article li');
+      const title = 'soc2_chapter2_activities_tools_workflow.txt';
+      const nodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content p, .lesson-content li, .lesson-content pre');
       const lines = [];
       nodes.forEach(n => {
         const tag = n.tagName.toLowerCase();
-        const text = n.innerText.trim();
-        if (!text) return;
-        if (tag === 'h1') lines.push('\n' + text + '\n' + '='.repeat(60));
-        else if (tag === 'h2') lines.push('\n' + text + '\n' + '-'.repeat(60));
-        else lines.push(text);
+        if (tag === 'h1' || tag === 'h2') lines.push('\n' + n.innerText + '\n');
+        else lines.push(n.innerText);
       });
-      const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+      const content = lines.join('\n');
+      const blob = new Blob([content], {type:'text/plain'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'Lesson2_Linux_Expanded_Notes.txt'; document.body.appendChild(a); a.click();
-      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 800);
+      const a = document.createElement('a'); a.href = url; a.download = title; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
     });
 
     /* Copy Markdown */
     document.getElementById('copyMarkdown').addEventListener('click', async () => {
-      const nodes = document.querySelectorAll('article h1, article h2, article h3, article p, article li');
+      const nodes = document.querySelectorAll('.lesson-content h1, .lesson-content h2, .lesson-content p, .lesson-content li, .lesson-content pre');
       let md = '';
       nodes.forEach(n => {
         const tag = n.tagName.toLowerCase();
-        const txt = n.innerText.trim();
-        if (!txt) return;
-        if (tag === 'h1') md += `# ${txt}\n\n`;
-        else if (tag === 'h2') md += `## ${txt}\n\n`;
-        else if (tag === 'h3') md += `### ${txt}\n\n`;
-        else if (tag === 'li') md += `- ${txt}\n`;
-        else md += `${txt}\n\n`;
+        if (tag === 'h1') md += `# ${n.innerText}\n\n`;
+        else if (tag === 'h2') md += `## ${n.innerText}\n\n`;
+        else if (tag === 'li') md += `- ${n.innerText}\n`;
+        else if (tag === 'pre') md += '```\n' + n.innerText + '\n```\n\n';
+        else md += `${n.innerText}\n\n`;
       });
       try { await navigator.clipboard.writeText(md); alert('Copied lesson content as Markdown to clipboard.'); }
       catch(e){ alert('Could not copy to clipboard.'); }
     });
 
-    /* Mini Quiz grading */
-    const miniAnswers = {mq1:'a', mq2:'b'};
-    document.getElementById('gradeMini').addEventListener('click', () => {
-      let score = 0, total = 2;
-      const resultEl = document.getElementById('miniResult');
-      for (let i=1;i<=2;i++){
-        const name = 'mq' + i;
-        const sel = document.querySelector(`input[name="${name}"]:checked`);
-        if (sel && sel.value === miniAnswers[name]) score++;
-      }
-      const pct = Math.round((score/total) * 100);
-      resultEl.textContent = `Score: ${score}/${total} (${pct}%)`;
-      resultEl.style.color = pct >= 80 ? '#7ef0c1' : pct >= 60 ? '#ffd66e' : '#ff7e93';
-      document.getElementById('gradeMini').disabled = true;
-    });
-    document.getElementById('resetMini').addEventListener('click', () => {
-      document.querySelectorAll('input[name^="mq"]').forEach(i => i.checked = false);
-      document.getElementById('miniResult').textContent = '';
-      document.getElementById('gradeMini').disabled = false;
-    });
-
-    /* TTS module (Web Speech API) */
+    /* Enhanced responsive TTS for SOC 2 */
     (function () {
-      if (!('speechSynthesis' in window)) {
-        console.warn('TTS not supported in this browser.');
-        const bar = document.getElementById('ttsBar'); if (bar) bar.style.display = 'none';
-        return;
-      }
+      const HOME = 'cyber-index.html';
+      const STORAGE_PREFIX = 'soc2';
+      const AUTO_KEY = STORAGE_PREFIX + '.tts.auto';
+      const COMPACT_KEY = STORAGE_PREFIX + '.ttsCompact';
+      const RESUME_KEY = STORAGE_PREFIX + '.tts.index';
+      const HINT_KEY = STORAGE_PREFIX + '.hint';
+      const MOBILE_BREAK = 820;
 
+      const ttsBar = document.getElementById('ttsBar');
       const playBtn = document.getElementById('ttsPlay');
       const pauseBtn = document.getElementById('ttsPause');
       const stopBtn = document.getElementById('ttsStop');
@@ -789,153 +420,307 @@ sudo apt update && sudo apt install <package>
       const rateInput = document.getElementById('ttsRate');
       const pitchInput = document.getElementById('ttsPitch');
       const autoBtn = document.getElementById('ttsToggleAuto');
+      const collapseBtn = document.getElementById('ttsCollapse');
+      const lesson = document.querySelector('.lesson-content') || document.body;
 
-      const contentRoot = document.querySelector('main') || document.body;
-      let voices = [];
-      let sentences = [];
-      let idx = 0;
+      if (!('speechSynthesis' in window)) {
+        console.warn('TTS not available; hiding TTS bar.');
+        if (ttsBar) ttsBar.style.display = 'none';
+        return;
+      }
 
-      function populateVoices(){
-        voices = speechSynthesis.getVoices();
+      /* inject desktop back button (non-invasive) */
+      (function injectDesktopBack(){
+        if (document.querySelector('.desktop-back-btn')) return;
+        const btn = document.createElement('button');
+        btn.className = 'desktop-back-btn';
+        btn.title = 'Back to lessons';
+        btn.setAttribute('aria-label','Back to lessons');
+        btn.innerText = '◀ Lessons';
+        Object.assign(btn.style, {
+          position: 'fixed',
+          left: '18px',
+          top: '18px',
+          zIndex: 9999,
+          padding: '8px 12px',
+          borderRadius: '10px',
+          border: '1px solid rgba(255,255,255,0.06)',
+          background: 'rgba(255,255,255,0.02)',
+          color: 'var(--text)',
+          fontWeight: 700,
+          cursor: 'pointer',
+          backdropFilter: 'blur(6px)'
+        });
+        document.body.appendChild(btn);
+        function update() { btn.style.display = window.innerWidth <= MOBILE_BREAK ? 'none' : 'inline-flex'; }
+        update();
+        window.addEventListener('resize', update);
+        btn.addEventListener('click', () => { window.location.href = HOME; });
+      })();
+
+      /* internal state */
+      const S = {
+        voices: [],
+        sentences: [],
+        idx: parseInt(localStorage.getItem(RESUME_KEY) || '0', 10) || 0,
+        utterance: null,
+        auto: localStorage.getItem(AUTO_KEY) === 'true',
+        compact: (localStorage.getItem(COMPACT_KEY) === 'true') || (window.matchMedia('(max-width:820px)').matches),
+        readingOnScroll: false,
+        muted: false
+      };
+
+      /* load voices */
+      function loadVoices() {
+        return new Promise((resolve) => {
+          let v = speechSynthesis.getVoices();
+          if (v.length) { S.voices = v; resolve(v); return; }
+          speechSynthesis.onvoiceschanged = () => { v = speechSynthesis.getVoices(); S.voices = v; resolve(v); };
+          setTimeout(() => { v = speechSynthesis.getVoices(); S.voices = v; resolve(v); }, 1200);
+        });
+      }
+      async function populateVoices() {
+        const voices = await loadVoices();
+        if (!voicesSelect) return;
         voicesSelect.innerHTML = '';
         voices.forEach(v => {
           const opt = document.createElement('option');
-          opt.value = v.voiceURI;
+          opt.value = v.voiceURI || v.name;
           opt.textContent = `${v.name} (${v.lang})${v.default ? ' — default' : ''}`;
           voicesSelect.appendChild(opt);
         });
-        const saved = localStorage.getItem('lesson2.voice');
-        if (saved) voicesSelect.value = saved;
+        const stored = localStorage.getItem('tts.voice');
+        if (stored) voicesSelect.value = stored;
       }
       populateVoices();
-      if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = populateVoices;
 
-      function getText(){
-        if (!contentRoot) return document.body.innerText;
-        const nodes = contentRoot.querySelectorAll('h1,h2,h3,h4,p,li');
-        return Array.from(nodes).map(n => n.innerText.trim()).filter(Boolean).join('.\n');
-      }
-      function buildSentences(text){
-        return text.split(/(?<=[.?!])\s+/);
+      /* build sentence objects pointing to nodes */
+      function buildSentences() {
+        const nodes = lesson.querySelectorAll('h1,h2,h3,p,li,pre');
+        const arr = [];
+        nodes.forEach(n => {
+          const txt = n.innerText.trim();
+          if (!txt) return;
+          const parts = txt.split(/(?<=[.?!])\s+/);
+          parts.forEach(p => { if (p && p.trim()) arr.push({ text: p.trim(), node: n }); });
+        });
+        S.sentences = arr;
       }
 
-      function speakAll(){
-        cancel();
-        const raw = getText();
-        sentences = buildSentences(raw);
-        idx = 0;
-        speakNext();
+      /* highlighting helpers */
+      function clearHighlights() {
+        const els = lesson.querySelectorAll('.tts-highlight');
+        els.forEach(el => el.classList.remove('tts-highlight'));
       }
-      function speakNext(){
-        if (idx >= sentences.length) return;
-        const s = sentences[idx++];
-        const u = new SpeechSynthesisUtterance(s);
-        const selURI = voicesSelect.value;
-        const sel = voices.find(v => v.voiceURI === selURI) || voices.find(v => v.default) || voices[0];
-        if (sel) u.voice = sel;
-        u.rate = parseFloat(rateInput.value);
-        u.pitch = parseFloat(pitchInput.value);
-        u.onstart = () => highlightSentence(s);
-        u.onend = () => { removeHighlights(); setTimeout(()=> speakNext(), 80); };
+      function highlightNode(node) {
+        clearHighlights();
+        if (!node) return;
+        node.classList.add('tts-highlight');
+        try { node.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+      }
+
+      /* device-aware default rate */
+      function deviceDefaultRate() {
+        const w = window.innerWidth;
+        if (w <= 420) return 0.95;
+        if (w <= 820) return 1.0;
+        return 1.08;
+      }
+
+      /* speaking */
+      function speakObj(obj) {
+        if (!obj || !obj.text) { S.idx++; return; }
+        if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(obj.text);
+        const voiceURI = (voicesSelect && voicesSelect.value) || localStorage.getItem('tts.voice') || '';
+        const selected = S.voices.find(v => v.voiceURI === voiceURI) || S.voices.find(v => v.default) || S.voices[0];
+        if (selected) u.voice = selected;
+        u.rate = rateInput ? parseFloat(rateInput.value) : deviceDefaultRate();
+        u.pitch = pitchInput ? parseFloat(pitchInput.value) : 1.0;
+        u.volume = S.muted ? 0 : 1;
+        u.onstart = () => highlightNode(obj.node);
+        u.onend = () => {
+          S.idx++;
+          localStorage.setItem(RESUME_KEY, String(S.idx));
+          if (S.idx < S.sentences.length) {
+            setTimeout(() => speakObj(S.sentences[S.idx]), 110);
+          } else {
+            S.idx = 0;
+            localStorage.setItem(RESUME_KEY, '0');
+            clearHighlights();
+          }
+        };
+        S.utterance = u;
         speechSynthesis.speak(u);
       }
-      function cancel(){ if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); }
-      function pause(){ if (speechSynthesis.speaking) speechSynthesis.pause(); }
-      function resume(){ if (speechSynthesis.paused) speechSynthesis.resume(); }
 
-      function highlightSentence(sentence){
-        removeHighlights();
-        const root = document.querySelector('.lesson-content');
-        if (!root) return;
-        const safe = sentence.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').trim().slice(0, 300);
-        if (!safe) return;
-        const regex = new RegExp(safe);
-        root.innerHTML = root.innerHTML.replace(regex, `<span class="tts-highlight">${sentence}</span>`);
+      /* controls */
+      function play(index) {
+        if (!S.sentences.length) buildSentences();
+        if (typeof index === 'number') S.idx = index;
+        if (S.idx >= S.sentences.length) S.idx = 0;
+        if (speechSynthesis.paused) return speechSynthesis.resume();
+        speakObj(S.sentences[S.idx]);
       }
-      function removeHighlights(){
-        const root = document.querySelector('.lesson-content');
-        if (!root) return;
-        const els = root.querySelectorAll('.tts-highlight');
-        els.forEach(el => { el.outerHTML = el.textContent; });
+      function pauseToggle() {
+        if (speechSynthesis.speaking && !speechSynthesis.paused) speechSynthesis.pause();
+        else if (speechSynthesis.paused) speechSynthesis.resume();
+      }
+      function stop() {
+        if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+        S.idx = 0;
+        localStorage.setItem(RESUME_KEY, '0');
+        clearHighlights();
+      }
+      function speakText(text) {
+        if (!text || !text.trim()) return;
+        if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        const voiceURI = (voicesSelect && voicesSelect.value) || localStorage.getItem('tts.voice') || '';
+        const selected = S.voices.find(v => v.voiceURI === voiceURI) || S.voices[0];
+        if (selected) u.voice = selected;
+        u.rate = rateInput ? parseFloat(rateInput.value) : deviceDefaultRate();
+        u.pitch = pitchInput ? parseFloat(pitchInput.value) : 1.0;
+        speechSynthesis.speak(u);
+      }
+      function toggleAuto() {
+        S.auto = !S.auto;
+        localStorage.setItem(AUTO_KEY, S.auto ? 'true' : 'false');
+        if (autoBtn) autoBtn.style.opacity = S.auto ? '1' : '0.6';
+      }
+      function setCompact(flag) {
+        if (!ttsBar) return;
+        ttsBar.setAttribute('data-compact', flag ? 'true' : 'false');
+        localStorage.setItem(COMPACT_KEY, flag ? 'true' : 'false');
       }
 
-      playBtn.addEventListener('click', () => {
-        if (speechSynthesis.paused) return resume();
-        if (speechSynthesis.speaking) return;
-        speakAll();
-        localStorage.setItem('lesson2.voice', voicesSelect.value || '');
-        localStorage.setItem('lesson2.rate', rateInput.value);
-        localStorage.setItem('lesson2.pitch', pitchInput.value);
-      });
-      pauseBtn.addEventListener('click', () => {
-        if (speechSynthesis.speaking) pause();
-        else if (speechSynthesis.paused) resume();
-      });
-      stopBtn.addEventListener('click', () => { cancel(); removeHighlights(); });
+      /* attach UI */
+      playBtn && playBtn.addEventListener('click', () => { play(0); });
+      pauseBtn && pauseBtn.addEventListener('click', pauseToggle);
+      stopBtn && stopBtn.addEventListener('click', stop);
+      voicesSelect && voicesSelect.addEventListener('change', () => localStorage.setItem('tts.voice', voicesSelect.value));
+      rateInput && rateInput.addEventListener('input', () => localStorage.setItem('tts.rate', rateInput.value));
+      pitchInput && pitchInput.addEventListener('input', () => localStorage.setItem('tts.pitch', pitchInput.value));
+      if (autoBtn) { autoBtn.style.opacity = S.auto ? '1' : '0.6'; autoBtn.addEventListener('click', toggleAuto); }
+      if (collapseBtn) collapseBtn.addEventListener('click', () => { const cur = ttsBar.getAttribute('data-compact') === 'true'; setCompact(!cur); });
 
-      voicesSelect.addEventListener('change', ()=> localStorage.setItem('lesson2.voice', voicesSelect.value));
-      rateInput.addEventListener('change', ()=> localStorage.setItem('lesson2.rate', rateInput.value));
-      pitchInput.addEventListener('change', ()=> localStorage.setItem('lesson2.pitch', pitchInput.value));
-      const savedAuto = localStorage.getItem('lesson2.auto') === 'true';
-      autoBtn.style.opacity = savedAuto ? '1' : '0.6';
-      autoBtn.addEventListener('click', ()=> {
-        const cur = localStorage.getItem('lesson2.auto') === 'true';
-        localStorage.setItem('lesson2.auto', (!cur).toString());
-        autoBtn.style.opacity = (!cur) ? '1' : '0.6';
-      });
+      /* initial compact & restore settings */
+      (function init() {
+        const storedCompact = localStorage.getItem(COMPACT_KEY);
+        const shouldDefault = window.matchMedia('(max-width:820px)').matches;
+        const compact = storedCompact === null ? shouldDefault : (storedCompact === 'true');
+        setCompact(compact);
 
-      const applySaved = () => {
-        const sv = localStorage.getItem('lesson2.voice');
-        if (sv && voices.find(v=>v.voiceURI===sv)) voicesSelect.value = sv;
-        const sr = localStorage.getItem('lesson2.rate') || rateInput.value;
-        const sp = localStorage.getItem('lesson2.pitch') || pitchInput.value;
-        rateInput.value = sr; pitchInput.value = sp;
-        if (localStorage.getItem('lesson2.auto') === 'true') {
-          try { speakAll(); } catch(e) { console.warn('Auto TTS blocked'); }
+        const r = localStorage.getItem('tts.rate');
+        const p = localStorage.getItem('tts.pitch');
+        const v = localStorage.getItem('tts.voice');
+        if (r && rateInput) rateInput.value = r;
+        if (p && pitchInput) pitchInput.value = p;
+        if (v && voicesSelect) setTimeout(()=> { try { voicesSelect.value = v; } catch(e){} }, 600);
+      })();
+
+      /* responsive adjustments */
+      function handleResize() {
+        const narrow = window.matchMedia('(max-width:420px)').matches;
+        const tablet = window.matchMedia('(max-width:820px)').matches && !narrow;
+        const userSet = localStorage.getItem(COMPACT_KEY);
+        if (userSet === null) {
+          if (narrow) setCompact(true);
+          else setCompact(false);
         }
+        if (voicesSelect) {
+          if (narrow) voicesSelect.style.maxWidth = '120px';
+          else if (tablet) voicesSelect.style.maxWidth = '180px';
+          else voicesSelect.style.maxWidth = '240px';
+        }
+        const desktopBtn = document.querySelector('.desktop-back-btn');
+        if (desktopBtn) desktopBtn.style.display = window.innerWidth <= MOBILE_BREAK ? 'none' : 'inline-flex';
+      }
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('orientationchange', () => setTimeout(handleResize, 260));
+      handleResize();
+
+      /* keyboard shortcuts */
+      window.addEventListener('keydown', (e) => {
+        const tag = (e.target && e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+        if (e.code === 'Space') { e.preventDefault(); if (speechSynthesis.speaking && !speechSynthesis.paused) pauseToggle(); else if (speechSynthesis.paused) pauseToggle(); else play(S.idx || 0); }
+        else if (e.key === 's' || e.key === 'S') stop();
+        else if (e.key === 'b' || e.key === 'B') window.location.href = HOME;
+        else if (e.key === '+' || e.key === '=') { if (rateInput) { rateInput.value = Math.min(parseFloat(rateInput.value) + 0.1, parseFloat(rateInput.max)); localStorage.setItem('tts.rate', rateInput.value); } }
+        else if (e.key === '-') { if (rateInput) { rateInput.value = Math.max(parseFloat(rateInput.value) - 0.1, parseFloat(rateInput.min)); localStorage.setItem('tts.rate', rateInput.value); } }
+        else if (e.key === 'm' || e.key === 'M') { S.muted = !S.muted; }
+        else if (e.key === 'r' || e.key === 'R') { const sel = window.getSelection().toString().trim(); if (sel) speakText(sel); }
+        else if (e.key === 'a' || e.key === 'A') toggleAuto();
+        else if (e.key === 't' || e.key === 'T') { S.readingOnScroll = !S.readingOnScroll; alert('Read-on-scroll: ' + (S.readingOnScroll ? 'ON' : 'OFF')); }
+      });
+
+      /* double-tap to toggle play/pause on mobile */
+      (function doubleTap() {
+        let last = 0;
+        document.addEventListener('touchend', (ev) => {
+          const now = Date.now();
+          if (now - last < 350) {
+            if (speechSynthesis.speaking && !speechSynthesis.paused) pauseToggle();
+            else play(S.idx || 0);
+            last = 0;
+            return;
+          }
+          last = now;
+        }, { passive: true });
+      })();
+
+      /* read-on-scroll using IntersectionObserver */
+      (function readOnScroll() {
+        if (!('IntersectionObserver' in window)) return;
+        const io = new IntersectionObserver((entries) => {
+          if (!S.readingOnScroll) return;
+          entries.forEach(en => {
+            if (en.isIntersecting && en.intersectionRatio > 0.6) {
+              const node = en.target;
+              const idx = S.sentences.findIndex(s => s.node === node);
+              if (idx >= 0) { S.idx = idx; play(idx); }
+            }
+          });
+        }, { threshold: [0.6] });
+        function observe() {
+          const nodes = lesson.querySelectorAll('h1,h2,h3,p,li,pre');
+          nodes.forEach(n => io.observe(n));
+        }
+        observe();
+        const mo = new MutationObserver(observe);
+        mo.observe(lesson, { childList: true, subtree: true });
+      })();
+
+      /* expose small API */
+      window.CyberEnh = {
+        play: () => play(0),
+        pause: () => pauseToggle(),
+        stop: () => stop(),
+        speakText: (t) => speakText(t),
+        toggleAutoRead: () => toggleAuto(),
+        selectVoice: (nameOrURI) => {
+          if (!voicesSelect || !nameOrURI) return;
+          const opt = Array.from(voicesSelect.options).find(o => o.value === nameOrURI || o.textContent.includes(nameOrURI));
+          if (opt) { voicesSelect.value = opt.value; localStorage.setItem('tts.voice', opt.value); }
+        },
+        getState: () => ({ idx: S.idx, auto: S.auto, muted: S.muted })
       };
 
-      let tries = 0;
-      const iv = setInterval(()=> {
-        if (speechSynthesis.getVoices().length) {
-          populateVoices(); applySaved(); clearInterval(iv);
-        } else if (++tries > 30) { applySaved(); clearInterval(iv); }
-      }, 200);
-    })();
+      /* auto-play if allowed */
+      window.addEventListener('load', () => {
+        buildSentences();
+        if (S.auto) {
+          try { play(S.idx || 0); } catch (e) { console.warn('Auto TTS blocked by browser, user must press Play to start.'); }
+        }
+      });
 
-    /* Responsive TTS: compact/expand toggle (preserves your existing TTS behaviour) */
-    (function () {
-      const BAR_KEY = 'lesson2.ttsCompact';
-      const ttsBar = document.getElementById('ttsBar');
-      const collapseBtn = document.getElementById('ttsCollapse');
-
-      if (!ttsBar || !collapseBtn) return;
-
-      // Initialize from saved preference or default for small screens
-      const saved = localStorage.getItem(BAR_KEY);
-      const shouldCompactDefault = window.matchMedia('(max-width:820px)').matches;
-      const compact = (saved === null) ? shouldCompactDefault : (saved === 'true');
-
-      ttsBar.setAttribute('data-compact', compact ? 'true' : 'false');
-
-      function setCompact(flag) {
-        ttsBar.setAttribute('data-compact', flag ? 'true' : 'false');
-        localStorage.setItem(BAR_KEY, flag ? 'true' : 'false');
+      /* quick hint for first-time visitors */
+      if (!localStorage.getItem(HINT_KEY)) {
+        setTimeout(()=> console.info('TTS shortcuts: Space play/pause • S stop • B back • +/- speed • R read selection • A toggle auto'), 1000);
+        localStorage.setItem(HINT_KEY, '1');
       }
 
-      collapseBtn.addEventListener('click', (e) => {
-        // toggle compact mode
-        const cur = ttsBar.getAttribute('data-compact') === 'true';
-        setCompact(!cur);
-      });
-
-      // Listen for orientation/resize changes — auto-collapse on narrow widths unless user set preference explicitly
-      let userOverrode = saved !== null;
-      window.addEventListener('resize', () => {
-        if (userOverrode) return;
-        const narrow = window.matchMedia('(max-width:820px)').matches;
-        setCompact(narrow);
-      });
     })();
   </script>
 </body>
