@@ -209,7 +209,7 @@
         el.innerHTML = `
           ${visited[l.id] ? '<div class="visited">Visited</div>' : ''}
           <h3>${l.title}</h3>
-          <p class="desc">Open module: <code>${l.file}</code></p>
+          <p class="desc"></p>
           <div class="meta">
             <div class="tag">${l.tags ? l.tags.slice(0,2).join(' • ') : 'Lesson'}</div>
             <div style="font-size:13px;color:var(--muted)">${String(idx+1).padStart(2,'0')}</div>
