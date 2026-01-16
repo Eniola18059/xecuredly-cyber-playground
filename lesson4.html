@@ -389,20 +389,6 @@
         <p>The first message sent over ARPANET on October 29, 1969 was <strong>“LO”</strong>. The intended "LOGIN" crashed the machine after the first two letters — a small but historic start to the networked age.</p>
         <div class="explain"><p class="small muted">This anecdote is a reminder: innovation often begins imperfectly but scales rapidly — the Internet grew from a simple experiment to a global infrastructure.</p></div>
       </section>
-
-      <section class="card long-read" aria-labelledby="labs">
-        <h2 id="labs" class="section-title">Hands-on Labs & Exercises</h2>
-        <p>Practical exercises to reinforce the theory. Always perform scanning/enumeration in a lab or with explicit permission.</p>
-        <ul class="list">
-          <li><strong>Lab 1 — Local host discovery:</strong> run <code>nmap -sn 192.168.1.0/24</code> on a home network to see active devices. Observe ARP table (<code>arp -a</code>).</li>
-          <li><strong>Lab 2 — Port & service discovery:</strong> scan a test VM with <code>nmap -sS -sV -p1-1000 target</code> and document services and versions.</li>
-          <li><strong>Lab 3 — Banner grabbing & vuln mapping:</strong> use <code>nmap --script vuln target</code> (in a controlled lab) to see automated findings and learn false-positive handling.</li>
-          <li><strong>Lab 4 — Enumeration:</strong> set up a Samba share and practice using <code>smbclient</code> and <code>enum4linux</code> to enumerate shares and users.</li>
-          <li><strong>Lab 5 — Packet capture:</strong> use Wireshark to capture a simple HTTP request and see headers, then repeat with HTTPS to see encryption.</li>
-        </ul>
-        <div class="explain"><p class="small muted">Tip: use virtual labs like VirtualBox or cloud sandboxes and snapshots to avoid damaging real systems. Always document commands, timestamps, and observations.</p></div>
-      </section>
-
       <section class="card long-read" aria-labelledby="refs">
         <h2 id="refs" class="section-title">Further Reading & References</h2>
         <ul class="list">
